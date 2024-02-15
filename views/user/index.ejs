@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="author" content="CodeHim">
+      <title> OTP Verify Mockup Example </title>
+      <!-- Style CSS -->
+      <link rel="stylesheet" href="user/assets/css/otpstyle.css">
+      <!-- Demo CSS (No need to include it into your project) -->
+      <link rel="stylesheet" href="user/assets/css/otpdemo.css">
+      <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css'>
+   </head>
+   <body>
+      <header class="cd__intro">
+         <h1> OTP Verify Mockup Example </h1>
+         <p> OTP Verify Mockup </p>
+         <div class="cd__action">
+            <a href="https://www.codehim.com/bootstrap/otp-input-field-using-bootstrap-5" title="Back to download and tutorial page" class="cd__btn back">Back to Tutorial</a>
+         </div>
+      </header>
+      <!--$%adsense%$-->
+      <main class="cd__main">
+         <!-- Start DEMO HTML (Use the following code into your project)-->
+         <body class="container-fluid bg-body-tertiary d-block">
+  <div class="row justify-content-center">
+      <div class="col-12 col-md-6 col-lg-4" style="min-width: 500px;">
+        <div class="card bg-white mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
+          <div class="card-body p-5 text-center">
+            <h4>Verify</h4>
+            <p>Your code was sent to you via email</p>
+
+            <div class="otp-field mb-4">
+              <input type="number" />
+              <input type="number" disabled />
+              <input type="number" disabled />
+              <input type="number" disabled />
+              <input type="number" disabled />
+              <input type="number" disabled />
+            </div>
+
+            <button class="btn btn-primary mb-3">
+              Verify
+            </button>
+
+            <p class="resend text-muted mb-0">
+              Didn't receive code? <a href="">Request again</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <div class="footer">
+    Made with ❤️ by Marcus | Visit <a href="https://shopblocks.com" target="_blank">Shopblocks</a>
+  </div>
+</body>
+         <!-- END EDMO HTML (Happy Coding!)-->
+      </main>
+      <footer class="cd__credit">Author: Marcus - Distributed By: <a title="Free web design code & scripts" href="https://www.codehim.com?source=demo-page" target="_blank">CodeHim</a></footer>
+      
+      <!-- Script JS -->
+      <!-- <script src="user/assets/js/otpscript.js"></script> -->
+      <script>
+        const inputs = document.querySelectorAll(".otp-field > input");
+const button = document.querySelector(".btn");
+
+window.addEventListener("load", () => inputs[0].focus());
+button.setAttribute("disabled", "disabled");
+
+inputs[0].addEventListener("paste", function (event) {
+  event.preventDefault();
+
+  const pastedValue = (event.clipboardData || window.clipboardData).getData(
+    "text"
+  );
+  const otpLength = inputs.length;
+
+  for (let i = 0; i < otpLength; i++) {
+    if (i < pastedValue.length) {
+      inputs[i].value = pastedValue[i];
+      inputs[i].removeAttribute("disabled");
+      inputs[i].focus;
+    } else {
+      inputs[i].value = ""; // Clear any remaining inputs
+      inputs[i].focus;
+    }
+  }
+});
+
+inputs.forEach((input, index1) => {
+  input.addEventListener("keyup", (e) => {
+    const currentInput = input;
+    const nextInput = input.nextElementSibling;
+    const prevInput = input.previousElementSibling;
+
+    if (currentInput.value.length > 1) {
+      currentInput.value = "";
+      return;
+    }
+
+    if (
+      nextInput &&
+      nextInput.hasAttribute("disabled") &&
+      currentInput.value !== ""
+    ) {
+      nextInput.removeAttribute("disabled");
+      nextInput.focus();
+    }
+
+    if (e.key === "Backspace") {
+      inputs.forEach((input, index2) => {
+        if (index1 <= index2 && prevInput) {
+          input.setAttribute("disabled", true);
+          input.value = "";
+          prevInput.focus();
+        }
+      });
+    }
+
+    button.classList.remove("active");
+    button.setAttribute("disabled", "disabled");
+
+    const inputsNo = inputs.length;
+    if (!inputs[inputsNo - 1].disabled && inputs[inputsNo - 1].value !== "") {
+      button.classList.add("active");
+      button.removeAttribute("disabled");
+
+      return;
+    }
+  });
+});
+      </script>
+      <!--$%analytics%$-->
+   </body>
+</html>
