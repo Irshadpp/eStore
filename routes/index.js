@@ -1,9 +1,23 @@
 var express = require('express');
-var router = express.Router();
+var router = express();
+const indexController = require('../controller/indexController')
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('user/index', { title: 'Athir Bot' });
-});
+
+router.set('views','./views/user');
+/* GET landing page. */
+router.get('/',indexController.loadIndex);
+
+
+//login and signup loading
+router.get('/login',indexController.loadLogin);
+router.get('/signup',indexController.loadSignup);
+
+
+//user signup
+router.post('/signup',indexController.signup);
+
+// otp load
+router.post('/otp',indexController.otpLoad)
+
 
 module.exports = router;

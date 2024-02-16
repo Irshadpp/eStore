@@ -1,136 +1,293 @@
-<!DOCTYPE html>
-<html lang="en">
-   <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="author" content="CodeHim">
-      <title> OTP Verify Mockup Example </title>
-      <!-- Style CSS -->
-      <link rel="stylesheet" href="user/assets/css/otpstyle.css">
-      <!-- Demo CSS (No need to include it into your project) -->
-      <link rel="stylesheet" href="user/assets/css/otpdemo.css">
-      <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css'>
-   </head>
-   <body>
-      <header class="cd__intro">
-         <h1> OTP Verify Mockup Example </h1>
-         <p> OTP Verify Mockup </p>
-         <div class="cd__action">
-            <a href="https://www.codehim.com/bootstrap/otp-input-field-using-bootstrap-5" title="Back to download and tutorial page" class="cd__btn back">Back to Tutorial</a>
-         </div>
-      </header>
-      <!--$%adsense%$-->
-      <main class="cd__main">
-         <!-- Start DEMO HTML (Use the following code into your project)-->
-         <body class="container-fluid bg-body-tertiary d-block">
-  <div class="row justify-content-center">
-      <div class="col-12 col-md-6 col-lg-4" style="min-width: 500px;">
-        <div class="card bg-white mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
-          <div class="card-body p-5 text-center">
-            <h4>Verify</h4>
-            <p>Your code was sent to you via email</p>
+<%-include('../layout/indexHeader')-%>
 
-            <div class="otp-field mb-4">
-              <input type="number" />
-              <input type="number" disabled />
-              <input type="number" disabled />
-              <input type="number" disabled />
-              <input type="number" disabled />
-              <input type="number" disabled />
-            </div>
 
-            <button class="btn btn-primary mb-3">
-              Verify
-            </button>
 
-            <p class="resend text-muted mb-0">
-              Didn't receive code? <a href="">Request again</a>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+    
+        <main class="main">
+            <div class="intro-slider-container">
+                <div class="intro-slider owl-carousel owl-simple owl-nav-inside owl-light" data-toggle="owl" data-owl-options='{"nav":false, "dots": false, "loop": false}'>
+                    <div class="intro-slide" style="background-image: url(user/assets/images/demos/demo-16/slider/slide-1.jpg);">
+                        <div class="container intro-content text-center">
+                            <h3 class="intro-subtitle">Want to know what's hot?</h3><!-- End .h3 intro-subtitle -->
+                            <h1 class="intro-title text-white">For Spring In The City</h1><!-- End .intro-title -->
 
-  <div class="footer">
-    Made with ❤️ by Marcus | Visit <a href="https://shopblocks.com" target="_blank">Shopblocks</a>
-  </div>
-</body>
-         <!-- END EDMO HTML (Happy Coding!)-->
-      </main>
-      <footer class="cd__credit">Author: Marcus - Distributed By: <a title="Free web design code & scripts" href="https://www.codehim.com?source=demo-page" target="_blank">CodeHim</a></footer>
-      
-      <!-- Script JS -->
-      <!-- <script src="user/assets/js/otpscript.js"></script> -->
-      <script>
-        const inputs = document.querySelectorAll(".otp-field > input");
-const button = document.querySelector(".btn");
+                            <a href="#scroll-to-content" class="btn btn-outline-white scroll-to">
+                                <span>Start scrolling</span>
+                                <i class="icon-long-arrow-down"></i>
+                            </a>
+                        </div><!-- End .intro-content -->
+                    </div><!-- End .intro-slide -->
+                </div><!-- End .intro-slider owl-carousel owl-simple -->
 
-window.addEventListener("load", () => inputs[0].focus());
-button.setAttribute("disabled", "disabled");
+                <span class="slider-loader text-white"></span><!-- End .slider-loader -->
+            </div><!-- End .intro-slider-container -->
 
-inputs[0].addEventListener("paste", function (event) {
-  event.preventDefault();
+           
+                <div class="pt-7"></div><!-- End .pt-6 -->
 
-  const pastedValue = (event.clipboardData || window.clipboardData).getData(
-    "text"
-  );
-  const otpLength = inputs.length;
+                <div class="row">
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="icon-box text-center">
+                            <span class="icon-box-icon text-dark">
+                                <i class="icon-truck"></i>
+                            </span>
+                            <div class="icon-box-content">
+                                <h3 class="icon-box-title">Payment & Delivery</h3><!-- End .icon-box-title -->
+                                <p>Free shipping for orders over $50</p>
+                            </div><!-- End .icon-box-content -->
+                        </div><!-- End .icon-box -->
+                    </div><!-- End .col-lg-3 col-sm-6 -->
 
-  for (let i = 0; i < otpLength; i++) {
-    if (i < pastedValue.length) {
-      inputs[i].value = pastedValue[i];
-      inputs[i].removeAttribute("disabled");
-      inputs[i].focus;
-    } else {
-      inputs[i].value = ""; // Clear any remaining inputs
-      inputs[i].focus;
-    }
-  }
-});
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="icon-box text-center">
+                            <span class="icon-box-icon text-dark">
+                                <i class="icon-rotate-left"></i>
+                            </span>
+                            <div class="icon-box-content">
+                                <h3 class="icon-box-title">Return & Refund</h3><!-- End .icon-box-title -->
+                                <p>Free 100% money back guarantee</p>
+                            </div><!-- End .icon-box-content -->
+                        </div><!-- End .icon-box -->
+                    </div><!-- End .col-lg-3 col-sm-6 -->
 
-inputs.forEach((input, index1) => {
-  input.addEventListener("keyup", (e) => {
-    const currentInput = input;
-    const nextInput = input.nextElementSibling;
-    const prevInput = input.previousElementSibling;
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="icon-box text-center">
+                            <span class="icon-box-icon text-dark">
+                                <i class="la la-unlock"></i>
+                            </span>
+                            <div class="icon-box-content">
+                                <h3 class="icon-box-title">Secure Payment</h3><!-- End .icon-box-title -->
+                                <p>100% secure payment</p>
+                            </div><!-- End .icon-box-content -->
+                        </div><!-- End .icon-box -->
+                    </div><!-- End .col-lg-3 col-sm-6 -->
 
-    if (currentInput.value.length > 1) {
-      currentInput.value = "";
-      return;
-    }
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="icon-box text-center">
+                            <span class="icon-box-icon text-dark">
+                                <i class="icon-headphones"></i>
+                            </span>
+                            <div class="icon-box-content">
+                                <h3 class="icon-box-title">Quality Support</h3><!-- End .icon-box-title -->
+                                <p>Alway online feedback 24/7</p>
+                            </div><!-- End .icon-box-content -->
+                        </div><!-- End .icon-box -->
+                    </div><!-- End .col-lg-3 col-sm-6 -->
+                </div><!-- End .row -->
 
-    if (
-      nextInput &&
-      nextInput.hasAttribute("disabled") &&
-      currentInput.value !== ""
-    ) {
-      nextInput.removeAttribute("disabled");
-      nextInput.focus();
-    }
+                
 
-    if (e.key === "Backspace") {
-      inputs.forEach((input, index2) => {
-        if (index1 <= index2 && prevInput) {
-          input.setAttribute("disabled", true);
-          input.value = "";
-          prevInput.focus();
-        }
-      });
-    }
+                        
 
-    button.classList.remove("active");
-    button.setAttribute("disabled", "disabled");
+            <div class="bg-lighter pt-6 pb-9">
+                <div class="container">
+                    <div class="heading text-center">
+                        <h2 class="title">Shop The Collection</h2><!-- End .title -->
+                        <p class="title-desc">Donec nec justo eget felis facilisis fermentum. <br>Aliquam porttitor mauris sit amet orci..</p><!-- End .title-desc -->
+                    </div><!-- End .heading -->
 
-    const inputsNo = inputs.length;
-    if (!inputs[inputsNo - 1].disabled && inputs[inputsNo - 1].value !== "") {
-      button.classList.add("active");
-      button.removeAttribute("disabled");
+                    <div class="owl-carousel owl-simple" data-toggle="owl" 
+                        data-owl-options='{
+                            "nav": false, 
+                            "dots": true,
+                            "margin": 20,
+                            "loop": false,
+                            "responsive": {
+                                "0": {
+                                    "items":2
+                                },
+                                "480": {
+                                    "items":2
+                                },
+                                "768": {
+                                    "items":3
+                                },
+                                "992": {
+                                    "items":4
+                                },
+                                "1200": {
+                                    "items":4,
+                                    "nav": true,
+                                    "dots": false
+                                }
+                            }
+                        }'>
+                        <div class="product product-4">
+                            <figure class="product-media">
+                                <a href="product.html">
+                                    <img src="user/assets/images/demos/demo-16/products/product-7.jpg" alt="Product image" class="product-image">
+                                    <img src="user/assets/images/demos/demo-16/products/product-7-2.jpg" alt="Product image" class="product-image-hover">
+                                </a>
 
-      return;
-    }
-  });
-});
-      </script>
-      <!--$%analytics%$-->
-   </body>
-</html>
+                                <div class="product-action-vertical">
+                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                    <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
+                                    <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                                </div><!-- End .product-action -->
+
+                                <div class="product-action">
+                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                </div><!-- End .product-action -->
+                            </figure><!-- End .product-media -->
+
+                            <div class="product-body">
+                                <div class="product-cat">
+                                    <a href="#">Clothing</a>
+                                </div><!-- End .product-cat -->
+                                <h3 class="product-title"><a href="product.html">Linen-blend dress</a></h3><!-- End .product-title -->
+                                <div class="product-price">
+                                    $60.00
+                                </div><!-- End .product-price -->
+                                <div class="product-nav product-nav-dots">
+                                    <a href="#" class="active" style="background: #e5dcb1;"><span class="sr-only">Color name</span></a>
+                                    <a href="#" style="background: #bacbd8;"><span class="sr-only">Color name</span></a>
+                                </div><!-- End .product-nav -->
+                            </div><!-- End .product-body -->
+                        </div><!-- End .product -->
+
+                        <div class="product product-4">
+                            <figure class="product-media">
+                                <span class="product-label label-primary">Sale</span>
+                                <a href="product.html">
+                                    <img src="user/assets/images/demos/demo-16/products/product-8.jpg" alt="Product image" class="product-image">
+                                    <img src="user/assets/images/demos/demo-16/products/product-8-2.jpg" alt="Product image" class="product-image-hover">
+                                </a>
+
+                                <div class="product-action-vertical">
+                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                    <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
+                                    <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                                </div><!-- End .product-action -->
+
+                                <div class="product-action">
+                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                </div><!-- End .product-action -->
+                            </figure><!-- End .product-media -->
+
+                            <div class="product-body">
+                                <div class="product-cat">
+                                    <a href="#">Shoes</a>
+                                </div><!-- End .product-cat -->
+                                <h3 class="product-title"><a href="product.html">Sandals with lacing</a></h3><!-- End .product-title -->
+                                <div class="product-price">
+                                    <span class="new-price">Now $70.00</span>
+                                    <span class="old-price">Was $155.00</span>
+                                </div><!-- End .product-price -->
+                            </div><!-- End .product-body -->
+                        </div><!-- End .product -->
+
+                        <div class="product product-4">
+                            <figure class="product-media">
+                                <a href="product.html">
+                                    <img src="user/assets/images/demos/demo-16/products/product-9.jpg" alt="Product image" class="product-image">
+                                    <img src="user/assets/images/demos/demo-16/products/product-9-2.jpg" alt="Product image" class="product-image-hover">
+                                </a>
+
+                                <div class="product-action-vertical">
+                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                    <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
+                                    <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                                </div><!-- End .product-action -->
+
+                                <div class="product-action">
+                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                </div><!-- End .product-action -->
+                            </figure><!-- End .product-media -->
+
+                            <div class="product-body">
+                                <div class="product-cat">
+                                    <a href="#">Clothing</a>
+                                </div><!-- End .product-cat -->
+                                <h3 class="product-title"><a href="product.html">Paper bag trousers</a></h3><!-- End .product-title -->
+                                <div class="product-price">
+                                    $58.00
+                                </div><!-- End .product-price -->
+                                <div class="product-nav product-nav-dots">
+                                    <a href="#" class="active" style="background: #9fac76;"><span class="sr-only">Color name</span></a>
+                                    <a href="#" style="background: #333333;"><span class="sr-only">Color name</span></a>
+                                </div><!-- End .product-nav -->
+                            </div><!-- End .product-body -->
+                        </div><!-- End .product -->
+
+                        <div class="product product-4">
+                            <figure class="product-media">
+                                <a href="product.html">
+                                    <img src="user/assets/images/demos/demo-16/products/product-10.jpg" alt="Product image" class="product-image">
+                                    <img src="user/assets/images/demos/demo-16/products/product-10-2.jpg" alt="Product image" class="product-image-hover">
+                                </a>
+
+                                <div class="product-action-vertical">
+                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                    <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
+                                    <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                                </div><!-- End .product-action -->
+
+                                <div class="product-action">
+                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                </div><!-- End .product-action -->
+                            </figure><!-- End .product-media -->
+
+                            <div class="product-body">
+                                <div class="product-cat">
+                                    <a href="#">Handbags</a>
+                                </div><!-- End .product-cat -->
+                                <h3 class="product-title"><a href="product.html">Paper straw shopper</a></h3><!-- End .product-title -->
+                                <div class="product-price">
+                                    $398.00
+                                </div><!-- End .product-price -->
+                            </div><!-- End .product-body -->
+                        </div><!-- End .product -->
+
+                        <div class="product product-4">
+                            <figure class="product-media">
+                                <a href="product.html">
+                                    <img src="user/assets/images/demos/demo-16/products/product-6.jpg" alt="Product image" class="product-image">
+                                </a>
+
+                                <div class="product-action-vertical">
+                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                    <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
+                                    <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                                </div><!-- End .product-action -->
+
+                                <div class="product-action">
+                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                </div><!-- End .product-action -->
+                            </figure><!-- End .product-media -->
+
+                            <div class="product-body">
+                                <div class="product-cat">
+                                    <a href="#">Clothing</a>
+                                </div><!-- End .product-cat -->
+                                <h3 class="product-title"><a href="product.html">Gray-blend dress</a></h3><!-- End .product-title -->
+                                <div class="product-price">
+                                    $85.00
+                                </div><!-- End .product-price -->
+                            </div><!-- End .product-body -->
+                        </div><!-- End .product -->
+                    </div><!-- End .owl-carousel owl-simple -->
+                </div><!-- End .container -->
+            </div><!-- End .bg-lighter pt-5 pb-5 -->
+
+            <nav  aria-label="Page navigation example">
+                <ul class="pagination justify-content-center display-1 ">
+                  <li class="page-item ">
+                    <a class="page-link " href="#" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                      <span class="sr-only ">Previous</span>
+                    </a>
+                  </li>
+                  <li class="page-item"><a class="page-link" href="#">1</a></li>
+                  <li class="page-item"><a class="page-link" href="#">2</a></li>
+                  <li class="page-item"><a class="page-link" href="#">3</a></li>
+                  <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                      <span class="sr-only">Next</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+
+            
+        <%-include('../layout/footer')-%>

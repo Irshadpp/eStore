@@ -1,121 +1,106 @@
-<%-include('../layout/header')-%>
-    
+<%-include('../layout/indexHeader')-%>
+      <main class="cd__main">
+         <!-- Start DEMO HTML (Use the following code into your project)-->
+         <body class="container-fluid bg-body-tertiary d-block">
+  <div class="row justify-content-center">
+      <div class="col-12 col-md-6 col-lg-4" style="min-width: 500px;">
+        <div class="card bg-white mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
+          <div class="card-body p-5 text-center">
+            <h4>Verify</h4>
+            <p>Your code was sent to you via email</p>
 
-        <div class="login-page bg-image pt-8 pb-8 pt-md-12 pb-md-12 pt-lg-17 pb-lg-17"
-            style="background-image: url('user/assets/images/backgrounds/login-bg.jpg')">
-            <div class="container">
-                <div class="form-box">
-                    <div class="form-tab">
-                        <ul class="nav nav-pills nav-fill" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="signin-tab-2" data-toggle="tab" href="#signin-2" role="tab"
-                                    aria-controls="signin-2" aria-selected="false">Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="register-tab-2" data-toggle="tab" href="#register-2"
-                                    role="tab" aria-controls="register-2" aria-selected="true">Signup</a>
-                            </li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="tab-pane fade" id="signin-2" role="tabpanel" aria-labelledby="signin-tab-2">
-                                <form action="#">
-                                    <div class="form-group">
-                                        <label for="singin-email-2">Username or email address *</label>
-                                        <input type="text" class="form-control" id="singin-email-2" name="singin-email"
-                                            required>
-                                    </div><!-- End .form-group -->
+            <div class="otp-field mb-4">
+              <input type="number" />
+              <input type="number" disabled />
+              <input type="number" disabled />
+              <input type="number" disabled />
+              <input type="number" disabled />
+              <input type="number" disabled />
+            </div>
 
-                                    <div class="form-group">
-                                        <label for="singin-password-2">Password *</label>
-                                        <input type="password" class="form-control" id="singin-password-2"
-                                            name="singin-password" required>
-                                    </div><!-- End .form-group -->
+            <button class="btn btn-primary mb-3">
+              Verify
+            </button>
 
-                                    <div class="form-footer">
-                                        <button type="submit" class="btn btn-outline-primary-2">
-                                            <span>LOG IN</span>
-                                            <i class="icon-long-arrow-right"></i>
-                                        </button>
+            <p class="resend text-muted mb-0">
+             Code will expire in 1:00 &nbsp;<a href="">Resend OTP</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+      
+      <!-- Script JS -->
+      <!-- <script src="user/assets/js/otpscript.js"></script> -->
+      <script>
+        const inputs = document.querySelectorAll(".otp-field > input");
+const button = document.querySelector(".btn");
 
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="signin-remember-2">
-                                            <label class="custom-control-label" for="signin-remember-2">Remember
-                                                Me</label>
-                                        </div><!-- End .custom-checkbox -->
+window.addEventListener("load", () => inputs[0].focus());
+button.setAttribute("disabled", "disabled");
 
-                                        <a href="#" class="forgot-link">Forgot Your Password?</a>
-                                    </div><!-- End .form-footer -->
-                                </form>
-                                <div class="form-choice">
-                                    <p class="text-center">or sign in with</p>
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <a href="#" class="btn btn-login btn-g">
-                                                <i class="icon-google"></i>
-                                                Login With Google
-                                            </a>
-                                        </div><!-- End .col-6 -->
-                                        <div class="col-sm-6">
-                                            <a href="#" class="btn btn-login btn-f">
-                                                <i class="icon-facebook-f"></i>
-                                                Login With Facebook
-                                            </a>
-                                        </div><!-- End .col-6 -->
-                                    </div><!-- End .row -->
-                                </div><!-- End .form-choice -->
-                            </div><!-- .End .tab-pane -->
-                            <div class="tab-pane fade show active" id="register-2" role="tabpanel"
-                                aria-labelledby="register-tab-2">
-                                <form action="#">
-                                    <div class="form-group">
-                                        <label for="register-email-2">Your email address *</label>
-                                        <input type="email" class="form-control" id="register-email-2"
-                                            name="register-email" required>
-                                    </div><!-- End .form-group -->
+inputs[0].addEventListener("paste", function (event) {
+  event.preventDefault();
 
-                                    <div class="form-group">
-                                        <label for="register-password-2">Password *</label>
-                                        <input type="password" class="form-control" id="register-password-2"
-                                            name="register-password" required>
-                                    </div><!-- End .form-group -->
+  const pastedValue = (event.clipboardData || window.clipboardData).getData(
+    "text"
+  );
+  const otpLength = inputs.length;
 
-                                    <div class="form-footer">
-                                        <button type="submit" class="btn btn-outline-primary-2">
-                                            <span>SIGN UP</span>
-                                            <i class="icon-long-arrow-right"></i>
-                                        </button>
+  for (let i = 0; i < otpLength; i++) {
+    if (i < pastedValue.length) {
+      inputs[i].value = pastedValue[i];
+      inputs[i].removeAttribute("disabled");
+      inputs[i].focus;
+    } else {
+      inputs[i].value = ""; // Clear any remaining inputs
+      inputs[i].focus;
+    }
+  }
+});
 
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="register-policy-2"
-                                                required>
-                                            <label class="custom-control-label" for="register-policy-2">I agree to the
-                                                <a href="#">privacy policy</a> *</label>
-                                        </div><!-- End .custom-checkbox -->
-                                    </div><!-- End .form-footer -->
-                                </form>
-                                <div class="form-choice">
-                                    <p class="text-center">or sign in with</p>
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <a href="#" class="btn btn-login btn-g">
-                                                <i class="icon-google"></i>
-                                                Login With Google
-                                            </a>
-                                        </div><!-- End .col-6 -->
-                                        <div class="col-sm-6">
-                                            <a href="#" class="btn btn-login  btn-f">
-                                                <i class="icon-facebook-f"></i>
-                                                Login With Facebook
-                                            </a>
-                                        </div><!-- End .col-6 -->
-                                    </div><!-- End .row -->
-                                </div><!-- End .form-choice -->
-                            </div><!-- .End .tab-pane -->
-                        </div><!-- End .tab-content -->
-                    </div><!-- End .form-tab -->
-                </div><!-- End .form-box -->
-            </div><!-- End .container -->
-        </div><!-- End .login-page section-bg -->
-        </main><!-- End .main -->
+inputs.forEach((input, index1) => {
+  input.addEventListener("keyup", (e) => {
+    const currentInput = input;
+    const nextInput = input.nextElementSibling;
+    const prevInput = input.previousElementSibling;
 
+    if (currentInput.value.length > 1) {
+      currentInput.value = "";
+      return;
+    }
+
+    if (
+      nextInput &&
+      nextInput.hasAttribute("disabled") &&
+      currentInput.value !== ""
+    ) {
+      nextInput.removeAttribute("disabled");
+      nextInput.focus();
+    }
+
+    if (e.key === "Backspace") {
+      inputs.forEach((input, index2) => {
+        if (index1 <= index2 && prevInput) {
+          input.setAttribute("disabled", true);
+          input.value = "";
+          prevInput.focus();
+        }
+      });
+    }
+
+    button.classList.remove("active");
+    button.setAttribute("disabled", "disabled");
+
+    const inputsNo = inputs.length;
+    if (!inputs[inputsNo - 1].disabled && inputs[inputsNo - 1].value !== "") {
+      button.classList.add("active");
+      button.removeAttribute("disabled");
+
+      return;
+    }
+  });
+});
+      </script>
+      <!--$%analytics%$-->
 <%-include('../layout/footer')-%>
