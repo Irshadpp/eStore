@@ -1,13 +1,14 @@
 const bcrypt = require('bcrypt');
 const User = require('../model/userdb');
+const OTP = require('../model/userdb')
+const generateOTP = require('../util/generateOtp')
+const asyncHandler = require('express-async-handler');
+const sendEmail = require('../util/sendEmail');
+const {AUTH_EMIAL} = process.env;
 
-const loadIndex = async (req,res) =>{
-    try {
+const loadIndex = asyncHandler(async (req,res) =>{
         res.render('index')
-    } catch (error) {
-        console.log(error.message);
-    }
-} 
+}) 
 
 const loadLogin = async(req,res)=>{
     try{
@@ -57,7 +58,7 @@ const signup = async (req,res) => {
                 })
                 const result = await users.save()
                 if(result){
-                    res.render('signup',{msg:"Signup sucessfull"});
+                    res.redirect('/otp');
                 }else{
                     res.render('signup',{msg:"Signup failed"});
                 }
@@ -73,14 +74,57 @@ const signup = async (req,res) => {
     }
 }
 
-
-const otpSubmit = async (req,res) =>{
+const otpSubmit = async ({req, res}) =>{
+    console.log("otp submit -------------------------------------");
     try {
-        
+        const {email, subject, message, duration} = req.body;
+        const createdOTP = await sendOtp({
+            email,
+            subject,
+            message,
+            duration
+        })
+        res.status(200).json(createdOTP)
+    } catch (error) {
+        res.status(400).send(error.message)
+    }
+}
+
+const sendOtp = async ({email, subject, message, duration = 1}) =>{
+    try {
+        if(!(email && subject && message)){
+            throw Error("Provide values for email, subject, message");
+        }
+        //clear any old record
+        // await OTP.deleteOne({email});
+
+        //generate otp
+        const generatedOTP = await generateOTP();
+
+        //send email
+        const mailOptions = {
+            from: AUTH_EMIAL,
+            to: 'irshad89434@gmail.com',
+            subject,
+            generatedOTP,
+            duration,
+        }
+        console.log(mailOptions.generatedOTP);
+        await sendEmail(mailOptions);
+        const newOTP = await new OTP({
+            email: email,
+            otp: generatedOTP,
+            created_at: Date.now(),
+            expiration_time: Date.now() + 120000 * +duration,
+        })
+
+        const createdOTPRecord = await newOTP.save()
+        return createdOTPRecord
     } catch (error) {
         console.log(error.message);
     }
 }
+
 
 
 module.exports = {
@@ -89,6 +133,7 @@ module.exports = {
     loadSignup,
     signup,
     otpLoad,
+    otpSubmit,
     
    
 }
