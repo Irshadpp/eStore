@@ -17,11 +17,9 @@ router.get('/signup',indexController.loadSignup);
 router.post('/signup',indexController.signup);
 
 // otp load
-router.get('/otp',indexController.otpLoad,indexController.otpSubmit);
-// router.post('/otp',indexController.otpSubmit);
-// router.post('/otp',)
+router.get('/otp',indexController.otpLoad);
+router.post('/verifyOTP',indexController.verifyOTP)
 
-// router.post('/otp_submit',);
 
 
 module.exports = router;

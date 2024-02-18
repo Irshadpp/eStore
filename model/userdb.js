@@ -12,15 +12,9 @@ const userSchema = new mongoose.Schema({
     token:{type:Number, default:''}
 })
 
-const otpSchema = new mongoose.Schema({
-    // user_id:{type:mongoose.Schema.Types.ObjectId, ref: 'User', required:true},
-    email:{type:String, unique:true},
-    otp:{type:Number, required:true},
-    created_at:{type:Date, default:Date.now},
-    expiration_time:{type:Date, required:true},
-})
+
 module.exports = mongoose.model('User',userSchema);
-module.exports = mongoose.model('OTP',otpSchema);
+
 
 // module.exports = { 
 //     User,
