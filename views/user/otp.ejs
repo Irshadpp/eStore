@@ -1,4 +1,5 @@
 <%-include('../layout/indexHeader')-%>
+
       <main class="cd__main">
          <!-- Start DEMO HTML (Use the following code into your project)-->
          <body class="container-fluid bg-body-tertiary d-block">
@@ -7,7 +8,7 @@
         <div class="card bg-white mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
           <div class="card-body p-5 text-center">
             <% if(typeof msg != 'undefined'){ %>
-              <p class="text-danger-50 text-center mb-5"><%= msg %></p> 
+              <p class="text-primary-50 text-center mb-5" id="text-danger"><%= msg %></p> 
              <% } %>
             <h4>Verify</h4>
             <p>Your code was sent to you via email</p>
@@ -27,12 +28,55 @@
           </form>
 
             <p class="resend text-muted mb-0">
-             Code will expire in 1:00 &nbsp;<a href="">Resend OTP</a>
+             Code will expire in <div id="timer"></div> &nbsp;<a href="/resendOTP">Resend OTP</a>
             </p>
           </div>
         </div>
       </div>
     </div>
+
+    <script>
+      // Set the time limit for the timer (in seconds)
+      const timeLimit = 120; // 5 minutes
+      
+      // Get the timer element from the HTML
+      const timerDisplay = document.getElementById('timer');
+    
+      // Function to update the timer display
+      function updateTimerDisplay(remainingTime) {
+        // Calculate minutes and seconds
+        const minutes = Math.floor(remainingTime / 60);
+        const seconds = remainingTime % 60;
+    
+        // Display the time in the format MM:SS
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }
+    
+      // Function to start the timer
+      function startTimer() {
+        let timeLeft = timeLimit;
+    
+        // Update the timer display immediately
+        updateTimerDisplay(timeLeft);
+    
+        // Update the timer every second
+        const timerInterval = setInterval(() => {
+          timeLeft--;
+    
+          // Update the timer display
+          updateTimerDisplay(timeLeft);
+    
+          // If the time is up, stop the timer
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            // alert('Time is up!');
+          }
+        }, 1000); // 1000 milliseconds = 1 second
+      }
+    
+      // Call the startTimer function to start the timer
+      startTimer();
+    </script>
       
       <!-- Script JS -->
       <!-- <script src="user/assets/js/otpscript.js"></script> -->

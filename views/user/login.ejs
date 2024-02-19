@@ -9,6 +9,9 @@
             <div class="container">
                 <div class="form-box">
                     <div class="form-tab">
+                        <% if(typeof msg != 'undefined'){ %>
+                            <p class="text-primary-50 text-center mb-5" id="text-danger"><%= msg %></p> 
+                           <% } %>
                         <ul class="nav nav-pills nav-fill" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link " id="signin-tab-2" data-toggle="tab" href="#signin-2" role="tab"
@@ -22,18 +25,18 @@
                                     <div class="form-group">
                                         <label for="register-email-2">Your email address *</label>
                                         <input type="email" class="form-control" id="register-email-2"
-                                            name="register-email" required>
+                                            name="email" required>
                                     </div><!-- End .form-group -->
 
                                     <div class="form-group">
                                         <label for="register-password-2">Password *</label>
                                         <input type="password" class="form-control" id="register-password-2"
-                                            name="register-password" required>
+                                            name="password" required>
                                     </div><!-- End .form-group -->
 
                                     <div class="form-footer">
                                         <button type="submit" class="btn btn-outline-primary-2">
-                                            <span>SIGN UP</span>
+                                            <span>LOGIN</span>
                                             <i class="icon-long-arrow-right"></i>
                                         </button>
 

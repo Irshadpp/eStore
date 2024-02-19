@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
     address:{type:Array},
     isVerified:{type:Boolean, required: true, default:false},
     isBlock:{type:Boolean, required:true, default:false},
-    isAdimin:{type:Boolean, required:true, default:false},
+    isAdmin:{type:Boolean, required:true, default:false},
     token:{type:Number, default:''}
 })
 
