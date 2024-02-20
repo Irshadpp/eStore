@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express();
-const indexController = require('../controller/indexController')
+const indexController = require('../controller/indexController');
+const indexAuth = require('../middlewares/indexAuth')
 
 
 
@@ -24,10 +25,10 @@ router.post('/verifyOTP',indexController.verifyOTP);
 router.get('/resendOTP',indexController.resendOTP);
 
 //home page load
-router.get('/home',indexController.homeLoad)
+router.get('/home', indexAuth.isUserBlock, indexController.homeLoad);
 
 //verify login
-router.post('/login', indexController.verifyLogin)
+router.post('/login', indexController.verifyLogin);
 
 
 

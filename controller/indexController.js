@@ -34,7 +34,11 @@ const otpLoad = async (req, res) => {
 }
 
 const homeLoad = asyncHandler(async (req, res) => {
-    res.render('home');
+
+    const userData = await User.findById(req.session.user_id);
+    console.log("======================",req.session.user_id);
+    res.render('home',{userData});
+
 })
 
 
@@ -53,10 +57,9 @@ const signup = async (req, res) => {
             if (/[A-Za-z0-9._%+-]+@gmail.com/.test(req.body.email)) {
 
                 const { username, email, mobile, password } = req.body;
-                const findUser = await User.find({ email: email });
-                const checkEmail = findUser[0].email;
-                console.log(checkEmail);
-                if (checkEmail !== email) {
+                const checkEmail = await User.findOne({ email: email });
+
+                if (!checkEmail) {
 
                     const sPassword = await securePassword(password);
                     const users = new User({
@@ -79,11 +82,11 @@ const signup = async (req, res) => {
 
                 } else {
 
-                    const checkVerified = await User.find({ email: email }, { _id: 0, isVerified: 1 });
-                    if (checkEmail && checkVerified[0].isVerified === false) {
-                        req.session.user_id = findUser[0]._id
-                        req.session.user_email = findUser[0].email;
-                        saveOTP(findUser[0], res);
+                    const checkVerified = await User.findOne({ email: email }, { _id: 0, isVerified: 1 });
+                    if (checkEmail && checkVerified.isVerified === false) {
+                        req.session.user_id = checkEmail._id
+                        req.session.user_email = checkEmail.email;
+                        saveOTP(checkEmail, res);
                         res.redirect('/otp');
                     } else {
                         res.render('signup', { msg: "Already have an accound in this email! Please login" });
@@ -183,6 +186,7 @@ const verifyLogin = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
     const userData = await User.findOne({ email: email });
 
+    if(userData.isBlock === false){
     if (userData) {
 
         const passwordMatch = await bcrypt.compare(password, userData.password);
@@ -191,7 +195,7 @@ const verifyLogin = asyncHandler(async (req, res) => {
 
             if (userData.isVerified === true) {
                 req.session.user_id = userData._id;
-                res.redirect('/home');
+                res.redirect('/home',{user_id});
             } else {
                 res.render('login', { msg: "Please verify your account with OTP!" })
             }
@@ -199,10 +203,12 @@ const verifyLogin = asyncHandler(async (req, res) => {
         } else {
             res.render('login', { msg: "Wrong password!" });
         }
-
     } else {
         res.render('login', { msg: "Invalid email!" });
     }
+}else{
+    res.render('login', { msg: "Access restricted!"});
+}
 
 })
 

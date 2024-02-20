@@ -16,44 +16,30 @@
                                     <%if(users.length>0){
                                         users.forEach((item)=>{ %>
                                     <tr>
-                                        <td width="40%">
+                                        <td width="25%">
                                                 <div class="info pl-3">
-                                                    <h6 class="mb-0 title"><%= users.name %></h6>
+                                                    <h6 class="mb-0 title"><%= item.username %></h6>
                                                 </div>
                                         </td>
-                                        <td><%= users.email %></td>
-                                        <td>08.07.2020</td>
-                                        <td><span class="badge rounded-pill alert-success">Not blocked</span></td>
+                                        <td><%= item.email %></td>
+                                        <td><%= item.createDate %></td>
+                                        <% if(item.isBlock === true){%>
+                                            <td width="10%"><span class="badge rounded-pill alert-danger">Blocked</span></td>
+                                            <%}else{%>
+                                                <td width="10%"><span class="badge rounded-pill alert-success">Not blocked</span></td>
+                                                <%}%>
                                         <td class="text-end">
-                                            <a href="#" class="btn btn-sm alert-danger rounded font-sm ">Block</a>
+                                            <a href="" onclick="blockUser('<%=item._id%>')" class="btn btn-sm alert-danger rounded font-sm ">Block</a>
                                         </td>
                                         <td class="text-end">
-                                            <a href="#" class="btn btn-sm alert-success rounded font-sm ">Unblock</a>
+                                            <a href="" onclick="unblockUser('<%=item._id%>')" class="btn btn-sm alert-success rounded font-sm ">Unblock</a>
                                         </td>
                                     </tr>
                                     <%})
                                 }else{%>
 
                                 <%}%>
-                                    <tr>
-                                        <td width="40%">
-                                       
-                                                <div class="info pl-3">
-                                                    <h6 class="mb-0 title">Eleanor Pena</h6>
-                                                    <small class="text-muted">Seller ID: #439</small>
-                                                </div>
-
-                                        </td>
-                                        <td>eleanor2020@example.com</td>
-                                        <td>08.07.2020</td>
-                                        <td><span class="badge rounded-pill alert-danger">Blocked</span></td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-sm alert-danger rounded font-sm ">Block</a>
-                                        </td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-sm alert-success rounded font-sm ">Unblock</a>
-                                        </td>
-                                    </tr>
+                                    
                                 </tbody>
                             </table>
                             <!-- table-responsive.// -->
@@ -62,7 +48,7 @@
                     <!-- card-body end// -->
                 </div>
                 <!-- card end// -->
-                <div class="pagination-area mt-15 mb-50">
+                <!-- <div class="pagination-area mt-15 mb-50">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-start">
                             <li class="page-item active"><a class="page-link" href="#">01</a></li>
@@ -75,7 +61,7 @@
                             </li>
                         </ul>
                     </nav>
-                </div>
+                </div> -->
             </section>
             <!-- content-main end// -->
             
@@ -87,5 +73,24 @@
         <script src="admin/assets/js/vendors/jquery.fullscreen.min.js"></script>
         <!-- Main Script -->
         <script src="admin/assets/js/main.js?v=1.1" type="text/javascript"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+            async function blockUser(userId){
+                try {
+                    await axios.put(`/admin/${userId}/block`);
+                } catch (error) {
+                    console.log(error.message);
+                }
+            }
+
+            async function unblockUser(userId){
+                try {
+                    await axios.put(`/admin/${userId}/unblock`);
+                } catch (error) {
+                    console.log(error.message);
+                }
+            }
+        </script>
     </body>
 </html>

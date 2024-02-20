@@ -16,5 +16,14 @@ router.get('/addProduct', adminController.addProductLoad);
 //verify login
 router.post('/',adminController.verifyLogin);
 
+//block user
+router.put('/:userId/block',adminController.blockUser);
+
+//unblock user
+router.put('/:userId/unblock',adminController.unblockUser);
+
+//add product 
+router.post('/addProduct', adminController.addProduct);
+
 
 module.exports = router;

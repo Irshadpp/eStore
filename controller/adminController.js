@@ -1,7 +1,8 @@
 const asyncHandler = require('express-async-handler');
 const Admin = require('../model/userdb');
-const User = require('../model/userdb')
-const bcrypt = require('bcrypt')
+const User = require('../model/userdb');
+const Product = require('../model/productdb');
+const bcrypt = require('bcrypt');
 
 //login load
 const loginLoad = asyncHandler( async (req,res) => {
@@ -15,8 +16,7 @@ const dashboardLoad = asyncHandler( async (req,res) => {
 
 //customers load
 const customersLoad = asyncHandler( async (req,res) => {
-    const userData = await User.find({isAdmin:0});
-    console.log(userData[0].email)
+    const userData = await User.find({isAdmin:false});
     res.render('customers',{users: userData});
 });
 
@@ -55,9 +55,41 @@ const verifyLogin = asyncHandler( async (req,res) => {
         res.render('login',{msg:"Couldn't find your email!"});
     }
 
+});
+
+const blockUser = asyncHandler( async (req,res) => {
+    const userId = req.params.userId;
+    await User.findByIdAndUpdate(userId,{isBlock:true});
+});
+
+const unblockUser = asyncHandler( async (req,res) => {
+    const userId = req.params.userId;
+    await User.findByIdAndUpdate(userId,{isBlock:false});
+});
+
+const addProduct = asyncHandler( async (req,res) => {
+
+    const {productName, description, price, quantity, category, image} = req.body;
+    // console.log("===================+++++++++++++++");
+    console.log(description);
+    console.log(price);
+    console.log(quantity);
+    console.log(category);
+    console.log(image);
+    const products = new Product({
+        productName: productName,
+        description: description,
+        price: price,
+        quantity: quantity,
+        category: category,
+        images: image,
+    });
+
+    var newProduct = await products.save();
+    console.log("----------------------",newProduct);
+    res.redirect('/admin/addProduct')
+
 })
-
-
 
 module.exports = {
     loginLoad,
@@ -67,4 +99,7 @@ module.exports = {
     productsLoad,
     categoryLoad,
     addProductLoad,
+    blockUser,
+    unblockUser,
+    addProduct
 }

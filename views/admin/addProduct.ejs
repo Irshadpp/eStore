@@ -13,27 +13,34 @@
                                 <h4>Basic</h4>
                             </div>
                             <div class="card-body">
-                                <form>
+                                <form method="post" >
                                     <div class="mb-4">
                                         <label for="product_name" class="form-label">Product title</label>
-                                        <input type="text" placeholder="Type here" class="form-control" id="product_name" />
+                                        <input type="text" placeholder="Type here" name="productName" class="form-control" id="product_name" />
                                     </div>
                                     <div class="mb-4">
                                         <label class="form-label">Full description</label>
-                                        <textarea placeholder="Type here" class="form-control" rows="4"></textarea>
+                                        <textarea placeholder="Type here" name="description" class="form-control" rows="4"></textarea>
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <div class="mb-4">
                                                 <label class="form-label">Price</label>
                                                 <div class="row gx-2">
-                                                    <input placeholder="Rs" type="text" class="form-control" />
+                                                    <input placeholder="Rs" name="price" type="text" class="form-control" />
                                                 </div>
                                             </div>
                                         </div>
-                                        
+                                        <div class="col-lg-4">
+                                            <div class="mb-4">
+                                                <label class="form-label">Quantity</label>
+                                                <div class="row gx-2">
+                                                    <input placeholder="Qty" name="quantity" type="text" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </form>
+
                             </div>
                         </div>
                         <!-- card end// -->
@@ -47,7 +54,7 @@
                             <div class="card-body">
                                 <div class="input-upload">
                                     <img src="assets/imgs/theme/upload.svg" alt="" />
-                                    <input class="form-control" type="file" />
+                                    <input class="form-control" name="image" type="file" />
                                 </div>
                             </div>
                         </div>
@@ -59,7 +66,7 @@
                             <div class="card-body">
                                 <div class="row gx-2">
                                     <div class="col-sm-6 mb-3">
-                                        <select class="form-select">
+                                        <select name="category" class="form-select">
                                             <option>Automobiles</option>
                                             <option>Home items</option>
                                             <option>Electronics</option>
@@ -78,6 +85,7 @@
                     <div class=" ">
                         <button class="btn btn-md rounded font-sm hover-up">Add Product</button>
                     </div>
+                </form>
                 </div>
             </section>
         </main>
