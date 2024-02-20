@@ -33,7 +33,7 @@ const otpLoad = async (req, res) => {
     }
 }
 
-const homeLoad = asyncHandler( async (req,res) =>{
+const homeLoad = asyncHandler(async (req, res) => {
     res.render('home');
 })
 
@@ -51,26 +51,48 @@ const signup = async (req, res) => {
     try {
         if (/^[A-Za-z]+(?: [A-Za-z]+)?$/.test(req.body.username)) {
             if (/[A-Za-z0-9._%+-]+@gmail.com/.test(req.body.email)) {
-                const sPassword = await securePassword(req.body.password);
-                const users = new User({
-                    username: req.body.username,
-                    email: req.body.email,
-                    mobile: req.body.mobile,
-                    password: sPassword,
-                    address: [],
-                })
-                var newUser = await users.save();
 
-                if (newUser) {
-                    req.session.user_id = newUser._id;
-                    req.session.user_email = newUser.email;
-                    saveOTP(newUser, res);
-                    res.redirect('/otp');
+                const { username, email, mobile, password } = req.body;
+                const findUser = await User.find({ email: email });
+                const checkEmail = findUser[0].email;
+                console.log(checkEmail);
+                if (checkEmail !== email) {
+
+                    const sPassword = await securePassword(password);
+                    const users = new User({
+                        username: username,
+                        email: email,
+                        mobile: mobile,
+                        password: sPassword,
+                        address: [],
+                    })
+                    var newUser = await users.save();
+
+                    if (newUser) {
+                        req.session.user_id = newUser._id;
+                        req.session.user_email = newUser.email;
+                        saveOTP(newUser, res);
+                        res.redirect('/otp');
+                    } else {
+                        res.render('signup', { msg: "Signup failed" });
+                    }
+
                 } else {
-                    res.render('signup', { msg: "Signup failed" });
+
+                    const checkVerified = await User.find({ email: email }, { _id: 0, isVerified: 1 });
+                    if (checkEmail && checkVerified[0].isVerified === false) {
+                        req.session.user_id = findUser[0]._id
+                        req.session.user_email = findUser[0].email;
+                        saveOTP(findUser[0], res);
+                        res.redirect('/otp');
+                    } else {
+                        res.render('signup', { msg: "Already have an accound in this email! Please login" });
+                    }
+
                 }
+
             } else {
-                res.render('signup', { msg: "Invalid email!" });
+                res.render('signup', { msg: "Invalid email structure!" });
             }
         } else {
             res.render('signup', { msg: "Give proper name!" });
@@ -130,7 +152,6 @@ const verifyOTP = asyncHandler(async (req, res) => {
 
     const enteredOTP = parseInt(`${req.body.num1}${req.body.num2}${req.body.num3}${req.body.num4}${req.body.num5}${req.body.num6}`)
 
-    console.log(req.session.user_id)
     const otpData = await OTP.findOne({ email: req.session.user_email });
 
     if (otpData) {
@@ -141,7 +162,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
                 res.redirect('/login');
                 req.session.destroy();
             }
-        }else{
+        } else {
             res.render('otp', { msg: 'Please enter the correct OTP!' });
         }
 
@@ -157,30 +178,30 @@ const resendOTP = asyncHandler(async (req, res) => {
 })
 
 
-const verifyLogin = asyncHandler( async (req,res)=>{
+const verifyLogin = asyncHandler(async (req, res) => {
 
     const { email, password } = req.body;
-    const userData = await User.findOne({email:email});
+    const userData = await User.findOne({ email: email });
 
-    if(userData){
+    if (userData) {
 
         const passwordMatch = await bcrypt.compare(password, userData.password);
 
-        if(passwordMatch){
+        if (passwordMatch) {
 
-            if(userData.isVerified === true){
+            if (userData.isVerified === true) {
                 req.session.user_id = userData._id;
                 res.redirect('/home');
-            }else{
-                res.render('login',{msg:"Please verify your account with OTP!"})
+            } else {
+                res.render('login', { msg: "Please verify your account with OTP!" })
             }
 
-        }else{
-            res.render('login',{msg:"Wrong password!"});
-        } 
+        } else {
+            res.render('login', { msg: "Wrong password!" });
+        }
 
-    }else{
-        res.render('login',{msg:"Invalid email!"});
+    } else {
+        res.render('login', { msg: "Invalid email!" });
     }
 
 })

@@ -5,202 +5,53 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Seller</th>
+                                        <th>Customers</th>
                                         <th>Email</th>
-                                        <th>Status</th>
                                         <th>Registered</th>
+                                        <th>Status</th>
                                         <th class="text-end">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <%if(users.length>0){
+                                        users.forEach((item)=>{ %>
                                     <tr>
                                         <td width="40%">
-                                            <a href="#" class="itemside">
-                                                <div class="left">
-                                                    <img src="admin/assets/imgs/people/avatar-1.png" class="img-sm img-avatar" alt="Userpic" />
+                                                <div class="info pl-3">
+                                                    <h6 class="mb-0 title"><%= users.name %></h6>
                                                 </div>
+                                        </td>
+                                        <td><%= users.email %></td>
+                                        <td>08.07.2020</td>
+                                        <td><span class="badge rounded-pill alert-success">Not blocked</span></td>
+                                        <td class="text-end">
+                                            <a href="#" class="btn btn-sm alert-danger rounded font-sm ">Block</a>
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="#" class="btn btn-sm alert-success rounded font-sm ">Unblock</a>
+                                        </td>
+                                    </tr>
+                                    <%})
+                                }else{%>
+
+                                <%}%>
+                                    <tr>
+                                        <td width="40%">
+                                       
                                                 <div class="info pl-3">
                                                     <h6 class="mb-0 title">Eleanor Pena</h6>
                                                     <small class="text-muted">Seller ID: #439</small>
                                                 </div>
-                                            </a>
+
                                         </td>
                                         <td>eleanor2020@example.com</td>
-                                        <td><span class="badge rounded-pill alert-success">Active</span></td>
                                         <td>08.07.2020</td>
+                                        <td><span class="badge rounded-pill alert-danger">Blocked</span></td>
                                         <td class="text-end">
-                                            <a href="#" class="btn btn-sm btn-brand rounded font-sm mt-15">View details</a>
+                                            <a href="#" class="btn btn-sm alert-danger rounded font-sm ">Block</a>
                                         </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="40%">
-                                            <a href="#" class="itemside">
-                                                <div class="left">
-                                                    <img src="admin/assets/imgs/people/avatar-2.png" class="img-sm img-avatar" alt="Userpic" />
-                                                </div>
-                                                <div class="info pl-3">
-                                                    <h6 class="mb-0 title">Mary Monasa</h6>
-                                                    <small class="text-muted">Seller ID: #129</small>
-                                                </div>
-                                            </a>
-                                        </td>
-                                        <td>monalisa@example.com</td>
-                                        <td><span class="badge rounded-pill alert-success">Active</span></td>
-                                        <td>11.07.2020</td>
                                         <td class="text-end">
-                                            <a href="#" class="btn btn-sm btn-brand rounded font-sm mt-15">View details</a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="40%">
-                                            <a href="#" class="itemside">
-                                                <div class="left">
-                                                    <img src="admin/assets/imgs/people/avatar-3.png" class="img-sm img-avatar" alt="Userpic" />
-                                                </div>
-                                                <div class="info pl-3">
-                                                    <h6 class="mb-0 title">Jonatan Ive</h6>
-                                                    <small class="text-muted">Seller ID: #400</small>
-                                                </div>
-                                            </a>
-                                        </td>
-                                        <td>mrjohn@example.com</td>
-                                        <td><span class="badge rounded-pill alert-success">Active</span></td>
-                                        <td>08.07.2020</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-sm btn-brand rounded font-sm mt-15">View details</a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="40%">
-                                            <a href="#" class="itemside">
-                                                <div class="left">
-                                                    <img src="admin/assets/imgs/people/avatar-4.png" class="img-sm img-avatar" alt="Userpic" />
-                                                </div>
-                                                <div class="info pl-3">
-                                                    <h6 class="mb-0 title">Eleanor Pena</h6>
-                                                    <small class="text-muted">Seller ID: #439</small>
-                                                </div>
-                                            </a>
-                                        </td>
-                                        <td>eleanor2020@example.com</td>
-                                        <td><span class="badge rounded-pill alert-danger">Inactive</span></td>
-                                        <td>08.07.2020</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-sm btn-brand rounded font-sm mt-15">View details</a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="40%">
-                                            <a href="#" class="itemside">
-                                                <div class="left">
-                                                    <img src="admin/assets/imgs/people/avatar-1.png" class="img-sm img-avatar" alt="Userpic" />
-                                                </div>
-                                                <div class="info pl-3">
-                                                    <h6 class="mb-0 title">Albert Pushkin</h6>
-                                                    <small class="text-muted">Seller ID: #439</small>
-                                                </div>
-                                            </a>
-                                        </td>
-                                        <td>someone@mymail.com</td>
-                                        <td><span class="badge rounded-pill alert-success">Active</span></td>
-                                        <td>20.11.2019</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-sm btn-brand rounded font-sm mt-15">View details</a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="40%">
-                                            <a href="#" class="itemside">
-                                                <div class="left">
-                                                    <img src="admin/assets/imgs/people/avatar-2.png" class="img-sm img-avatar" alt="Userpic" />
-                                                </div>
-                                                <div class="info pl-3">
-                                                    <h6 class="mb-0 title">Alexandra Pena</h6>
-                                                    <small class="text-muted">Seller ID: #439</small>
-                                                </div>
-                                            </a>
-                                        </td>
-                                        <td>eleanor2020@example.com</td>
-                                        <td><span class="badge rounded-pill alert-danger">Inactive</span></td>
-                                        <td>08.07.2020</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-sm btn-brand rounded font-sm mt-15">View details</a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="40%">
-                                            <a href="#" class="itemside">
-                                                <div class="left">
-                                                    <img src="admin/assets/imgs/people/avatar-3.png" class="img-sm img-avatar" alt="Userpic" />
-                                                </div>
-                                                <div class="info pl-3">
-                                                    <h6 class="mb-0 title">Eleanor Pena</h6>
-                                                    <small class="text-muted">Seller ID: #439</small>
-                                                </div>
-                                            </a>
-                                        </td>
-                                        <td>eleanor2020@example.com</td>
-                                        <td><span class="badge rounded-pill alert-danger">Inactive</span></td>
-                                        <td>08.07.2020</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-sm btn-brand rounded font-sm mt-15">View details</a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="40%">
-                                            <a href="#" class="itemside">
-                                                <div class="left">
-                                                    <img src="admin/assets/imgs/people/avatar-4.png" class="img-sm img-avatar" alt="Userpic" />
-                                                </div>
-                                                <div class="info pl-3">
-                                                    <h6 class="mb-0 title">Alex Pushkina</h6>
-                                                    <small class="text-muted">Seller ID: #439</small>
-                                                </div>
-                                            </a>
-                                        </td>
-                                        <td>alex@gmail.org</td>
-                                        <td><span class="badge rounded-pill alert-success">Active</span></td>
-                                        <td>08.07.2020</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-sm btn-brand rounded font-sm mt-15">View details</a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="40%">
-                                            <a href="#" class="itemside">
-                                                <div class="left">
-                                                    <img src="admin/assets/imgs/people/avatar-1.png" class="img-sm img-avatar" alt="Userpic" />
-                                                </div>
-                                                <div class="info pl-3">
-                                                    <h6 class="mb-0 title">Eleanor Pena</h6>
-                                                    <small class="text-muted">Seller ID: #439</small>
-                                                </div>
-                                            </a>
-                                        </td>
-                                        <td>eleanor2020@example.com</td>
-                                        <td><span class="badge rounded-pill alert-success">Active</span></td>
-                                        <td>08.07.2020</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-sm btn-brand rounded font-sm mt-15">View details</a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="40%">
-                                            <a href="#" class="itemside">
-                                                <div class="left">
-                                                    <img src="admin/assets/imgs/people/avatar-2.png" class="img-sm img-avatar" alt="Userpic" />
-                                                </div>
-                                                <div class="info pl-3">
-                                                    <h6 class="mb-0 title">Eleanor Pena</h6>
-                                                    <small class="text-muted">Seller ID: #439</small>
-                                                </div>
-                                            </a>
-                                        </td>
-                                        <td>eleanor2020@example.com</td>
-                                        <td><span class="badge rounded-pill alert-success">Active</span></td>
-                                        <td>08.07.2020</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-sm btn-brand rounded font-sm mt-15">View details</a>
+                                            <a href="#" class="btn btn-sm alert-success rounded font-sm ">Unblock</a>
                                         </td>
                                     </tr>
                                 </tbody>

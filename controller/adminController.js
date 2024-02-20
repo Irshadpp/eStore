@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Admin = require('../model/userdb');
+const User = require('../model/userdb')
 const bcrypt = require('bcrypt')
 
 //login load
@@ -14,7 +15,9 @@ const dashboardLoad = asyncHandler( async (req,res) => {
 
 //customers load
 const customersLoad = asyncHandler( async (req,res) => {
-    res.render('customers');
+    const userData = await User.find({isAdmin:0});
+    console.log(userData[0].email)
+    res.render('customers',{users: userData});
 });
 
 const productsLoad = asyncHandler( async (req,res) => {
@@ -23,7 +26,11 @@ const productsLoad = asyncHandler( async (req,res) => {
 
 const categoryLoad = asyncHandler( async (req,res) => {
     res.render('category');
-})
+});
+
+const addProductLoad = asyncHandler( async (req,res) => {
+    res.render('addProduct');
+});
 
 const verifyLogin = asyncHandler( async (req,res) => {
 
@@ -50,6 +57,8 @@ const verifyLogin = asyncHandler( async (req,res) => {
 
 })
 
+
+
 module.exports = {
     loginLoad,
     verifyLogin,
@@ -57,4 +66,5 @@ module.exports = {
     customersLoad,
     productsLoad,
     categoryLoad,
+    addProductLoad,
 }
