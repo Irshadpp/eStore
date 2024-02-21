@@ -15,6 +15,7 @@ router.get('/',indexController.loadIndex);
 router.get('/login',indexController.loadLogin);
 router.get('/signup',indexController.loadSignup);
 
+router.get('/product', indexController.productLoad);
 
 //user signup
 router.post('/signup',indexController.signup);

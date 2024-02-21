@@ -13,7 +13,7 @@
                                 <h4>Basic</h4>
                             </div>
                             <div class="card-body">
-                                <form method="post" >
+                                <form method="post" enctype="multipart/form-data">
                                     <div class="mb-4">
                                         <label for="product_name" class="form-label">Product title</label>
                                         <input type="text" placeholder="Type here" name="productName" class="form-control" id="product_name" />
@@ -54,11 +54,16 @@
                             <div class="card-body">
                                 <div class="input-upload">
                                     <img src="assets/imgs/theme/upload.svg" alt="" />
-                                    <input class="form-control" name="image" type="file" />
+                                    <input class="form-control" name="images" type="file" multiple/>
+                                    <!-- <input class="form-control" name="image2" type="file" />
+                                    <input class="form-control" name="image3" type="file" />
+                                    <input class="form-control" name="image4" type="file" /> -->
                                 </div>
                             </div>
                         </div>
                         <!-- card end// -->
+                        
+
                         <div class="card mb-4">
                             <div class="card-header">
                                 <h4>Category</h4>
@@ -67,12 +72,13 @@
                                 <div class="row gx-2">
                                     <div class="col-sm-6 mb-3">
                                         <select name="category" class="form-select">
-                                            <option>Automobiles</option>
-                                            <option>Home items</option>
-                                            <option>Electronics</option>
-                                            <option>Smartphones</option>
-                                            <option>Sport items</option>
-                                            <option>Baby and Tous</option>
+                                            <%if(categories.length>0){
+                                                categories.forEach((item)=>{%>
+                                                    <option><%=item.categoryName%></option>
+                                                <%})
+                                            }else{%>
+                                                <option></option>
+                                                <%}%>
                                         </select>
                                     </div>
                                     

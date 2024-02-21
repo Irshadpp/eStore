@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../model/userdb');
-const OTP = require('../model/otpdb')
+const OTP = require('../model/otpdb');
+const Product = require('../model/productdb');
 const generateOTP = require('../util/generateOtp')
 const asyncHandler = require('express-async-handler');
 const sendEmail = require('../util/sendEmail');
@@ -36,8 +37,15 @@ const otpLoad = async (req, res) => {
 const homeLoad = asyncHandler(async (req, res) => {
 
     const userData = await User.findById(req.session.user_id);
-    console.log("======================",req.session.user_id);
-    res.render('home',{userData});
+    const products = await Product.find();
+    console.log("+++++++++++++++++++++++++++++",userData)
+    res.render('home',{userData,products});
+
+});
+
+const productLoad = asyncHandler( async (req,res) =>{
+
+    res.render('product');
 
 })
 
@@ -195,7 +203,7 @@ const verifyLogin = asyncHandler(async (req, res) => {
 
             if (userData.isVerified === true) {
                 req.session.user_id = userData._id;
-                res.redirect('/home',{user_id});
+                res.redirect('/home');
             } else {
                 res.render('login', { msg: "Please verify your account with OTP!" })
             }
@@ -221,6 +229,7 @@ module.exports = {
     loadSignup,
     signup,
     otpLoad,
+    productLoad,
     verifyOTP,
     resendOTP,
     verifyLogin,

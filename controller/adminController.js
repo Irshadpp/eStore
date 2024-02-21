@@ -1,8 +1,12 @@
 const asyncHandler = require('express-async-handler');
+const bcrypt = require('bcrypt');
+const path = require('path')
+
 const Admin = require('../model/userdb');
 const User = require('../model/userdb');
 const Product = require('../model/productdb');
-const bcrypt = require('bcrypt');
+const Category = require('../model/categorydb');
+
 
 //login load
 const loginLoad = asyncHandler( async (req,res) => {
@@ -21,15 +25,20 @@ const customersLoad = asyncHandler( async (req,res) => {
 });
 
 const productsLoad = asyncHandler( async (req,res) => {
-    res.render('products');
+    const productData = await Product.find();
+    const imagePathsArray = productData.map(product => product.imagePaths); 
+    // console.log("======================",productData.productName);
+    res.render('products',{products:productData,imagePaths:imagePathsArray});
 });
 
 const categoryLoad = asyncHandler( async (req,res) => {
-    res.render('category');
+    const categoryData = await Category.find();
+    res.render('category',{categories:categoryData});
 });
 
 const addProductLoad = asyncHandler( async (req,res) => {
-    res.render('addProduct');
+    const categoryData = await Category.find();
+    res.render('addProduct',{categories:categoryData});
 });
 
 const verifyLogin = asyncHandler( async (req,res) => {
@@ -67,27 +76,44 @@ const unblockUser = asyncHandler( async (req,res) => {
     await User.findByIdAndUpdate(userId,{isBlock:false});
 });
 
+
+
 const addProduct = asyncHandler( async (req,res) => {
 
-    const {productName, description, price, quantity, category, image} = req.body;
-    // console.log("===================+++++++++++++++");
-    console.log(description);
-    console.log(price);
-    console.log(quantity);
-    console.log(category);
-    console.log(image);
+    if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ message: 'No files uploaded' });
+    }
+
+    const {productName, description, price, quantity, category} = req.body;
+    const imagePaths = req.files.map(file => file.path);
+
     const products = new Product({
         productName: productName,
         description: description,
         price: price,
         quantity: quantity,
         category: category,
-        images: image,
+        imagePaths: imagePaths,
     });
 
     var newProduct = await products.save();
-    console.log("----------------------",newProduct);
-    res.redirect('/admin/addProduct')
+    console.log("======================",newProduct.imagePaths);
+    const categoryData = await Category.find();
+    res.render('addProduct',{categories:categoryData})
+
+});
+
+const addCategory = asyncHandler( async (req,res) =>{
+
+    const {categoryName, description} = req.body;
+
+    const category = new Category({
+        categoryName:categoryName,
+        description,
+    })
+
+    var newCategory = await category.save();
+    res.render('category')
 
 })
 
@@ -101,5 +127,7 @@ module.exports = {
     addProductLoad,
     blockUser,
     unblockUser,
-    addProduct
+    addProduct, 
+    addCategory,
+
 }

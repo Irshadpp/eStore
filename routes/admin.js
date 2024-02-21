@@ -2,6 +2,7 @@ var express = require('express');
 var router = express();
 
 const adminController = require('../controller/adminController');
+const upload = require('../util/imageUpload');
 
 router.set('views','views/admin');
 
@@ -23,7 +24,11 @@ router.put('/:userId/block',adminController.blockUser);
 router.put('/:userId/unblock',adminController.unblockUser);
 
 //add product 
-router.post('/addProduct', adminController.addProduct);
+router.post('/addProduct', upload.array('images', 4), adminController.addProduct);
+
+//add category
+router.post('/category', adminController.addCategory);
+
 
 
 module.exports = router;

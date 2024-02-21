@@ -76,14 +76,14 @@
 
                         
 
-            <div class="bg-lighter pt-6 pb-9">
+            <div class="bg-lighter pt-6 pb-9 row">
                 <div class="container">
                     <div class="heading text-center">
                         <h2 class="title">Shop The Collection</h2><!-- End .title -->
                         <p class="title-desc">Donec nec justo eget felis facilisis fermentum. <br>Aliquam porttitor mauris sit amet orci..</p><!-- End .title-desc -->
                     </div><!-- End .heading -->
-
-                    <div class="owl-carousel owl-simple" data-toggle="owl" 
+                    <%products.forEach((item)=>{%>
+                    <div class="owl-carousel owl-simple " data-toggle="owl" 
                         data-owl-options='{
                             "nav": false, 
                             "dots": true,
@@ -135,134 +135,12 @@
                                 <div class="product-price">
                                     $60.00
                                 </div><!-- End .product-price -->
-                                <div class="product-nav product-nav-dots">
-                                    <a href="#" class="active" style="background: #e5dcb1;"><span class="sr-only">Color name</span></a>
-                                    <a href="#" style="background: #bacbd8;"><span class="sr-only">Color name</span></a>
-                                </div><!-- End .product-nav -->
                             </div><!-- End .product-body -->
                         </div><!-- End .product -->
 
-                        <div class="product product-4">
-                            <figure class="product-media">
-                                <span class="product-label label-primary">Sale</span>
-                                <a href="product.html">
-                                    <img src="user/assets/images/demos/demo-16/products/product-8.jpg" alt="Product image" class="product-image">
-                                    <img src="user/assets/images/demos/demo-16/products/product-8-2.jpg" alt="Product image" class="product-image-hover">
-                                </a>
-
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                    <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                                    <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
-                                </div><!-- End .product-action -->
-
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                </div><!-- End .product-action -->
-                            </figure><!-- End .product-media -->
-
-                            <div class="product-body">
-                                <div class="product-cat">
-                                    <a href="#">Shoes</a>
-                                </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html">Sandals with lacing</a></h3><!-- End .product-title -->
-                                <div class="product-price">
-                                    <span class="new-price">Now $70.00</span>
-                                    <span class="old-price">Was $155.00</span>
-                                </div><!-- End .product-price -->
-                            </div><!-- End .product-body -->
-                        </div><!-- End .product -->
-
-                        <div class="product product-4">
-                            <figure class="product-media">
-                                <a href="product.html">
-                                    <img src="user/assets/images/demos/demo-16/products/product-9.jpg" alt="Product image" class="product-image">
-                                    <img src="user/assets/images/demos/demo-16/products/product-9-2.jpg" alt="Product image" class="product-image-hover">
-                                </a>
-
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                    <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                                    <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
-                                </div><!-- End .product-action -->
-
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                </div><!-- End .product-action -->
-                            </figure><!-- End .product-media -->
-
-                            <div class="product-body">
-                                <div class="product-cat">
-                                    <a href="#">Clothing</a>
-                                </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html">Paper bag trousers</a></h3><!-- End .product-title -->
-                                <div class="product-price">
-                                    $58.00
-                                </div><!-- End .product-price -->
-                                <div class="product-nav product-nav-dots">
-                                    <a href="#" class="active" style="background: #9fac76;"><span class="sr-only">Color name</span></a>
-                                    <a href="#" style="background: #333333;"><span class="sr-only">Color name</span></a>
-                                </div><!-- End .product-nav -->
-                            </div><!-- End .product-body -->
-                        </div><!-- End .product -->
-
-                        <div class="product product-4">
-                            <figure class="product-media">
-                                <a href="product.html">
-                                    <img src="user/assets/images/demos/demo-16/products/product-10.jpg" alt="Product image" class="product-image">
-                                    <img src="user/assets/images/demos/demo-16/products/product-10-2.jpg" alt="Product image" class="product-image-hover">
-                                </a>
-
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                    <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                                    <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
-                                </div><!-- End .product-action -->
-
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                </div><!-- End .product-action -->
-                            </figure><!-- End .product-media -->
-
-                            <div class="product-body">
-                                <div class="product-cat">
-                                    <a href="#">Handbags</a>
-                                </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html">Paper straw shopper</a></h3><!-- End .product-title -->
-                                <div class="product-price">
-                                    $398.00
-                                </div><!-- End .product-price -->
-                            </div><!-- End .product-body -->
-                        </div><!-- End .product -->
-
-                        <div class="product product-4">
-                            <figure class="product-media">
-                                <a href="product.html">
-                                    <img src="user/assets/images/demos/demo-16/products/product-6.jpg" alt="Product image" class="product-image">
-                                </a>
-
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                    <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                                    <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
-                                </div><!-- End .product-action -->
-
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                </div><!-- End .product-action -->
-                            </figure><!-- End .product-media -->
-
-                            <div class="product-body">
-                                <div class="product-cat">
-                                    <a href="#">Clothing</a>
-                                </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html">Gray-blend dress</a></h3><!-- End .product-title -->
-                                <div class="product-price">
-                                    $85.00
-                                </div><!-- End .product-price -->
-                            </div><!-- End .product-body -->
-                        </div><!-- End .product -->
+                        
                     </div><!-- End .owl-carousel owl-simple -->
+                    <%})%>
                 </div><!-- End .container -->
             </div><!-- End .bg-lighter pt-5 pb-5 -->
 
