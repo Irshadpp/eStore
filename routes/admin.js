@@ -13,6 +13,7 @@ router.get('/customers', adminController.customersLoad);
 router.get('/products',adminController.productsLoad);
 router.get('/category', adminController.categoryLoad);
 router.get('/addProduct', adminController.addProductLoad);
+router.get('/editProduct/:product_id', adminController.editProductLoad);
 
 //verify login
 router.post('/',adminController.verifyLogin);

@@ -1,6 +1,5 @@
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
-const path = require('path')
 
 const Admin = require('../model/userdb');
 const User = require('../model/userdb');
@@ -20,26 +19,39 @@ const dashboardLoad = asyncHandler( async (req,res) => {
 
 //customers load
 const customersLoad = asyncHandler( async (req,res) => {
-    const userData = await User.find({isAdmin:false});
+    const userData = await User.find({$and:[{isAdmin:false},{isVerified:true}]});
     res.render('customers',{users: userData});
 });
 
 const productsLoad = asyncHandler( async (req,res) => {
     const productData = await Product.find();
     const imagePathsArray = productData.map(product => product.imagePaths); 
-    // console.log("======================",productData.productName);
-    res.render('products',{products:productData,imagePaths:imagePathsArray});
+    console.log("======================",imagePathsArray[0][1]);
+    res.render('products',{products:productData,imagePathsArray});
 });
 
 const categoryLoad = asyncHandler( async (req,res) => {
+    console.log("======================-------------------------");
     const categoryData = await Category.find();
-    res.render('category',{categories:categoryData});
+    console.log("======================",categoryData);
+    res.render('category',{categoryData});
 });
 
 const addProductLoad = asyncHandler( async (req,res) => {
     const categoryData = await Category.find();
-    res.render('addProduct',{categories:categoryData});
+    res.render('addProduct',{categoryData});
 });
+
+const editProductLoad = asyncHandler( async (req,res) =>{
+
+    const product_id = req.params.product_id;
+    const categoryData = await Category.find();
+    
+    const product = await Product.findOne({_id:product_id})
+
+    res.render('editProduct',{categoryData,product});
+
+})
 
 const verifyLogin = asyncHandler( async (req,res) => {
 
@@ -85,7 +97,7 @@ const addProduct = asyncHandler( async (req,res) => {
     }
 
     const {productName, description, price, quantity, category} = req.body;
-    const imagePaths = req.files.map(file => file.path);
+    const imagePaths = req.files.map(file => file.filename);
 
     const products = new Product({
         productName: productName,
@@ -97,9 +109,8 @@ const addProduct = asyncHandler( async (req,res) => {
     });
 
     var newProduct = await products.save();
-    console.log("======================",newProduct.imagePaths);
     const categoryData = await Category.find();
-    res.render('addProduct',{categories:categoryData})
+    res.render('addProduct',{categoryData})
 
 });
 
@@ -113,7 +124,7 @@ const addCategory = asyncHandler( async (req,res) =>{
     })
 
     var newCategory = await category.save();
-    res.render('category')
+    res.redirect('/admin/category')
 
 })
 
@@ -129,5 +140,5 @@ module.exports = {
     unblockUser,
     addProduct, 
     addCategory,
-
+    editProductLoad,
 }

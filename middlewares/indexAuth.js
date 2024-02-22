@@ -1,10 +1,26 @@
-const asyncHandler = require('express-async-handler')
+const asyncHandler = require('express-async-handler');
+
+const isLogin = asyncHandler( (req,res,next) =>{
+    if(!req.session.user_id){
+        res.redirect('/login')
+    }else{
+        next()
+    }
+});
+
+const isLogout = asyncHandler( (req,res,next) =>{
+    if(req.session.user_id){
+        res.redirect('/home')
+    }else{
+        next()
+    }
+});
 
 const isUserBlock = asyncHandler( async (req,res,next) => {
 
-    console.log("-----------------",req.session.user_id);
+    console.log("-------------------------",req.session.isBlock);
     if(req.session.isBlock === true){
-        session.destroy();
+        req.session.destroy();
         res.redirect('/login');
     }else{
         next();
@@ -13,5 +29,8 @@ const isUserBlock = asyncHandler( async (req,res,next) => {
 });
 
 module.exports = {
+
+    isLogin,
+    isLogout,
     isUserBlock
 }

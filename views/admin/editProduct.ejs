@@ -1,0 +1,106 @@
+<%-include('../layout/adminHeader')-%>
+            <section class="content-main">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="content-header">
+                            <h2 class="content-title">Edit Product</h2>
+                           
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h4>Basic</h4>
+                            </div>
+                            <div class="card-body">
+                                <form method="post" enctype="multipart/form-data">
+                                    <div class="mb-4">
+                                        <label for="product_name" class="form-label">Product title</label>
+                                        <input type="text" placeholder="<%=product.productName%>" name="productName" class="form-control" id="product_name" />
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">Full description</label>
+                                        <textarea placeholder="<%=product.description%>" name="description" class="form-control" rows="4"></textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="mb-4">
+                                                <label class="form-label">Price</label>
+                                                <div class="row gx-2">
+                                                    <input placeholder="<%=product.price%>" name="price" type="text" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="mb-4">
+                                                <label class="form-label">Quantity</label>
+                                                <div class="row gx-2">
+                                                    <input placeholder="<%=product.quantity%>" name="quantity" type="text" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                            </div>
+                        </div>
+                        <!-- card end// -->
+                        
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h4>Media</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="input-upload">
+                                    <img src="/admin/assets/imgs/theme/upload.svg" alt="" />
+                                    <input class="form-control" name="images" type="file" multiple/>
+                                    <!-- <input class="form-control" name="image2" type="file" />
+                                    <input class="form-control" name="image3" type="file" />
+                                    <input class="form-control" name="image4" type="file" /> -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- card end// -->
+                        
+
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h4>Category</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row gx-2">
+                                    <div class="col-sm-6 mb-3">
+                                        <select name="category" class="form-select">
+                                            <%if(categoryData.length>0){
+                                                categoryData.forEach((item)=>{%>
+                                                    <option aria-placeholder="<%=product.category%>"><%=item.categoryName%></option>
+                                                <%})
+                                            }else{%>
+                                                <option></option>
+                                                <%}%>
+                                        </select>
+                                    </div>
+                                    
+                                </div>
+                                <!-- row.// -->
+                            </div>
+                        </div>
+                        <!-- card end// -->
+                    </div>
+                    <div class=" ">
+                        <button class="btn btn-md rounded font-sm hover-up">Edit Product</button>
+                    </div>
+                </form>
+                </div>
+            </section>
+        </main>
+        <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
+        <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
+        <script src="assets/js/vendors/select2.min.js"></script>
+        <script src="assets/js/vendors/perfect-scrollbar.js"></script>
+        <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
+        <!-- Main Script -->
+        <script src="assets/js/main.js?v=1.1" type="text/javascript"></script>
+    </body>
+</html>

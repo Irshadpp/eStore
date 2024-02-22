@@ -1,14 +1,13 @@
 <%-include('../layout/header')-%>
     
 
-            
         <main class="main">
             <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
                 <div class="container d-flex align-items-center">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Products</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Default</li>
+                        <li class="breadcrumb-item"><a href="/home">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/home">Products</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><%=product.productName%></li>
                     </ol>
 
                 </div><!-- End .container -->
@@ -22,7 +21,7 @@
                                 <div class="product-gallery product-gallery-vertical">
                                     <div class="row">
                                         <figure class="product-main-image">
-                                            <img id="product-zoom" src="user/assets/images/products/single/1.jpg" data-zoom-image="user/assets/images/products/single/1-big.jpg" alt="product image">
+                                            <img id="product-zoom" src="/<%= product.imagePaths[0] %>" data-zoom-image="/user/assets/images/products/single/1-big.jpg" alt="product image">
 
                                             <a href="#" id="btn-product-gallery" class="btn-product-gallery">
                                                 <i class="icon-arrows"></i>
@@ -30,20 +29,20 @@
                                         </figure><!-- End .product-main-image -->
 
                                         <div id="product-zoom-gallery" class="product-image-gallery">
-                                            <a class="product-gallery-item active" href="#" data-image="user/assets/images/products/single/1.jpg" data-zoom-image="user/assets/images/products/single/1-big.jpg">
-                                                <img src="user/assets/images/products/single/1-small.jpg" alt="product side">
+                                            <a class="product-gallery-item active" href="#" data-image="/user/assets/images/products/single/1.jpg" data-zoom-image="/user/assets/images/products/single/1-big.jpg">
+                                                <img src="/<%= product.imagePaths[0] %>" alt="product side">
                                             </a>
 
-                                            <a class="product-gallery-item" href="#" data-image="user/assets/images/products/single/2.jpg" data-zoom-image="user/assets/images/products/single/2-big.jpg">
-                                                <img src="user/assets/images/products/single/2-small.jpg" alt="product cross">
+                                            <a class="product-gallery-item" href="#" data-image="/user/assets/images/products/single/2.jpg" data-zoom-image="/user/assets/images/products/single/2-big.jpg">
+                                                <img src="/<%= product.imagePaths[0] %>" alt="product cross">
                                             </a>
 
-                                            <a class="product-gallery-item" href="#" data-image="user/assets/images/products/single/3.jpg" data-zoom-image="user/assets/images/products/single/3-big.jpg">
-                                                <img src="user/assets/images/products/single/3-small.jpg" alt="product with model">
+                                            <a class="product-gallery-item" href="#" data-image="/user/assets/images/products/single/3.jpg" data-zoom-image="/user/assets/images/products/single/3-big.jpg">
+                                                <img src="/<%= product.imagePaths[1] %>" alt="product with model">
                                             </a>
 
-                                            <a class="product-gallery-item" href="#" data-image="user/assets/images/products/single/4.jpg" data-zoom-image="user/assets/images/products/single/4-big.jpg">
-                                                <img src="user/assets/images/products/single/4-small.jpg" alt="product back">
+                                            <a class="product-gallery-item" href="#" data-image="/user/assets/images/products/single/4.jpg" data-zoom-image="/user/assets/images/products/single/4-big.jpg">
+                                                <img src="/<%= product.imagePaths[3] %>" alt="product back">
                                             </a>
                                         </div><!-- End .product-image-gallery -->
                                     </div><!-- End .row -->
@@ -52,7 +51,7 @@
 
                             <div class="col-md-6">
                                 <div class="product-details">
-                                    <h1 class="product-title">Dark yellow lace cut out swing dress</h1><!-- End .product-title -->
+                                    <h1 class="product-title"><%=product.productName%></h1><!-- End .product-title -->
 
                                     <div class="ratings-container">
                                         <div class="ratings">
@@ -62,11 +61,11 @@
                                     </div><!-- End .rating-container -->
 
                                     <div class="product-price">
-                                        $84.00
+                                        Rs&nbsp;<%=product.price%>
                                     </div><!-- End .product-price -->
 
                                     <div class="product-content">
-                                        <p>Sed egestas, ante et vulputate volutpat, eros pede semper est, vitae luctus metus libero eu augue. Morbi purus libero, faucibus adipiscing. Sed lectus. </p>
+                                        <p><%=product.description%></p>
                                     </div><!-- End .product-content -->
 
                                     
@@ -90,9 +89,9 @@
                                     <div class="product-details-footer">
                                         <div class="product-cat">
                                             <span>Category:</span>
-                                            <a href="#">Women</a>,
-                                            <a href="#">Dresses</a>,
-                                            <a href="#">Yellow</a>
+                                            <a href="#"><%=product.category%></a>,
+                                            <!-- <a href="#">Dresses</a>, -->
+                                            <!-- <a href="#">Yellow</a> -->
                                         </div><!-- End .product-cat -->
 
                                         
@@ -104,7 +103,7 @@
 
                     
 
-                    <h2 class="title text-center mb-4">You May Also Like</h2><!-- End .title text-center -->
+                    <h2 class="title text-center mb-4"></h2><!-- End .title text-center -->
 
                     <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl" 
                         data-owl-options='{
@@ -136,7 +135,7 @@
                             <figure class="product-media">
                                 <span class="product-label label-new">New</span>
                                 <a href="product.html">
-                                    <img src="user/assets/images/products/product-4.jpg" alt="Product image" class="product-image">
+                                    <img src="/user/assets/images/products/product-4.jpg" alt="Product image" class="product-image">
                                 </a>
 
                                 <div class="product-action-vertical">
@@ -167,14 +166,14 @@
 
                                 <div class="product-nav product-nav-thumbs">
                                     <a href="#" class="active">
-                                        <img src="user/assets/images/products/product-4-thumb.jpg" alt="product desc">
+                                        <img src="/user/assets/images/products/product-4-thumb.jpg" alt="product desc">
                                     </a>
                                     <a href="#">
-                                        <img src="user/assets/images/products/product-4-2-thumb.jpg" alt="product desc">
+                                        <img src="/user/assets/images/products/product-4-2-thumb.jpg" alt="product desc">
                                     </a>
 
                                     <a href="#">
-                                        <img src="user/assets/images/products/product-4-3-thumb.jpg" alt="product desc">
+                                        <img src="/user/assets/images/products/product-4-3-thumb.jpg" alt="product desc">
                                     </a>
                                 </div><!-- End .product-nav -->
                             </div><!-- End .product-body -->
@@ -184,7 +183,7 @@
                             <figure class="product-media">
                                 <span class="product-label label-out">Out of Stock</span>
                                 <a href="product.html">
-                                    <img src="user/assets/images/products/product-6.jpg" alt="Product image" class="product-image">
+                                    <img src="/user/assets/images/products/product-6.jpg" alt="Product image" class="product-image">
                                 </a>
 
                                 <div class="product-action-vertical">
@@ -202,9 +201,9 @@
                                 <div class="product-cat">
                                     <a href="#">Jackets</a>
                                 </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html">Khaki utility boiler jumpsuit</a></h3><!-- End .product-title -->
+                                <h3 class="product-title"><a href="product.html"></a></h3><!-- End .product-title -->
                                 <div class="product-price">
-                                    <span class="out-price">$120.00</span>
+                                    <span class="out-price"></span>
                                 </div><!-- End .product-price -->
                                 <div class="ratings-container">
                                     <div class="ratings">
@@ -219,7 +218,7 @@
                             <figure class="product-media">
                                 <span class="product-label label-top">Top</span>
                                 <a href="product.html">
-                                    <img src="user/assets/images/products/product-11.jpg" alt="Product image" class="product-image">
+                                    <img src="/user/assets/images/products/product-11.jpg" alt="Product image" class="product-image">
                                 </a>
 
                                 <div class="product-action-vertical">
@@ -250,14 +249,14 @@
 
                                 <div class="product-nav product-nav-thumbs">
                                     <a href="#" class="active">
-                                        <img src="user/assets/images/products/product-11-thumb.jpg" alt="product desc">
+                                        <img src="/user/assets/images/products/product-11-thumb.jpg" alt="product desc">
                                     </a>
                                     <a href="#">
-                                        <img src="user/assets/images/products/product-11-2-thumb.jpg" alt="product desc">
+                                        <img src="/user/assets/images/products/product-11-2-thumb.jpg" alt="product desc">
                                     </a>
 
                                     <a href="#">
-                                        <img src="user/assets/images/products/product-11-3-thumb.jpg" alt="product desc">
+                                        <img src="/user/assets/images/products/product-11-3-thumb.jpg" alt="product desc">
                                     </a>
                                 </div><!-- End .product-nav -->
                             </div><!-- End .product-body -->
@@ -266,7 +265,7 @@
                         <div class="product product-7 text-center">
                             <figure class="product-media">
                                 <a href="product.html">
-                                    <img src="user/assets/images/products/product-10.jpg" alt="Product image" class="product-image">
+                                    <img src="/user/assets/images/products/product-10.jpg" alt="Product image" class="product-image">
                                 </a>
 
                                 <div class="product-action-vertical">
@@ -300,7 +299,7 @@
                         <div class="product product-7 text-center">
                             <figure class="product-media">
                                 <a href="product.html">
-                                    <img src="user/assets/images/products/product-7.jpg" alt="Product image" class="product-image">
+                                    <img src="/user/assets/images/products/product-7.jpg" alt="Product image" class="product-image">
                                 </a>
 
                                 <div class="product-action-vertical">
@@ -335,80 +334,7 @@
             </div><!-- End .page-content -->
         </main><!-- End .main -->
 
-        <footer class="footer">
-        	<div class="footer-middle">
-	            <div class="container">
-	            	<div class="row">
-	            		<div class="col-sm-6 col-lg-3">
-	            			<div class="widget widget-about">
-	            				<img src="user/assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
-	            				<p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
-
-	            				<div class="social-icons">
-	            					<a href="#" class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
-	            					<a href="#" class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
-	            					<a href="#" class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
-	            					<a href="#" class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
-	            					<a href="#" class="social-icon" target="_blank" title="Pinterest"><i class="icon-pinterest"></i></a>
-	            				</div><!-- End .soial-icons -->
-	            			</div><!-- End .widget about-widget -->
-	            		</div><!-- End .col-sm-6 col-lg-3 -->
-
-	            		<div class="col-sm-6 col-lg-3">
-	            			<div class="widget">
-	            				<h4 class="widget-title">Useful Links</h4><!-- End .widget-title -->
-
-	            				<ul class="widget-list">
-	            					<li><a href="about.html">About Molla</a></li>
-	            					<li><a href="#">How to shop on Molla</a></li>
-	            					<li><a href="#">FAQ</a></li>
-	            					<li><a href="contact.html">Contact us</a></li>
-	            					<li><a href="login.html">Log in</a></li>
-	            				</ul><!-- End .widget-list -->
-	            			</div><!-- End .widget -->
-	            		</div><!-- End .col-sm-6 col-lg-3 -->
-
-	            		<div class="col-sm-6 col-lg-3">
-	            			<div class="widget">
-	            				<h4 class="widget-title">Customer Service</h4><!-- End .widget-title -->
-
-	            				<ul class="widget-list">
-	            					<li><a href="#">Payment Methods</a></li>
-	            					<li><a href="#">Money-back guarantee!</a></li>
-	            					<li><a href="#">Returns</a></li>
-	            					<li><a href="#">Shipping</a></li>
-	            					<li><a href="#">Terms and conditions</a></li>
-	            					<li><a href="#">Privacy Policy</a></li>
-	            				</ul><!-- End .widget-list -->
-	            			</div><!-- End .widget -->
-	            		</div><!-- End .col-sm-6 col-lg-3 -->
-
-	            		<div class="col-sm-6 col-lg-3">
-	            			<div class="widget">
-	            				<h4 class="widget-title">My Account</h4><!-- End .widget-title -->
-
-	            				<ul class="widget-list">
-	            					<li><a href="#">Sign In</a></li>
-	            					<li><a href="cart.html">View Cart</a></li>
-	            					<li><a href="#">My Wishlist</a></li>
-	            					<li><a href="#">Track My Order</a></li>
-	            					<li><a href="#">Help</a></li>
-	            				</ul><!-- End .widget-list -->
-	            			</div><!-- End .widget -->
-	            		</div><!-- End .col-sm-6 col-lg-3 -->
-	            	</div><!-- End .row -->
-	            </div><!-- End .container -->
-	        </div><!-- End .footer-middle -->
-
-	        <div class="footer-bottom">
-	        	<div class="container">
-	        		<p class="footer-copyright">Copyright © 2019 Molla Store. All Rights Reserved.</p><!-- End .footer-copyright -->
-	        		<figure class="footer-payments">
-	        			<img src="user/assets/images/payments.png" alt="Payment methods" width="272" height="20">
-	        		</figure><!-- End .footer-payments -->
-	        	</div><!-- End .container -->
-	        </div><!-- End .footer-bottom -->
-        </footer><!-- End .footer -->
+        
     </div><!-- End .page-wrapper -->
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
@@ -419,15 +345,15 @@
                 <div class="col-6">
                     <figure class="product-media">
                         <a href="product.html">
-                            <img src="user/assets/images/products/sticky/product-1.jpg" alt="Product image">
+                            <img src="/<%= product.imagePaths[0] %>" alt="Product image">
                         </a>
                     </figure><!-- End .product-media -->
-                    <h4 class="product-title"><a href="product.html">Dark yellow lace cut out swing dress</a></h4><!-- End .product-title -->
+                    <h4 class="product-title"><a href="product.html"><%=product.productName%></a></h4><!-- End .product-title -->
                 </div><!-- End .col-6 -->
 
                 <div class="col-6 justify-content-end">
                     <div class="product-price">
-                        $84.00
+                        Rs&nbsp;<%=product.price%>
                     </div><!-- End .product-price -->
                     <div class="product-details-quantity">
                         <input type="number" id="sticky-cart-qty" class="form-control" value="1" min="1" max="10" step="1" data-decimals="0" required>
@@ -614,119 +540,7 @@
         </div><!-- End .mobile-menu-wrapper -->
     </div><!-- End .mobile-menu-container -->
 
-    <!-- Sign in / Register Modal -->
-    <div class="modal fade" id="signin-modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true"><i class="icon-close"></i></span>
-                    </button>
-
-                    <div class="form-box">
-                        <div class="form-tab">
-                            <ul class="nav nav-pills nav-fill" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="signin-tab" data-toggle="tab" href="#signin" role="tab" aria-controls="signin" aria-selected="true">Sign In</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="register-tab" data-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="false">Register</a>
-                                </li>
-                            </ul>
-                            <div class="tab-content" id="tab-content-5">
-                                <div class="tab-pane fade show active" id="signin" role="tabpanel" aria-labelledby="signin-tab">
-                                    <form action="#">
-                                        <div class="form-group">
-                                            <label for="singin-email">Username or email address *</label>
-                                            <input type="text" class="form-control" id="singin-email" name="singin-email" required>
-                                        </div><!-- End .form-group -->
-
-                                        <div class="form-group">
-                                            <label for="singin-password">Password *</label>
-                                            <input type="password" class="form-control" id="singin-password" name="singin-password" required>
-                                        </div><!-- End .form-group -->
-
-                                        <div class="form-footer">
-                                            <button type="submit" class="btn btn-outline-primary-2">
-                                                <span>LOG IN</span>
-                                                <i class="icon-long-arrow-right"></i>
-                                            </button>
-
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="signin-remember">
-                                                <label class="custom-control-label" for="signin-remember">Remember Me</label>
-                                            </div><!-- End .custom-checkbox -->
-
-                                            <a href="#" class="forgot-link">Forgot Your Password?</a>
-                                        </div><!-- End .form-footer -->
-                                    </form>
-                                    <div class="form-choice">
-                                        <p class="text-center">or sign in with</p>
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <a href="#" class="btn btn-login btn-g">
-                                                    <i class="icon-google"></i>
-                                                    Login With Google
-                                                </a>
-                                            </div><!-- End .col-6 -->
-                                            <div class="col-sm-6">
-                                                <a href="#" class="btn btn-login btn-f">
-                                                    <i class="icon-facebook-f"></i>
-                                                    Login With Facebook
-                                                </a>
-                                            </div><!-- End .col-6 -->
-                                        </div><!-- End .row -->
-                                    </div><!-- End .form-choice -->
-                                </div><!-- .End .tab-pane -->
-                                <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
-                                    <form action="#">
-                                        <div class="form-group">
-                                            <label for="register-email">Your email address *</label>
-                                            <input type="email" class="form-control" id="register-email" name="register-email" required>
-                                        </div><!-- End .form-group -->
-
-                                        <div class="form-group">
-                                            <label for="register-password">Password *</label>
-                                            <input type="password" class="form-control" id="register-password" name="register-password" required>
-                                        </div><!-- End .form-group -->
-
-                                        <div class="form-footer">
-                                            <button type="submit" class="btn btn-outline-primary-2">
-                                                <span>SIGN UP</span>
-                                                <i class="icon-long-arrow-right"></i>
-                                            </button>
-
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="register-policy" required>
-                                                <label class="custom-control-label" for="register-policy">I agree to the <a href="#">privacy policy</a> *</label>
-                                            </div><!-- End .custom-checkbox -->
-                                        </div><!-- End .form-footer -->
-                                    </form>
-                                    <div class="form-choice">
-                                        <p class="text-center">or sign in with</p>
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <a href="#" class="btn btn-login btn-g">
-                                                    <i class="icon-google"></i>
-                                                    Login With Google
-                                                </a>
-                                            </div><!-- End .col-6 -->
-                                            <div class="col-sm-6">
-                                                <a href="#" class="btn btn-login  btn-f">
-                                                    <i class="icon-facebook-f"></i>
-                                                    Login With Facebook
-                                                </a>
-                                            </div><!-- End .col-6 -->
-                                        </div><!-- End .row -->
-                                    </div><!-- End .form-choice -->
-                                </div><!-- .End .tab-pane -->
-                            </div><!-- End .tab-content -->
-                        </div><!-- End .form-tab -->
-                    </div><!-- End .form-box -->
-                </div><!-- End .modal-body -->
-            </div><!-- End .modal-content -->
-        </div><!-- End .modal-dialog -->
-    </div><!-- End .modal -->
+    
 
     <!-- Plugins JS File -->
     <script src="user/assets/js/jquery.min.js"></script>

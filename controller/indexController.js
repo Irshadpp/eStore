@@ -6,6 +6,7 @@ const generateOTP = require('../util/generateOtp')
 const asyncHandler = require('express-async-handler');
 const sendEmail = require('../util/sendEmail');
 
+
 const loadIndex = asyncHandler(async (req, res) => {
     res.render('index')
 })
@@ -38,15 +39,35 @@ const homeLoad = asyncHandler(async (req, res) => {
 
     const userData = await User.findById(req.session.user_id);
     const products = await Product.find();
-    console.log("+++++++++++++++++++++++++++++",userData)
-    res.render('home',{userData,products});
+    const imagePathsArray = products.map( (item) => item.imagePaths);
+    console.log("+++++++++++++++++++++++++++++",imagePathsArray);
+    res.render('home',{userData,products,imagePathsArray});
 
 });
 
 const productLoad = asyncHandler( async (req,res) =>{
 
-    res.render('product');
+    const product_id = req.params.product_id;
 
+    const product = await Product.findOne({_id:product_id});
+    console.log("============================",product.imagePaths[0]);
+
+    if(!product){
+        return res.status(404).send("Product Not Found");
+    }
+    res.render('product',{product});
+
+});
+
+const profileLoad = asyncHandler( (req,res) => {
+
+    res.render('profile');
+
+});
+
+const loguot = asyncHandler( (req,res) => {
+    req.session.destroy();
+    res.redirect('/login');
 })
 
 
@@ -193,9 +214,8 @@ const verifyLogin = asyncHandler(async (req, res) => {
 
     const { email, password } = req.body;
     const userData = await User.findOne({ email: email });
-
-    if(userData.isBlock === false){
     if (userData) {
+    if(userData.isBlock === false){
 
         const passwordMatch = await bcrypt.compare(password, userData.password);
 
@@ -203,6 +223,7 @@ const verifyLogin = asyncHandler(async (req, res) => {
 
             if (userData.isVerified === true) {
                 req.session.user_id = userData._id;
+                req.session.isBlock = userData.isBlock;
                 res.redirect('/home');
             } else {
                 res.render('login', { msg: "Please verify your account with OTP!" })
@@ -212,10 +233,10 @@ const verifyLogin = asyncHandler(async (req, res) => {
             res.render('login', { msg: "Wrong password!" });
         }
     } else {
-        res.render('login', { msg: "Invalid email!" });
+        res.render('login', { msg: "Access restricted!" });
     }
 }else{
-    res.render('login', { msg: "Access restricted!"});
+    res.render('login', { msg: "Invalid email!"});
 }
 
 })
@@ -229,9 +250,11 @@ module.exports = {
     loadSignup,
     signup,
     otpLoad,
+    loguot,
     productLoad,
     verifyOTP,
     resendOTP,
     verifyLogin,
-    homeLoad
+    homeLoad,
+    profileLoad
 }

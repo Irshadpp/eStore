@@ -72,8 +72,8 @@
                                 <div class="row gx-2">
                                     <div class="col-sm-6 mb-3">
                                         <select name="category" class="form-select">
-                                            <%if(categories.length>0){
-                                                categories.forEach((item)=>{%>
+                                            <%if(categoryData.length>0){
+                                                categoryData.forEach((item)=>{%>
                                                     <option><%=item.categoryName%></option>
                                                 <%})
                                             }else{%>
