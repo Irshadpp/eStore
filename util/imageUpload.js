@@ -5,9 +5,6 @@ const fs = require('fs');
 
 
 const storage = multer.diskStorage({
-    // destination: (req, file, cb) => {
-    //     cb(null, 'images');
-    // },
 
     destination: (req, file, cb) => {
         const uploadPath = 'images';
@@ -24,14 +21,19 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + ext);
     },
 
-    // console.log("+++++++++++++++++++++++++++++++++++++++++++++++",storage);
-
    
 })
 
 const upload = multer({ 
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5 MB limit
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
+
+    fileFilter: (req, file, cb) => {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+            return cb(new multer.MulterError('LIMIT_UNEXPECTED_FILE', 'Only image files are allowed'));
+        }
+        cb(null, true);
+    }
  });
 
 module.exports = upload;

@@ -10,7 +10,13 @@ const Category = require('../model/categorydb');
 //login load
 const loginLoad = asyncHandler( async (req,res) => {
     res.render('login');
+});
+
+const logout = asyncHandler( async (req,res) =>{
+    req.session.destroy();
+    res.redirect('/admin');
 })
+
 
 //dashboard load
 const dashboardLoad = asyncHandler( async (req,res) => {
@@ -62,10 +68,12 @@ const verifyLogin = asyncHandler( async (req,res) => {
         
         if(adminData.isAdmin === true){
             
-            const matchPassword = bcrypt.compare(password, adminData.password);
+            const matchPassword = await bcrypt.compare(password, adminData.password);
             if(matchPassword){
                 req.session.admin_id = adminData._id;
                 res.redirect('/admin/dashboard');
+            }else{
+                res.render('login',{msg:"Wrong password!"});
             }
 
         }else{
@@ -92,12 +100,33 @@ const unblockUser = asyncHandler( async (req,res) => {
 
 const addProduct = asyncHandler( async (req,res) => {
 
+    const categoryData = await Category.find();
+
     if (!req.files || req.files.length === 0) {
-        return res.status(400).json({ message: 'No files uploaded' });
-    }
+        return res.status(400).render('addProduct',{ warningMsg: 'No images uploaded!', categoryData});
+    };
+
 
     const {productName, description, price, quantity, category} = req.body;
     const imagePaths = req.files.map(file => file.filename);
+
+
+    if(description.trim() === ''){
+        return res.status(400).render('addProduct',{warningMsg:"Please give product description!", categoryData});
+    };
+
+    if(productName.trim() === ''){
+        return res.status(400).render('addProduct',{warningMsg:"Please give product name!", categoryData});
+    };
+
+    if(price < 1){
+        return res.status(400).render('addProduct',{warningMsg:"Product price must be valid!", categoryData})
+    };
+
+    if(quantity < 1){
+        return res.status(400).render('addProduct',{warningMsg:"Give product quantity!", categoryData});
+    };
+
 
     const products = new Product({
         productName: productName,
@@ -109,8 +138,7 @@ const addProduct = asyncHandler( async (req,res) => {
     });
 
     var newProduct = await products.save();
-    const categoryData = await Category.find();
-    res.render('addProduct',{categoryData})
+    res.render('addProduct',{sucessMsg:"Product added successfully",categoryData});
 
 });
 
@@ -118,14 +146,37 @@ const addCategory = asyncHandler( async (req,res) =>{
 
     const {categoryName, description} = req.body;
 
-    const category = new Category({
-        categoryName:categoryName,
-        description,
-    })
+    const checkCategory = await Category.findOne({categoryName:categoryName});
+    const categoryData = await Category.find();
 
-    var newCategory = await category.save();
-    res.redirect('/admin/category')
+    if(checkCategory){
+        res.render('category',{msg:"Category already exist!",categoryData});
+    }else{
+        const category = new Category({
+            categoryName:categoryName,
+            description:description,
+        })
+    
+        var newCategory = await category.save();
+        res.redirect('/admin/category')
+    }
+});
 
+const editProduct = asyncHandler( async (req,res) =>{
+
+    const product_id = req.query.id;
+    console.log('================================edit product',product_id)
+
+    const {productName, description, price, quantity, category} = req.body;
+
+    const productData = await Product.findByIdAndUpdate({_id:product_id},{$set:{productName: productName, description: description, price: price, quantity: quantity, category: category}});
+    const categoryData = await Category.find();
+
+    if(productData){
+        res.render('editProduct', {msg:"Product edited sucessfully",product: productData, categoryData });
+    }else{
+        res.send("something went wrong");
+    }
 })
 
 module.exports = {
@@ -141,4 +192,6 @@ module.exports = {
     addProduct, 
     addCategory,
     editProductLoad,
+    logout,
+    editProduct,
 }

@@ -5,8 +5,11 @@
                         <h2 class="content-title card-title">Categories</h2>
                         <p>Add, edit or delete a category</p>
                     </div>
+                    <% if(typeof msg != 'undefined'){ %>
+                        <p class="text-primary-50 text-center mb-5" id="text-danger"><%= msg %></p> 
+                       <% } %>
                     <div>
-                        <input type="text" placeholder="Search Categories" class="form-control bg-white" />
+                        <input required type="text" placeholder="Search Categories" class="form-control bg-white" />
                     </div>
                 </div>
                 <div class="card">
@@ -16,7 +19,7 @@
                                 <form method="post" >
                                     <div class="mb-4">
                                         <label for="product_name" class="form-label">Name</label>
-                                        <input name="categoryName" type="text" placeholder="Type here" class="form-control" id="product_name" />
+                                        <input required name="categoryName" type="text" placeholder="Type here" class="form-control" id="product_name" />
                                     </div>
                          
                                     <div class="mb-4">

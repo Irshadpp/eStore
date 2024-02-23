@@ -46,7 +46,7 @@
                                 <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
                                     <a class="itemside" href="#">
                                         <div class="left">
-                                            <img src='../<%=imagePathsArray[0][1]%>' class="img-sm img-thumbnail" alt="Item" />
+                                            <img src='../<%=item.imagePaths[0]%>' class="img-sm img-thumbnail" alt="Item" />
                                         </div>
                                         <div class="info">
                                             <h6 class="mb-0"><%=item.productName%></h6>
@@ -56,8 +56,8 @@
                                 
 
                                 <div class="col-lg-2 col-sm-2 col-4 col-price"><span><%= item.price%></span></div>
-                                <div class="col-lg-1 col-sm-2 col-4 col-date">
-                                    <span><%= item.category%></span>
+                                <div width="20%" class="col-lg-1 col-sm-2 col-4 col-date">
+                                    <span ><%= item.category%></span>
                                 </div>
                                 <div class="col-lg-2 col-sm-2 col-4 col-status">
                                     <span class="badge rounded-pill alert-success"><%= item.status%></span>
@@ -90,7 +90,7 @@
                             </li>
                         </ul>
                     </nav>
-                </div> -->
+                </div> 
             </section>
             <!-- content-main end// -->
             

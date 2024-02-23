@@ -27,7 +27,7 @@ router.post('/verifyOTP', indexController.verifyOTP);
 router.get('/resendOTP', indexController.resendOTP);
 
 //home page load
-router.get('/home', indexAuth.isLogin, indexAuth.isUserBlock, indexController.homeLoad);
+router.get('/home', indexAuth.isLogin, indexController.homeLoad);
 router.get('/profile', indexAuth.isLogin, indexController.profileLoad);
 
 //verify login

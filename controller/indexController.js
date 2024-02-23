@@ -8,7 +8,9 @@ const sendEmail = require('../util/sendEmail');
 
 
 const loadIndex = asyncHandler(async (req, res) => {
-    res.render('index')
+    const products = await Product.find();
+    const imagePathsArray = products.map( (item) => item.imagePaths);
+    res.render('index',{products, imagePathsArray});
 })
 
 const loadLogin = async (req, res) => {
@@ -101,8 +103,8 @@ const signup = async (req, res) => {
                     var newUser = await users.save();
 
                     if (newUser) {
-                        req.session.user_id = newUser._id;
-                        req.session.user_email = newUser.email;
+                        req.session.userSignup_id = newUser._id;
+                        req.session.userSignup_email = newUser.email;
                         saveOTP(newUser, res);
                         res.redirect('/otp');
                     } else {
@@ -113,8 +115,9 @@ const signup = async (req, res) => {
 
                     const checkVerified = await User.findOne({ email: email }, { _id: 0, isVerified: 1 });
                     if (checkEmail && checkVerified.isVerified === false) {
-                        req.session.user_id = checkEmail._id
-                        req.session.user_email = checkEmail.email;
+                        req.session.userSignup_id = checkEmail._id
+                        req.session.userSignup_email = checkEmail.email;
+                        console.log()
                         saveOTP(checkEmail, res);
                         res.redirect('/otp');
                     } else {
@@ -135,7 +138,7 @@ const signup = async (req, res) => {
     }
 }
 
-const saveOTP = asyncHandler(async ({ _id, email }, res) => {
+const saveOTP = asyncHandler(async ({email}, res) => {
 
     const subjectt = 'eStore signup varification OTP';
     const message = 'Please verify your eStore account with OTP';
@@ -184,11 +187,12 @@ const verifyOTP = asyncHandler(async (req, res) => {
 
     const enteredOTP = parseInt(`${req.body.num1}${req.body.num2}${req.body.num3}${req.body.num4}${req.body.num5}${req.body.num6}`)
 
-    const otpData = await OTP.findOne({ email: req.session.user_email });
-
+    const otpData = await OTP.findOne({ email: req.session.userSignup_email });
+    
+    console.log("=======================",req.session.userSignup_email);
     if (otpData) {
         if (otpData.otp === enteredOTP) {
-            const verifyUser = await User.findOneAndUpdate({ _id: req.session.user_id }, { $set: { isVerified: true } });
+            const verifyUser = await User.findOneAndUpdate({ _id: req.session.userSignup_id }, { $set: { isVerified: true } });
 
             if (verifyUser) {
                 res.redirect('/login');
@@ -199,12 +203,12 @@ const verifyOTP = asyncHandler(async (req, res) => {
         }
 
     } else {
-        res.render('otp', { msg: 'Please enter the correct OTP!' });
+        res.render('otp', { msg: 'Something went wrong!' });
     }
 })
 
 const resendOTP = asyncHandler(async (req, res) => {
-    const userData = await User.findOne({ _id: req.session.user_id });
+    const userData = await User.findOne({ _id: req.session.userSignup_id });
     saveOTP(userData);
     res.render('otp');
 })

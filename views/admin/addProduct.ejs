@@ -4,8 +4,13 @@
                     <div class="col-9">
                         <div class="content-header">
                             <h2 class="content-title">Add New Product</h2>
-                           
                         </div>
+                        <% if(typeof sucessMsg != 'undefined'){ %>
+                            <p class="text-center text-success mb-5" id="text-danger"><%= sucessMsg %></p>  
+                           <% } %>
+                           <% if(typeof warningMsg != 'undefined'){ %>
+                            <p class="text-center text-danger  mb-5" id="text-danger"><%= warningMsg %></p> 
+                           <% } %>
                     </div>
                     <div class="col-lg-6">
                         <div class="card mb-4">
@@ -16,18 +21,18 @@
                                 <form method="post" enctype="multipart/form-data">
                                     <div class="mb-4">
                                         <label for="product_name" class="form-label">Product title</label>
-                                        <input type="text" placeholder="Type here" name="productName" class="form-control" id="product_name" />
+                                        <input  required type="text" placeholder="Type here" name="productName" class="form-control" id="textInput" />
                                     </div>
                                     <div class="mb-4">
                                         <label class="form-label">Full description</label>
-                                        <textarea placeholder="Type here" name="description" class="form-control" rows="4"></textarea>
+                                        <textarea placeholder="Type here" name="description" class="form-control" rows="4" required></textarea>
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <div class="mb-4">
                                                 <label class="form-label">Price</label>
                                                 <div class="row gx-2">
-                                                    <input placeholder="Rs" name="price" type="text" class="form-control" />
+                                                    <input required placeholder="Rs" name="price" type="number" class="form-control" />
                                                 </div>
                                             </div>
                                         </div>
@@ -35,7 +40,7 @@
                                             <div class="mb-4">
                                                 <label class="form-label">Quantity</label>
                                                 <div class="row gx-2">
-                                                    <input placeholder="Qty" name="quantity" type="text" class="form-control" />
+                                                    <input required placeholder="Qty" name="quantity" type="number" class="form-control" />
                                                 </div>
                                             </div>
                                         </div>
@@ -54,7 +59,7 @@
                             <div class="card-body">
                                 <div class="input-upload">
                                     <img src="assets/imgs/theme/upload.svg" alt="" />
-                                    <input class="form-control" name="images" type="file" multiple/>
+                                    <input class="form-control" name="images" type="file" accept="image/*" multiple maxlength="4"/>
                                     <!-- <input class="form-control" name="image2" type="file" />
                                     <input class="form-control" name="image3" type="file" />
                                     <input class="form-control" name="image4" type="file" /> -->

@@ -16,6 +16,12 @@ const isLogout = asyncHandler( (req,res,next) =>{
     }
 });
 
+// const isSignup = asyncHandler( (req,res,next) =>{
+//     if(!req.session.userSignup_id){
+//         res.redirect('/signup');
+//     }
+// })
+
 const isUserBlock = asyncHandler( async (req,res,next) => {
 
     console.log("-------------------------",req.session.isBlock);

@@ -13,21 +13,21 @@
                                 <h4>Basic</h4>
                             </div>
                             <div class="card-body">
-                                <form method="post" enctype="multipart/form-data">
+                                <form method="post" action="/admin/editProduct?id=<%=product._id%>" enctype="multipart/form-data">
                                     <div class="mb-4">
                                         <label for="product_name" class="form-label">Product title</label>
-                                        <input type="text" placeholder="<%=product.productName%>" name="productName" class="form-control" id="product_name" />
+                                        <input required type="text" value="<%=product.productName%>" name="productName" class="form-control" id="product_name" />
                                     </div>
                                     <div class="mb-4">
                                         <label class="form-label">Full description</label>
-                                        <textarea placeholder="<%=product.description%>" name="description" class="form-control" rows="4"></textarea>
+                                        <textarea  name="description" class="form-control" rows="4"><%=product.description%></textarea>
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-4">
                                             <div class="mb-4">
                                                 <label class="form-label">Price</label>
                                                 <div class="row gx-2">
-                                                    <input placeholder="<%=product.price%>" name="price" type="text" class="form-control" />
+                                                    <input required value="<%=product.price%>" name="price" type="text" class="form-control" />
                                                 </div>
                                             </div>
                                         </div>
@@ -35,7 +35,7 @@
                                             <div class="mb-4">
                                                 <label class="form-label">Quantity</label>
                                                 <div class="row gx-2">
-                                                    <input placeholder="<%=product.quantity%>" name="quantity" type="text" class="form-control" />
+                                                    <input required value="<%=product.quantity%>" name="quantity" type="text" class="form-control" />
                                                 </div>
                                             </div>
                                         </div>
@@ -74,7 +74,7 @@
                                         <select name="category" class="form-select">
                                             <%if(categoryData.length>0){
                                                 categoryData.forEach((item)=>{%>
-                                                    <option aria-placeholder="<%=product.category%>"><%=item.categoryName%></option>
+                                                    <option value="<%=product.category%> selected"><%=item.categoryName%></option>
                                                 <%})
                                             }else{%>
                                                 <option></option>
