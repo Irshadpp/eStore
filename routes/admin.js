@@ -30,7 +30,7 @@ router.put('/:userId/unblock',adminController.unblockUser);
 
 //add and edit product 
 router.post('/addProduct', upload.array('images', 4), adminController.addProduct);
-router.post('/editProduct', adminController.editProduct);
+router.post('/editProduct', upload.array('images', 4), adminController.editProduct);
 
 //add category
 router.post('/category', adminController.addCategory);

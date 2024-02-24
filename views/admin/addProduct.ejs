@@ -18,7 +18,7 @@
                                 <h4>Basic</h4>
                             </div>
                             <div class="card-body">
-                                <form method="post" enctype="multipart/form-data">
+                                <form method="post" enctype="multipart/form-data" id="uploadForm">
                                     <div class="mb-4">
                                         <label for="product_name" class="form-label">Product title</label>
                                         <input  required type="text" placeholder="Type here" name="productName" class="form-control" id="textInput" />
@@ -59,7 +59,7 @@
                             <div class="card-body">
                                 <div class="input-upload">
                                     <img src="assets/imgs/theme/upload.svg" alt="" />
-                                    <input class="form-control" name="images" type="file" accept="image/*" multiple maxlength="4"/>
+                                    <input class="form-control" id="imageUpload" name="images" type="file" accept="image/*" multiple maxlength = 5/>
                                     <!-- <input class="form-control" name="image2" type="file" />
                                     <input class="form-control" name="image3" type="file" />
                                     <input class="form-control" name="image4" type="file" /> -->
@@ -100,6 +100,16 @@
                 </div>
             </section>
         </main>
+        <script>
+document.getElementById('uploadForm').addEventListener('submit', function(event) {
+    var input = document.getElementById('imageUpload');
+    // Check if the number of files selected is more than 4
+    if (input.files.length > 4) {
+        alert('Please select up to 4 images only.');
+        event.preventDefault(); // Prevent form submission
+    }
+});
+</script>
         <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
         <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
         <script src="assets/js/vendors/select2.min.js"></script>

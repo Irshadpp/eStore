@@ -4,8 +4,13 @@
                     <div class="col-9">
                         <div class="content-header">
                             <h2 class="content-title">Edit Product</h2>
-                           
                         </div>
+                        <% if(typeof sucessMsg != 'undefined'){ %>
+                            <p class="text-center text-success mb-5" id="text-danger"><%= sucessMsg %></p>  
+                           <% } %>
+                           <% if(typeof warningMsg != 'undefined'){ %>
+                            <p class="text-center text-danger  mb-5" id="text-danger"><%= warningMsg %></p> 
+                           <% } %>
                     </div>
                     <div class="col-lg-6">
                         <div class="card mb-4">
@@ -13,7 +18,7 @@
                                 <h4>Basic</h4>
                             </div>
                             <div class="card-body">
-                                <form method="post" action="/admin/editProduct?id=<%=product._id%>" enctype="multipart/form-data">
+                                <form method="post" action="/admin/editProduct?id=<%=product._id%>" enctype="multipart/form-data" id="uploadForm">
                                     <div class="mb-4">
                                         <label for="product_name" class="form-label">Product title</label>
                                         <input required type="text" value="<%=product.productName%>" name="productName" class="form-control" id="product_name" />
@@ -54,7 +59,7 @@
                             <div class="card-body">
                                 <div class="input-upload">
                                     <img src="/admin/assets/imgs/theme/upload.svg" alt="" />
-                                    <input class="form-control" name="images" type="file" multiple/>
+                                    <input id="imageUpload" class="form-control" name="images" type="file" multiple/>
                                     <!-- <input class="form-control" name="image2" type="file" />
                                     <input class="form-control" name="image3" type="file" />
                                     <input class="form-control" name="image4" type="file" /> -->
@@ -72,13 +77,13 @@
                                 <div class="row gx-2">
                                     <div class="col-sm-6 mb-3">
                                         <select name="category" class="form-select">
-                                            <%if(categoryData.length>0){
-                                                categoryData.forEach((item)=>{%>
-                                                    <option value="<%=product.category%> selected"><%=item.categoryName%></option>
-                                                <%})
-                                            }else{%>
+                                            <% if (categoryData.length > 0) {
+                                                categoryData.forEach((item) => { %>
+                                                    <option value="<%= item.categoryName %>" <% if (item.categoryName === product.category) { %> selected <% } %>><%= item.categoryName %></option>
+                                                <% })
+                                            } else { %>
                                                 <option></option>
-                                                <%}%>
+                                            <% } %>
                                         </select>
                                     </div>
                                     
@@ -95,6 +100,16 @@
                 </div>
             </section>
         </main>
+<script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+    var input = document.getElementById('imageUpload');
+    // Check if the number of files selected is more than 4
+    if (input.files.length > 4) {
+        alert('Please select up to 4 images only.');
+        event.preventDefault(); // Prevent form submission
+    }
+});
+</script>
         <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
         <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
         <script src="assets/js/vendors/select2.min.js"></script>

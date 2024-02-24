@@ -165,15 +165,48 @@ const addCategory = asyncHandler( async (req,res) =>{
 const editProduct = asyncHandler( async (req,res) =>{
 
     const product_id = req.query.id;
-    console.log('================================edit product',product_id)
+    const categoryData = await Category.find();
+    const product = await Product.findOne({_id: product_id});
 
+    if (!req.files || req.files.length === 0) {
+        return res.status(400).render('editProduct',{ warningMsg: 'No images uploaded!', categoryData, product});
+    };
+
+    const imagePaths = req.files.map(file => file.filename);
     const {productName, description, price, quantity, category} = req.body;
 
-    const productData = await Product.findByIdAndUpdate({_id:product_id},{$set:{productName: productName, description: description, price: price, quantity: quantity, category: category}});
-    const categoryData = await Category.find();
+    if(description.trim() === ''){
+        return res.status(400).render('editProduct',{warningMsg:"Please give product description!", categoryData, product});
+    };
+
+    if(productName.trim() === ''){
+        return res.status(400).render('addProduct',{warningMsg:"Please give product name!", categoryData, product});
+    };
+
+    if(price < 1){
+        return res.status(400).render('editProduct',{warningMsg:"Product price must be valid!", categoryData, product})
+    };
+
+    if(quantity < 1){
+        return res.status(400).render('editProduct',{warningMsg:"Give product quantity!", categoryData, product});
+    };
+
+
+    const productData = await Product.findByIdAndUpdate(
+        {_id:product_id},
+        {$set:{
+            productName: productName,
+            description: description, 
+            price: price, 
+            quantity: quantity, 
+            category: category, 
+            imagePaths: imagePaths
+        }});
+
+    const editedProductData = await Product.findOne({_id: product_id})
 
     if(productData){
-        res.render('editProduct', {msg:"Product edited sucessfully",product: productData, categoryData });
+        res.render('editProduct', {msg:"Product edited sucessfully",product: editedProductData, categoryData });
     }else{
         res.send("something went wrong");
     }
