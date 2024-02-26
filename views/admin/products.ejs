@@ -43,12 +43,12 @@
                            
                         <article class="itemlist">
                             <div class="row align-items-center">
-                                <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                                <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name" >
                                     <a class="itemside" href="#">
                                         <div class="left">
                                             <img src='../<%=item.imagePaths[0]%>' class="img-sm img-thumbnail" alt="Item" />
                                         </div>
-                                        <div class="info">
+                                        <div class="info" >
                                             <h6 class="mb-0"><%=item.productName%></h6>
                                         </div>
                                     </a>
@@ -56,11 +56,23 @@
                                 
 
                                 <div class="col-lg-2 col-sm-2 col-4 col-price"><span><%= item.price%></span></div>
-                                <div width="20%" class="col-lg-1 col-sm-2 col-4 col-date">
-                                    <span ><%= item.category%></span>
+                                <div class="col-lg-1 col-sm-2 col-4 col-date">
+                                    <span><%= item.category%></span>
                                 </div>
                                 <div class="col-lg-2 col-sm-2 col-4 col-status">
                                     <span class="badge rounded-pill alert-success"><%= item.status%></span>
+                                    <% var flag = 0%>
+                                    <%category.forEach((element)=>{%>
+                                        <%if (item.category === element.categoryName) {%>
+                                        <span class="badge rounded-pill alert-danger mt-1 ">unlisted</span>
+                                        <% flag = 1%>
+                                            <%}%>
+                                            <%})%> 
+                                            <%if (flag === 0) {%>
+                                                <span class="badge rounded-pill alert-success mt-1 ">listed</span>
+                                                <%}%>
+
+
                                 </div>
                                 <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
                                     <a href="/admin/editProduct/<%=item._id%>" class="btn btn-sm font-sm rounded btn-brand"> <i class="material-icons md-edit"></i> Edit </a>

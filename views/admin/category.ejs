@@ -5,8 +5,11 @@
                         <h2 class="content-title card-title">Categories</h2>
                         <p>Add, edit or delete a category</p>
                     </div>
-                    <% if(typeof msg != 'undefined'){ %>
-                        <p class="text-primary-50 text-center mb-5" id="text-danger"><%= msg %></p> 
+                    <% if(typeof sucessMsg != 'undefined'){ %>
+                        <p class="text-center text-success mb-5" id="text-danger"><%= sucessMsg %></p>  
+                       <% } %>
+                       <% if(typeof warningMsg != 'undefined'){ %>
+                        <p class="text-center text-danger  mb-5" id="text-danger"><%= warningMsg %></p> 
                        <% } %>
                     <div>
                         <input required type="text" placeholder="Search Categories" class="form-control bg-white" />
@@ -40,6 +43,7 @@
                                                 <!-- <th>ID</th> -->
                                                 <th>Name</th>
                                                 <th>Description</th>
+                                                <th>Status</th>
                                                 <th class="text-end">Action</th>
                                             </tr>
                                         </thead>
@@ -50,12 +54,19 @@
                                                 <!-- <td>21</td> -->
                                                 <td><b><%= item.categoryName %></b></td>
                                                 <td><%= item.description %></td>
+                                                <%if(item.list === false){%>
+                                                <td><span class="badge rounded-pill alert-danger">Unlisted</span></td>
+                                                <%}else{%>
+                                                    <td><span class="badge rounded-pill alert-success">listed</span></td>
+                                                    <%}%>
                                                 <td class="text-end">
                                                     <div class="dropdown">
                                                         <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
                                                         <div class="dropdown-menu">
                                                             <a class="dropdown-item" href="#">Edit info</a>
-                                                            <a class="dropdown-item text-danger" href="#">Delete</a>
+                                                            <a class="dropdown-item text-success" href="" onclick="list('<%=item._id%>')">List</a>
+                                                            
+                                                            <a class="dropdown-item text-danger" href="" onClick="unlist('<%=item._id%>')">Unlist</a>
                                                         </div>
                                                     </div>
                                                     <!-- dropdown //end -->
@@ -84,5 +95,24 @@
         <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
         <!-- Main Script -->
         <script src="assets/js/main.js?v=1.1" type="text/javascript"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+            async function unlist(categoryId){
+                console.log('=====================',categoryId)
+                try {
+                    await axios.put(`/admin/unlist/${categoryId}`);
+                } catch (error) {
+                    console.log(error.message);
+                }
+            }
+
+            async function list(categoryId){
+                try {
+                    await axios.put(`/admin/list/${categoryId}`);
+                } catch (error) {
+                    console.log(error.message);
+                }
+            }
+        </script>
     </body>
 </html>

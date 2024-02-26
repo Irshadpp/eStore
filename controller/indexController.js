@@ -2,15 +2,18 @@ const bcrypt = require('bcrypt');
 const User = require('../model/userdb');
 const OTP = require('../model/otpdb');
 const Product = require('../model/productdb');
+const Category = require('../model/categorydb')
 const generateOTP = require('../util/generateOtp')
 const asyncHandler = require('express-async-handler');
 const sendEmail = require('../util/sendEmail');
 
 
 const loadIndex = asyncHandler(async (req, res) => {
-    const products = await Product.find();
+    console.log("===========================",category);
+
+    const products = await Product.find();;
     const imagePathsArray = products.map( (item) => item.imagePaths);
-    res.render('index',{products, imagePathsArray});
+    res.render('index',{products, category, imagePathsArray});
 })
 
 const loadLogin = async (req, res) => {
@@ -40,9 +43,27 @@ const otpLoad = async (req, res) => {
 const homeLoad = asyncHandler(async (req, res) => {
 
     const userData = await User.findById(req.session.user_id);
-    const products = await Product.find();
+    const category = await Category.find({list:false});
+    const products = await Product.aggregate([
+        {
+            $lookup:{
+                from: "Category",
+                localField: "category",
+                foreignField: "categoryName",
+                as: "categoryInfo"
+            }
+        },
+        {
+            $unwind: "$categoryInfo"
+        },
+        {
+            $match:{
+                "categoryInfo.list": true,
+            }
+        }
+    ]);
     const imagePathsArray = products.map( (item) => item.imagePaths);
-    console.log("+++++++++++++++++++++++++++++",imagePathsArray);
+    console.log("+++++++++++++++++++++++++++++",products);
     res.render('home',{userData,products,imagePathsArray});
 
 });

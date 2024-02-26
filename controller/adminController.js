@@ -30,16 +30,14 @@ const customersLoad = asyncHandler( async (req,res) => {
 });
 
 const productsLoad = asyncHandler( async (req,res) => {
+    const category = await Category.find({list:false});
     const productData = await Product.find();
     const imagePathsArray = productData.map(product => product.imagePaths); 
-    console.log("======================",imagePathsArray[0][1]);
-    res.render('products',{products:productData,imagePathsArray});
+    res.render('products',{products:productData,category,imagePathsArray});
 });
 
 const categoryLoad = asyncHandler( async (req,res) => {
-    console.log("======================-------------------------");
     const categoryData = await Category.find();
-    console.log("======================",categoryData);
     res.render('category',{categoryData});
 });
 
@@ -110,7 +108,6 @@ const addProduct = asyncHandler( async (req,res) => {
     const {productName, description, price, quantity, category} = req.body;
     const imagePaths = req.files.map(file => file.filename);
 
-
     if(description.trim() === ''){
         return res.status(400).render('addProduct',{warningMsg:"Please give product description!", categoryData});
     };
@@ -127,7 +124,7 @@ const addProduct = asyncHandler( async (req,res) => {
         return res.status(400).render('addProduct',{warningMsg:"Give product quantity!", categoryData});
     };
 
-
+    
     const products = new Product({
         productName: productName,
         description: description,
@@ -138,28 +135,39 @@ const addProduct = asyncHandler( async (req,res) => {
     });
 
     var newProduct = await products.save();
-    res.render('addProduct',{sucessMsg:"Product added successfully",categoryData});
+    res.render('addProduct',{successMsg:"Product added successfully",categoryData});
 
 });
 
 const addCategory = asyncHandler( async (req,res) =>{
 
     const {categoryName, description} = req.body;
+    const regexPattern = new RegExp(categoryName, "i");
 
-    const checkCategory = await Category.findOne({categoryName:categoryName});
+    const checkCategory = await Category.findOne({categoryName:{$regex:regexPattern}});
     const categoryData = await Category.find();
 
-    if(checkCategory){
-        res.render('category',{msg:"Category already exist!",categoryData});
-    }else{
+
+    if(!(/^[A-Za-z]+(?: [A-Za-z]+)?$/.test(categoryName))){
+        return res.status(400).render('category',{warningMsg:"Give a proper category name!",categoryData});
+    }
+
+    if(checkCategory && checkCategory.categoryName.toLocaleLowerCase() === categoryName.toLocaleLowerCase()){
+       return res.status(400).render('category',{warningMsg:"Category already exist!",categoryData});
+        }
+       
+        if(description.trim() === ''){
+            return res.status(400).render('category',{warningMsg:"Please give category description!", categoryData});
+        };
         const category = new Category({
             categoryName:categoryName,
             description:description,
         })
-    
+
         var newCategory = await category.save();
-        res.redirect('/admin/category')
-    }
+        const updatedCategoryData = await Category.find();
+
+        res.status(201).render('category',{successMsg:"Catergory added successfully", categoryData: updatedCategoryData});
 });
 
 const editProduct = asyncHandler( async (req,res) =>{
@@ -167,10 +175,6 @@ const editProduct = asyncHandler( async (req,res) =>{
     const product_id = req.query.id;
     const categoryData = await Category.find();
     const product = await Product.findOne({_id: product_id});
-
-    if (!req.files || req.files.length === 0) {
-        return res.status(400).render('editProduct',{ warningMsg: 'No images uploaded!', categoryData, product});
-    };
 
     const imagePaths = req.files.map(file => file.filename);
     const {productName, description, price, quantity, category} = req.body;
@@ -180,7 +184,7 @@ const editProduct = asyncHandler( async (req,res) =>{
     };
 
     if(productName.trim() === ''){
-        return res.status(400).render('addProduct',{warningMsg:"Please give product name!", categoryData, product});
+        return res.status(400).render('editProduct',{warningMsg:"Please give product name!", categoryData, product});
     };
 
     if(price < 1){
@@ -189,6 +193,10 @@ const editProduct = asyncHandler( async (req,res) =>{
 
     if(quantity < 1){
         return res.status(400).render('editProduct',{warningMsg:"Give product quantity!", categoryData, product});
+    };
+
+    if (!req.files || req.files.length === 0) {
+        return res.status(400).render('editProduct',{ warningMsg: 'No images uploaded!', categoryData, product});
     };
 
 
@@ -206,11 +214,37 @@ const editProduct = asyncHandler( async (req,res) =>{
     const editedProductData = await Product.findOne({_id: product_id})
 
     if(productData){
-        res.render('editProduct', {msg:"Product edited sucessfully",product: editedProductData, categoryData });
+        res.render('editProduct', {successMsg:"Product edited sucessfully",product: editedProductData, categoryData });
     }else{
         res.send("something went wrong");
     }
-})
+});
+
+
+const unlistCategory = async (req,res) => {
+    try {
+        const categoryId = req.params.categoryId
+        await Category.findByIdAndUpdate(
+            categoryId,
+            {list:false}
+        );
+
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+}
+
+const listCategory = async (req,res) => {
+    try {
+        const categoryId = req.params.categoryId;
+        await Category.findByIdAndUpdate(
+            categoryId,
+            {list:true}
+        )
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+}
 
 module.exports = {
     loginLoad,
@@ -227,4 +261,6 @@ module.exports = {
     editProductLoad,
     logout,
     editProduct,
+    unlistCategory,
+    listCategory
 }

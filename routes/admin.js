@@ -35,6 +35,10 @@ router.post('/editProduct', upload.array('images', 4), adminController.editProdu
 //add category
 router.post('/category', adminController.addCategory);
 
+//list and unlist category
+router.put('/unlist/:categoryId', adminController.unlistCategory);
+router.put('/list/:categoryId', adminController.listCategory);
+
 
 
 module.exports = router;
