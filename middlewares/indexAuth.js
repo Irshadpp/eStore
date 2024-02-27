@@ -1,4 +1,5 @@
 const asyncHandler = require('express-async-handler');
+const User = require('../model/userdb');
 
 const isLogin = asyncHandler( (req,res,next) =>{
     if(!req.session.user_id){
@@ -16,17 +17,13 @@ const isLogout = asyncHandler( (req,res,next) =>{
     }
 });
 
-// const isSignup = asyncHandler( (req,res,next) =>{
-//     if(!req.session.userSignup_id){
-//         res.redirect('/signup');
-//     }
-// })
 
 const isUserBlock = asyncHandler( async (req,res,next) => {
 
-    console.log("-------------------------",req.session.isBlock);
-    if(req.session.isBlock === true){
-        req.session.destroy();
+    const checkUser = await User.findById(req.session.user_id);
+
+    if(checkUser.isBlock === true){
+        req.session.user_id = null;
         res.redirect('/login');
     }else{
         next();
@@ -35,7 +32,6 @@ const isUserBlock = asyncHandler( async (req,res,next) => {
 });
 
 module.exports = {
-
     isLogin,
     isLogout,
     isUserBlock

@@ -220,6 +220,20 @@ const editProduct = asyncHandler( async (req,res) =>{
     }
 });
 
+const deleteProduct = async (req,res) => {
+    try {
+        const productId = req.params.productId
+        await Product.findByIdAndDelete(
+            productId
+        );
+        res.redirect('/admin/products')
+
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+}
+
+
 
 const unlistCategory = async (req,res) => {
     try {
@@ -244,7 +258,36 @@ const listCategory = async (req,res) => {
     } catch (error) {
         res.status(500).send(error.message);
     }
+};
+
+const unlistProduct = async (req,res) =>{
+
+    try {
+        const productId = req.params.productId;
+    await Product.findByIdAndUpdate(
+        productId,
+        {list:false}
+    )
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+    
 }
+
+const listProduct = async (req,res) =>{
+    console.log("==================================llliiiiisssssttttt");
+    try {
+        const productId = req.params.productId;
+        await Product.findByIdAndUpdate(
+            productId,
+            {list:true}
+        );
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+}
+
+
 
 module.exports = {
     loginLoad,
@@ -262,5 +305,8 @@ module.exports = {
     logout,
     editProduct,
     unlistCategory,
-    listCategory
+    listCategory,
+    unlistProduct,
+    listProduct,
+    deleteProduct,
 }

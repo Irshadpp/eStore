@@ -15,7 +15,7 @@ router.get('/', indexAuth.isLogout, indexController.loadIndex);
 router.get('/login',indexAuth.isLogout, indexController.loadLogin);
 router.get('/signup', indexAuth.isLogout, indexController.loadSignup);
 
-router.get('/product/:product_id', indexAuth.isLogin, indexController.productLoad);
+router.get('/product/:product_id', indexAuth.isLogin, indexAuth.isUserBlock, indexController.productLoad);
 
 //user signup
 router.post('/signup',indexController.signup);
@@ -27,8 +27,8 @@ router.post('/verifyOTP', indexController.verifyOTP);
 router.get('/resendOTP', indexController.resendOTP);
 
 //home page load
-router.get('/home', indexAuth.isLogin, indexController.homeLoad);
-router.get('/profile', indexAuth.isLogin, indexController.profileLoad);
+router.get('/home', indexAuth.isLogin, indexAuth.isUserBlock, indexController.homeLoad);
+router.get('/profile', indexAuth.isLogin, indexAuth.isUserBlock, indexController.profileLoad);
 
 //verify login
 router.post('/login', indexController.verifyLogin);

@@ -1,121 +1,142 @@
 <%-include('../layout/adminHeader')-%>
-            <section class="content-main">
-                <div class="row">
-                    <div class="col-9">
-                        <div class="content-header">
-                            <h2 class="content-title">Edit Product</h2>
-                        </div>
-                        <% if(typeof successMsg != 'undefined'){ %>
-                            <p class="text-center text-success mb-5" id="text-danger"><%= successMsg %></p>  
-                           <% } %>
-                           <% if(typeof warningMsg != 'undefined'){ %>
-                            <p class="text-center text-danger  mb-5" id="text-danger"><%= warningMsg %></p> 
-                           <% } %>
+    <section class="content-main">
+        <div class="row">
+            <div class="col-9">
+                <div class="content-header">
+                    <h2 class="content-title">Edit Product</h2>
+                </div>
+                <% if(typeof successMsg !='undefined' ){ %>
+                    <p class="text-center text-success mb-5" id="text-danger">
+                        <%= successMsg %>
+                    </p>
+                    <% } %>
+                        <% if(typeof warningMsg !='undefined' ){ %>
+                            <p class="text-center text-danger  mb-5" id="text-danger">
+                                <%= warningMsg %>
+                            </p>
+                            <% } %>
+            </div>
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Basic</h4>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h4>Basic</h4>
+                    <div class="card-body">
+                        <form method="post" action="/admin/editProduct?id=<%=product._id%>"
+                            enctype="multipart/form-data" id="uploadForm">
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Product title</label>
+                                <input required type="text" value="<%=product.productName%>" name="productName"
+                                    class="form-control" id="product_name" />
                             </div>
-                            <div class="card-body">
-                                <form method="post" action="/admin/editProduct?id=<%=product._id%>" enctype="multipart/form-data" id="uploadForm">
+                            <div class="mb-4">
+                                <label class="form-label">Full description</label>
+                                <textarea name="description" class="form-control"
+                                    rows="4"><%=product.description%></textarea>
+                            </div>
+                            <div class="row d-flex ">
+                                <div class="col-lg-4">
                                     <div class="mb-4">
-                                        <label for="product_name" class="form-label">Product title</label>
-                                        <input required type="text" value="<%=product.productName%>" name="productName" class="form-control" id="product_name" />
-                                    </div>
-                                    <div class="mb-4">
-                                        <label class="form-label">Full description</label>
-                                        <textarea  name="description" class="form-control" rows="4"><%=product.description%></textarea>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-4">
-                                            <div class="mb-4">
-                                                <label class="form-label">Price</label>
-                                                <div class="row gx-2">
-                                                    <input required value="<%=product.price%>" name="price" type="text" class="form-control" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <div class="mb-4">
-                                                <label class="form-label">Quantity</label>
-                                                <div class="row gx-2">
-                                                    <input required value="<%=product.quantity%>" name="quantity" type="text" class="form-control" />
-                                                </div>
-                                            </div>
+                                        <label class="form-label">Price</label>
+                                        <div class="row gx-2">
+                                            <input required value="<%=product.price%>" name="price" type="text"
+                                                class="form-control" />
                                         </div>
                                     </div>
-
-                            </div>
-                        </div>
-                        <!-- card end// -->
-                        
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h4>Media</h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="input-upload">
-                                    <img src="/admin/assets/imgs/theme/upload.svg" alt="" />
-                                    <input id="imageUpload" class="form-control" name="images" type="file" multiple/>
-                                    <!-- <input class="form-control" name="image2" type="file" />
-                                    <input class="form-control" name="image3" type="file" />
-                                    <input class="form-control" name="image4" type="file" /> -->
                                 </div>
-                            </div>
-                        </div>
-                        <!-- card end// -->
-                        
-
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h4>Category</h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="row gx-2">
-                                    <div class="col-sm-6 mb-3">
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Quantity</label>
+                                        <div class="row gx-2">
+                                            <input required value="<%=product.quantity%>" name="quantity" type="text"
+                                                class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mt-0">
+                                        <label class="form-label">Category</label>
                                         <select name="category" class="form-select">
-                                            <% if (categoryData.length > 0) {
+                                            <% if (categoryData.length> 0) {
                                                 categoryData.forEach((item) => { %>
-                                                    <option value="<%= item.categoryName %>" <% if (item.categoryName === product.category) { %> selected <% } %>><%= item.categoryName %></option>
-                                                <% })
-                                            } else { %>
-                                                <option></option>
-                                            <% } %>
+                                                <option value="<%= item.categoryName %>" <% if
+                                                    (item.categoryName===product.category) { %> selected <% } %>><%=
+                                                            item.categoryName %>
+                                                </option>
+                                                <% }) } else { %>
+                                                    <option></option>
+                                                    <% } %>
                                         </select>
                                     </div>
-                                    
                                 </div>
-                                <!-- row.// -->
                             </div>
-                        </div>
-                        <!-- card end// -->
+
                     </div>
-                    <div class=" ">
-                        <button class="btn btn-md rounded font-sm hover-up">Edit Product</button>
-                    </div>
-                </form>
                 </div>
-            </section>
-        </main>
-<script>
-        document.getElementById('uploadForm').addEventListener('submit', function(event) {
-    var input = document.getElementById('imageUpload');
-    // Check if the number of files selected is more than 4
-    if (input.files.length > 4) {
-        alert('Please select up to 4 images only.');
-        event.preventDefault(); // Prevent form submission
-    }
-});
-</script>
-        <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
-        <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
-        <script src="assets/js/vendors/select2.min.js"></script>
-        <script src="assets/js/vendors/perfect-scrollbar.js"></script>
-        <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
-        <!-- Main Script -->
-        <script src="assets/js/main.js?v=1.1" type="text/javascript"></script>
+                <!-- card end// -->
+
+            </div>
+            
+
+
+            <div class="row">
+                <%product.imagePaths.forEach((item)=>{%>
+                <div class="col-3">
+                    <div class="card card-product-grid">
+                        <a href="#" class="img-wrap"> <img src="/<%=item%>" alt="Product" /> </a>
+                        <a href="#changeImageModal" data-toggle="modal" class="btn justify-content-center btn-sm font-sm rounded btn-brand"> <i class="material-icons md-edit"></i> Edit </a>
+                        <a href="" class="btn justify-content-center btn-sm font-sm btn-light rounded"> <i
+                                class="material-icons md-delete_forever"></i> Delete </a>
+                    </div>
+                </div>
+                <%})%>
+            </div>
+            <div class=" ">
+                <button class="btn btn-md rounded font-sm hover-up">Edit Product</button>
+            </div>
+            </form>
+        </div>
+    </section>
+    <!-- Modal HTML -->
+<div id="changeImageModal" class="modal fade">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header flex-column">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Select an image here</p>
+            </div>
+             <form action="/admin/imageChange?id=" method="post">  
+                                                      
+             <input id="imageUpload"  class="form-control" name="images" type="file"/>
+            <div class="modal-footer text-center justify-content-center">
+                <button type="button" class="btn btn-secondary" >Cancel</button>
+                <button class="btn btn-success text-light" type="submit">&nbsp;&nbsp;&nbsp;&nbsp;Update</button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+
+    </main>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function (event) {
+            var input = document.getElementById('imageUpload');
+            // Check if the number of files selected is more than 4
+            if (input.files.length > 4) {
+                alert('Please select up to 4 images only.');
+                event.preventDefault(); // Prevent form submission
+            }
+        });
+    </script>
+    <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/vendors/select2.min.js"></script>
+    <script src="assets/js/vendors/perfect-scrollbar.js"></script>
+    <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <!-- Main Script -->
+    <script src="assets/js/main.js?v=1.1" type="text/javascript"></script>
     </body>
-</html>
+
+    </html>

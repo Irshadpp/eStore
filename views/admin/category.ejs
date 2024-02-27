@@ -98,7 +98,6 @@
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script>
             async function unlist(categoryId){
-                console.log('=====================',categoryId)
                 try {
                     await axios.put(`/admin/unlist/${categoryId}`);
                 } catch (error) {

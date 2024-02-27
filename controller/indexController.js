@@ -9,8 +9,8 @@ const sendEmail = require('../util/sendEmail');
 
 
 const loadIndex = asyncHandler(async (req, res) => {
-    console.log("===========================",category);
 
+    const category = await Category.find();
     const products = await Product.find();;
     const imagePathsArray = products.map( (item) => item.imagePaths);
     res.render('index',{products, category, imagePathsArray});
@@ -43,27 +43,16 @@ const otpLoad = async (req, res) => {
 const homeLoad = asyncHandler(async (req, res) => {
 
     const userData = await User.findById(req.session.user_id);
-    const category = await Category.find({list:false});
-    const products = await Product.aggregate([
-        {
-            $lookup:{
-                from: "Category",
-                localField: "category",
-                foreignField: "categoryName",
-                as: "categoryInfo"
-            }
-        },
-        {
-            $unwind: "$categoryInfo"
-        },
-        {
-            $match:{
-                "categoryInfo.list": true,
-            }
-        }
-    ]);
+    const products = await Product.aggregate([{$lookup:{
+        from:"categories",
+        localField:"category",
+        foreignField:"categoryName",
+        as:"categoryInfo"
+        }},
+            {$match:{$and:[{"categoryInfo.list":true},{list:true}]}}
+        ]);
+        
     const imagePathsArray = products.map( (item) => item.imagePaths);
-    console.log("+++++++++++++++++++++++++++++",products);
     res.render('home',{userData,products,imagePathsArray});
 
 });

@@ -39,6 +39,11 @@ router.post('/category', adminController.addCategory);
 router.put('/unlist/:categoryId', adminController.unlistCategory);
 router.put('/list/:categoryId', adminController.listCategory);
 
+//list, unlist and delete product
+router.put('/products/list/:productId', adminController.listProduct);
+router.put('/products/unlist/:productId', adminController.unlistProduct);
+router.delete('/products/delete/:productId', adminController.deleteProduct);
+
 
 
 module.exports = router;
