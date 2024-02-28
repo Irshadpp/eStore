@@ -275,7 +275,6 @@ const unlistProduct = async (req,res) =>{
 }
 
 const listProduct = async (req,res) =>{
-    console.log("==================================llliiiiisssssttttt");
     try {
         const productId = req.params.productId;
         await Product.findByIdAndUpdate(

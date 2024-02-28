@@ -60,10 +60,7 @@ const homeLoad = asyncHandler(async (req, res) => {
 const productLoad = asyncHandler( async (req,res) =>{
 
     const product_id = req.params.product_id;
-
     const product = await Product.findOne({_id:product_id});
-    console.log("============================",product.imagePaths[0]);
-
     if(!product){
         return res.status(404).send("Product Not Found");
     }
@@ -78,7 +75,7 @@ const profileLoad = asyncHandler( (req,res) => {
 });
 
 const loguot = asyncHandler( (req,res) => {
-    req.session.destroy();
+    req.session.user_id = null;
     res.redirect('/login');
 })
 
@@ -145,6 +142,36 @@ const signup = async (req, res) => {
     } catch (error) {
         console.log(error.message);
 
+    }
+};
+
+const googleLogin = async (req,res) => {
+    try {
+
+        const username = req.user.displayName;
+        const email = req.user.emails[0].value;
+        const googleId = req.user.id;
+
+        const userCheck = await User.findOne({email: email});
+        if(userCheck){
+            req.session.user_id = userCheck._id;
+            res.redirect('/home');
+        }else{
+            const users = new User({
+                username: username,
+                email: email,
+                googleId: googleId,
+                address: [],
+            });
+    
+            const newUser = await users.save();
+            if(newUser){
+                req.session.user_id = newUser._id;
+                res.redirect('/home');
+            }
+        }
+    } catch (error) {
+        res.status(500).send(error.message);
     }
 }
 
@@ -263,6 +290,7 @@ module.exports = {
     loadLogin,
     loadSignup,
     signup,
+    googleLogin,
     otpLoad,
     loguot,
     productLoad,

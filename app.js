@@ -1,11 +1,15 @@
+require('dotenv').config
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
-var nocache = require('nocache')
-var {v4:uuidv4} = require('uuid')
+var nocache = require('nocache');
+var {v4:uuidv4} = require('uuid');
+var passport = require('passport')
+
+require('./util/passportSetup');
 
 var indexRouter = require('./routes/index');
 var adminRouter = require('./routes/admin');
@@ -29,7 +33,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'images')));
 
-
 //create session;
 var sessionSecret = uuidv4();
 app.use(session({
@@ -37,6 +40,10 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }))
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 
 app.use('/', indexRouter);

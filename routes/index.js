@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express();
+const passport = require('passport');
 const indexController = require('../controller/indexController');
 const indexAuth = require('../middlewares/indexAuth');
 
@@ -20,6 +21,10 @@ router.get('/product/:product_id', indexAuth.isLogin, indexAuth.isUserBlock, ind
 //user signup
 router.post('/signup',indexController.signup);
 router.get('/logout',indexController.loguot);
+
+//sugnup with google
+router.get('/google', passport.authenticate('google',{scope:['profile', 'email']}));
+router.get('/google/callback', passport.authenticate('google', {failureRedirect: '/failed'}), indexController.googleLogin);
 
 // otp load
 router.get('/otp',indexController.otpLoad);
