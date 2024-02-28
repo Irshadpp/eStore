@@ -44,6 +44,9 @@ router.put('/products/list/:productId', adminController.listProduct);
 router.put('/products/unlist/:productId', adminController.unlistProduct);
 router.delete('/products/delete/:productId', adminController.deleteProduct);
 
+//delete image from edit product
+router.delete('/deleteImage/:imagePath', adminController.deleteImage);
+
 
 
 module.exports = router;

@@ -18,9 +18,6 @@
             </div>
             <div class="col-lg-6">
                 <div class="card mb-4">
-                    <div class="card-header">
-                        <h4>Basic</h4>
-                    </div>
                     <div class="card-body">
                         <form method="post" action="/admin/editProduct?id=<%=product._id%>"
                             enctype="multipart/form-data" id="uploadForm">
@@ -85,7 +82,7 @@
                     <div class="card card-product-grid">
                         <a href="#" class="img-wrap"> <img src="/<%=item%>" alt="Product" /> </a>
                         <a href="#changeImageModal" data-toggle="modal" class="btn justify-content-center btn-sm font-sm rounded btn-brand"> <i class="material-icons md-edit"></i> Edit </a>
-                        <a href="" class="btn justify-content-center btn-sm font-sm btn-light rounded"> <i
+                        <a href="" onclick="deleteImage('<%=item%>')" class="btn justify-content-center btn-sm font-sm btn-light rounded"> <i
                                 class="material-icons md-delete_forever"></i> Delete </a>
                     </div>
                 </div>
@@ -129,12 +126,21 @@
                 event.preventDefault(); // Prevent form submission
             }
         });
+
+        async function deleteImage(imagePath){
+            try {
+                await axios.delete(`/admin/deleteImage/${imagePath}`);
+            } catch (error) {
+                console.log(error);
+            }
+        }
     </script>
     <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="assets/js/vendors/select2.min.js"></script>
     <script src="assets/js/vendors/perfect-scrollbar.js"></script>
     <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- Main Script -->
     <script src="assets/js/main.js?v=1.1" type="text/javascript"></script>
     </body>

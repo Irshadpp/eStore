@@ -220,6 +220,24 @@ const editProduct = asyncHandler( async (req,res) =>{
     }
 });
 
+const deleteImage = async (req,res) =>{
+    try {
+        const image = req.params.imagePath;
+        const product = await Product.updateMany(
+           {},
+           {
+            $pull: {
+                imagePaths:image
+            }
+           }
+        );
+        res.render('editProduct',{product});
+
+    } catch (error) {
+        res.status(401).send(error.message);
+    }
+}
+
 const deleteProduct = async (req,res) => {
     try {
         const productId = req.params.productId
@@ -303,6 +321,7 @@ module.exports = {
     editProductLoad,
     logout,
     editProduct,
+    deleteImage,
     unlistCategory,
     listCategory,
     unlistProduct,
