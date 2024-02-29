@@ -61,10 +61,11 @@ const productLoad = asyncHandler( async (req,res) =>{
 
     const product_id = req.params.product_id;
     const product = await Product.findOne({_id:product_id});
+    const images = product.imagePaths
     if(!product){
         return res.status(404).send("Product Not Found");
     }
-    res.render('product',{product});
+    res.render('product',{product,images});
 
 });
 

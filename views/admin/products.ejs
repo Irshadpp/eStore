@@ -48,18 +48,15 @@
                                         <%}%>
 
                                             <% var flag=0%>
-                                                <%category.forEach((element)=>{%>
-                                                    <%if ( item.category===element.categoryName || item.list===false )
-                                                        {%>
-                                                        <span
-                                                            class="badge rounded-pill alert-danger mt-1 ">unlisted</span>
-                                                        <% flag=1%>
-                                                            <%}%>
-                                                                <%})%>
-                                                                    <%if (flag===0) {%>
-                                                                        <span
-                                                                            class="badge rounded-pill alert-success mt-1 ">listed</span>
-                                                                        <%}%>
+                                            <%category.forEach((element)=>{%>
+                                        <%if (item.category === element.categoryName) {%>
+                                        <span class="badge rounded-pill alert-danger mt-1 ">unlisted</span>
+                                        <% flag = 1%>
+                                            <%}%>
+                                            <%})%> 
+                                            <%if (flag === 0) {%>
+                                                <span class="badge rounded-pill alert-success mt-1 ">listed</span>
+                                                <%}%>
 
 
                             </div>

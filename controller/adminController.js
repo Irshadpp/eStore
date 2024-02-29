@@ -13,7 +13,7 @@ const loginLoad = asyncHandler( async (req,res) => {
 });
 
 const logout = asyncHandler( async (req,res) =>{
-    req.session.destroy();
+    req.session.admin_id = null;
     res.redirect('/admin');
 })
 
@@ -245,9 +245,12 @@ const editcategory = async (req,res) =>{
     const {categoryName, description} = req.body;
     const regexPattern = new RegExp(categoryName, "i");
 
-    const checkCategory = await Category.findOne({categoryName:{$regex:regexPattern}});
     const oldCategoryData = await Category.findOne({_id:category_id});
-    const categoryData = await Category.find();
+    const categoryData = await Category.find({_id:{$ne:category_id}});
+    const checkCategory = await Category.findOne({
+        _id:{$ne:category_id},
+        categoryName:{$regex:regexPattern}
+    });
 
 
     if(!(/^[A-Za-z]+(?: [A-Za-z]+)?$/.test(categoryName))){
