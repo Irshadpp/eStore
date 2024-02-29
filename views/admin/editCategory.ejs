@@ -1,0 +1,56 @@
+<%-include('../layout/adminHeader')-%>
+            <section class="content-main">
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title card-title">Edit category</h2>
+                    </div>
+                    <% if(typeof sucessMsg != 'undefined'){ %>
+                        <p class="text-center text-success mb-5" id="text-danger"><%= sucessMsg %></p>  
+                       <% } %>
+                       <% if(typeof warningMsg != 'undefined'){ %>
+                        <p class="text-center text-danger  mb-5" id="text-danger"><%= warningMsg %></p> 
+                       <% } %>
+                    <div>
+                        <input required type="text" placeholder="Search Categories" class="form-control bg-white" />
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <form method="post" >
+                                    <div class="mb-4">
+                                        <label for="product_name" class="form-label">Name</label>
+                                        <input required name="categoryName" value="<%=categoryData.categoryName%>" type="text" class="form-control" id="product_name" />
+                                    </div>
+                         
+                                    <div class="mb-4">
+                                        <label class="form-label">Description</label>
+                                        <textarea name="description" value="" class="form-control"><%=categoryData.description%></textarea>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button class="btn btn-primary">Update category</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- .col// -->
+                        </div>
+                        <!-- .row // -->
+                    </div>
+                    <!-- card body .// -->
+                </div>
+                <!-- card .// -->
+            </section>
+            <!-- content-main end// -->
+        </main>
+        <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
+        <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
+        <script src="assets/js/vendors/select2.min.js"></script>
+        <script src="assets/js/vendors/perfect-scrollbar.js"></script>
+        <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
+        <!-- Main Script -->
+        <script src="assets/js/main.js?v=1.1" type="text/javascript"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    </body>
+</html>

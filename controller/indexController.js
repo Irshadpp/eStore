@@ -257,7 +257,6 @@ const verifyLogin = asyncHandler(async (req, res) => {
     const userData = await User.findOne({ email: email });
     if (userData) {
     if(userData.isBlock === false){
-
         const passwordMatch = await bcrypt.compare(password, userData.password);
 
         if (passwordMatch) {

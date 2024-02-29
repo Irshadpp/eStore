@@ -10,7 +10,7 @@
                         <%= successMsg %>
                     </p>
                     <% } %>
-                        <% if(typeof warningMsg !='undefined' ){ %>
+                        <% if(typeof warningMsg !='undefined'){ %>
                             <p class="text-center text-danger  mb-5" id="text-danger">
                                 <%= warningMsg %>
                             </p>
@@ -66,6 +66,7 @@
                                         </select>
                                     </div>
                                 </div>
+                                
                             </div>
 
                     </div>
@@ -73,6 +74,21 @@
                 <!-- card end// -->
 
             </div>
+
+            
+            <div class="col-lg-3">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5>Add image</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="input-upload">
+                                    <img src="/admin/assets/imgs/theme/upload.svg" alt="" />
+                                    <input class="form-control" name="images" type="file" accept="image/*"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             
 
 
@@ -88,33 +104,14 @@
                 </div>
                 <%})%>
             </div>
+            
             <div class=" ">
                 <button class="btn btn-md rounded font-sm hover-up">Edit Product</button>
             </div>
             </form>
         </div>
     </section>
-    <!-- Modal HTML -->
-<div id="changeImageModal" class="modal fade">
-    <div class="modal-dialog modal-confirm">
-        <div class="modal-content">
-            <div class="modal-header flex-column">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Select an image here</p>
-            </div>
-             <form action="/admin/imageChange?id=" method="post">  
-                                                      
-             <input id="imageUpload"  class="form-control" name="images" type="file"/>
-            <div class="modal-footer text-center justify-content-center">
-                <button type="button" class="btn btn-secondary" >Cancel</button>
-                <button class="btn btn-success text-light" type="submit">&nbsp;&nbsp;&nbsp;&nbsp;Update</button>
-            </div>
-        </form>
-        </div>
-    </div>
-</div>
+   
 
     </main>
     <script>
@@ -127,22 +124,30 @@
             }
         });
 
+        async function addImage(productId){
+            try {
+                await axios.put(`/admin/addImage/${productId}`);
+            } catch (error) {
+                console.log(error.message);
+            }
+        }
+
         async function deleteImage(imagePath){
             try {
                 await axios.delete(`/admin/deleteImage/${imagePath}`);
             } catch (error) {
-                console.log(error);
+                console.log(error.message);
             }
         }
     </script>
-    <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
-    <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/vendors/select2.min.js"></script>
-    <script src="assets/js/vendors/perfect-scrollbar.js"></script>
-    <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/admin/assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/admin/assets/js/vendors/select2.min.js"></script>
+    <script src="/admin/assets/js/vendors/perfect-scrollbar.js"></script>
+    <script src="/admin/assets/js/vendors/jquery.fullscreen.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- Main Script -->
-    <script src="assets/js/main.js?v=1.1" type="text/javascript"></script>
+    <script src="/admin/assets/js/main.js?v=1.1" type="text/javascript"></script>
     </body>
 
     </html>

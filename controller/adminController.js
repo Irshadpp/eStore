@@ -46,12 +46,19 @@ const addProductLoad = asyncHandler( async (req,res) => {
     res.render('addProduct',{categoryData});
 });
 
+const editCategoryLoad = asyncHandler( async (req,res)=>{
+
+    const category_id = req.params.category_id;
+    const categoryData = await Category.findOne({_id:category_id});
+    res.render('editCategory',{categoryData});
+})
+
 const editProductLoad = asyncHandler( async (req,res) =>{
 
     const product_id = req.params.product_id;
     const categoryData = await Category.find();
     
-    const product = await Product.findOne({_id:product_id})
+    const product = await Product.findOne({_id:product_id});
 
     res.render('editProduct',{categoryData,product});
 
@@ -176,7 +183,9 @@ const editProduct = asyncHandler( async (req,res) =>{
     const categoryData = await Category.find();
     const product = await Product.findOne({_id: product_id});
 
-    const imagePaths = req.files.map(file => file.filename);
+    console.log('----------------------------',product);
+    
+    const imageCount = product.imagePaths.length;
     const {productName, description, price, quantity, category} = req.body;
 
     if(description.trim() === ''){
@@ -195,9 +204,13 @@ const editProduct = asyncHandler( async (req,res) =>{
         return res.status(400).render('editProduct',{warningMsg:"Give product quantity!", categoryData, product});
     };
 
-    if (!req.files || req.files.length === 0) {
-        return res.status(400).render('editProduct',{ warningMsg: 'No images uploaded!', categoryData, product});
-    };
+    if(imageCount > 3 && req.files.length>0){
+        return res.status(400).render('editProduct', {warningMsg:"Product Already has 4 images", categoryData, product});
+    }
+
+    // if (!req.files || req.files.length === 0) {
+    //     return res.status(400).render('editProduct',{ warningMsg: 'No images uploaded!', categoryData, product});
+    // };
 
 
     const productData = await Product.findByIdAndUpdate(
@@ -208,22 +221,75 @@ const editProduct = asyncHandler( async (req,res) =>{
             price: price, 
             quantity: quantity, 
             category: category, 
-            imagePaths: imagePaths
         }});
+
+    if(req.files.length>0){
+        await Product.findByIdAndUpdate(
+            {_id:product_id},
+                {$push:{imagePaths:req.files[0].filename}}
+        )
+    }
 
     const editedProductData = await Product.findOne({_id: product_id})
 
     if(productData){
-        res.render('editProduct', {successMsg:"Product edited sucessfully",product: editedProductData, categoryData });
+        res.redirect(`/admin/products`);
     }else{
         res.send("something went wrong");
     }
 });
 
-const deleteImage = async (req,res) =>{
+const editcategory = async (req,res) =>{
+
+    const category_id = req.params.category_id;
+    const {categoryName, description} = req.body;
+    const regexPattern = new RegExp(categoryName, "i");
+
+    const checkCategory = await Category.findOne({categoryName:{$regex:regexPattern}});
+    const oldCategoryData = await Category.findOne({_id:category_id});
+    const categoryData = await Category.find();
+
+
+    if(!(/^[A-Za-z]+(?: [A-Za-z]+)?$/.test(categoryName))){
+        return res.status(400).render('editCategory',{warningMsg:"Give a proper category name!",categoryData:oldCategoryData});
+    }
+
+    if(checkCategory && checkCategory.categoryName.toLocaleLowerCase() === categoryName.toLocaleLowerCase()){
+       return res.status(400).render('editCategory',{warningMsg:"Category already exist!",categoryData:oldCategoryData});
+        }
+       
+        if(description.trim() === ''){
+            return res.status(400).render('editCategory',{warningMsg:"Please give category description!", categoryData:oldCategoryData});
+        };
+
+        const editedCategory = await Category.findByIdAndUpdate(category_id, {$set:{categoryName:categoryName, description:description}})
+        const updatedCategoryData = await Category.find();
+
+        res.status(201).redirect('/admin/category');
+}
+
+
+
+    const deleteImage = async (req,res) =>{
     try {
         const image = req.params.imagePath;
-        const product = await Product.updateMany(
+        const product = await Product.findOne({imagePaths:image});
+        const productImage = await Product.aggregate([
+            {$match:{imagePaths:image}},
+            {
+                $project:{
+                    _id:0,
+                imageCount:{
+                $size:"$imagePaths"
+            }
+            }
+        }
+        ]);
+        if(productImage[0].imageCount < 2){
+            //here return is working but not working the response
+            return res.redirect(`/admin/editProduct/${product._id}`,{successMsg:'Product must have atleast one image!',product});
+        }
+        const updatedProduct = await Product.updateMany(
            {},
            {
             $pull: {
@@ -231,7 +297,7 @@ const deleteImage = async (req,res) =>{
             }
            }
         );
-        res.render('editProduct',{product});
+        res.render('editProduct',{product:updatedProduct});
 
     } catch (error) {
         res.status(401).send(error.message);
@@ -313,6 +379,7 @@ module.exports = {
     customersLoad,
     productsLoad,
     categoryLoad,
+    editCategoryLoad,
     addProductLoad,
     blockUser,
     unblockUser,
@@ -321,6 +388,7 @@ module.exports = {
     editProductLoad,
     logout,
     editProduct,
+    editcategory,
     deleteImage,
     unlistCategory,
     listCategory,

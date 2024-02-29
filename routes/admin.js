@@ -15,6 +15,7 @@ router.get('/products', adminAuth.isLogin, adminController.productsLoad);
 router.get('/category', adminAuth.isLogin, adminController.categoryLoad);
 router.get('/addProduct', adminAuth.isLogin, adminController.addProductLoad);
 router.get('/editProduct/:product_id', adminAuth.isLogin, adminController.editProductLoad);
+router.get('/editCategory/:category_id', adminAuth.isLogin, adminController.editCategoryLoad)
 
 //verify login
 router.post('/',adminController.verifyLogin);
@@ -31,11 +32,16 @@ router.put('/:userId/unblock',adminController.unblockUser);
 //add and edit product 
 router.post('/addProduct', upload.array('images', 4), adminController.addProduct);
 router.post('/editProduct', upload.array('images', 4), adminController.editProduct);
+//delete image from edit product
+router.delete('/deleteImage/:imagePath', adminController.deleteImage);
+//adding image in edit product
 
-//add category
+
+//add adn edit category
 router.post('/category', adminController.addCategory);
+router.post('/editCategory/:category_id', adminController.editcategory);
 
-//list and unlist category
+//list and unlist  category
 router.put('/unlist/:categoryId', adminController.unlistCategory);
 router.put('/list/:categoryId', adminController.listCategory);
 
@@ -43,9 +49,6 @@ router.put('/list/:categoryId', adminController.listCategory);
 router.put('/products/list/:productId', adminController.listProduct);
 router.put('/products/unlist/:productId', adminController.unlistProduct);
 router.delete('/products/delete/:productId', adminController.deleteProduct);
-
-//delete image from edit product
-router.delete('/deleteImage/:imagePath', adminController.deleteImage);
 
 
 

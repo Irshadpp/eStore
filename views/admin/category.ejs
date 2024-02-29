@@ -63,7 +63,7 @@
                                                     <div class="dropdown">
                                                         <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
                                                         <div class="dropdown-menu">
-                                                            <a class="dropdown-item" href="#">Edit info</a>
+                                                            <a class="dropdown-item" href="/admin/editCategory/<%=item._id%>">Edit info</a>
                                                             <a class="dropdown-item text-success" href="" onclick="list('<%=item._id%>')">List</a>
                                                             
                                                             <a class="dropdown-item text-danger" href="" onClick="unlist('<%=item._id%>')">Unlist</a>
@@ -88,15 +88,17 @@
             </section>
             <!-- content-main end// -->
         </main>
-        <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
-        <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
-        <script src="assets/js/vendors/select2.min.js"></script>
-        <script src="assets/js/vendors/perfect-scrollbar.js"></script>
-        <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
+        <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
+        <script src="/admin/assets/js/vendors/bootstrap.bundle.min.js"></script>
+        <script src="/admin/assets/js/vendors/select2.min.js"></script>
+        <script src="/admin/assets/js/vendors/perfect-scrollbar.js"></script>
+        <script src="/admin/assets/js/vendors/jquery.fullscreen.min.js"></script>
         <!-- Main Script -->
-        <script src="assets/js/main.js?v=1.1" type="text/javascript"></script>
+        <script src="/admin/assets/js/main.js?v=1.1" type="text/javascript"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script>
+
+
             async function unlist(categoryId){
                 try {
                     await axios.put(`/admin/unlist/${categoryId}`);
