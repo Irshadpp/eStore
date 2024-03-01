@@ -12,8 +12,8 @@ const loadIndex = asyncHandler(async (req, res) => {
 
     const category = await Category.find();
     const products = await Product.find();;
-    const imagePathsArray = products.map( (item) => item.imagePaths);
-    res.render('index',{products, category, imagePathsArray});
+    const imagePathsArray = products.map((item) => item.imagePaths);
+    res.render('index', { products, category, imagePathsArray });
 })
 
 const loadLogin = async (req, res) => {
@@ -43,39 +43,49 @@ const otpLoad = async (req, res) => {
 const homeLoad = asyncHandler(async (req, res) => {
 
     const userData = await User.findById(req.session.user_id);
-    const products = await Product.aggregate([{$lookup:{
-        from:"categories",
-        localField:"category",
-        foreignField:"categoryName",
-        as:"categoryInfo"
-        }},
-            {$match:{$and:[{"categoryInfo.list":true},{list:true}]}}
-        ]);
-        
-    const imagePathsArray = products.map( (item) => item.imagePaths);
-    res.render('home',{userData,products,imagePathsArray});
+    const products = await Product.aggregate([{
+        $lookup: {
+            from: "categories",
+            localField: "category",
+            foreignField: "categoryName",
+            as: "categoryInfo"
+        }
+    },
+    { $match: { $and: [{ "categoryInfo.list": true }, { list: true }] } }
+    ]);
+
+    const imagePathsArray = products.map((item) => item.imagePaths);
+    res.render('home', { userData, products, imagePathsArray });
 
 });
 
-const productLoad = asyncHandler( async (req,res) =>{
+const productLoad = asyncHandler(async (req, res) => {
 
     const product_id = req.params.product_id;
-    const product = await Product.findOne({_id:product_id});
+    const product = await Product.findOne({ _id: product_id });
     const images = product.imagePaths
-    if(!product){
+    if (!product) {
         return res.status(404).send("Product Not Found");
     }
-    res.render('product',{product,images});
+    res.render('product', { product, images });
 
 });
 
-const profileLoad = asyncHandler( (req,res) => {
+const accountLoad = asyncHandler((req, res) => {
 
-    res.render('profile');
+    res.render('account');
 
 });
 
-const loguot = asyncHandler( (req,res) => {
+const cartLoad = async (req,res)=>{
+    try {
+        res.render('cart');
+    } catch (error) {
+        res.status(404).send("Page note Found");
+    }
+}
+
+const loguot = asyncHandler((req, res) => {
     req.session.user_id = null;
     res.redirect('/login');
 })
@@ -146,27 +156,27 @@ const signup = async (req, res) => {
     }
 };
 
-const googleLogin = async (req,res) => {
+const googleLogin = async (req, res) => {
     try {
 
         const username = req.user.displayName;
         const email = req.user.emails[0].value;
         const googleId = req.user.id;
 
-        const userCheck = await User.findOne({email: email});
-        if(userCheck){
+        const userCheck = await User.findOne({ email: email });
+        if (userCheck) {
             req.session.user_id = userCheck._id;
             res.redirect('/home');
-        }else{
+        } else {
             const users = new User({
                 username: username,
                 email: email,
                 googleId: googleId,
                 address: [],
             });
-    
+
             const newUser = await users.save();
-            if(newUser){
+            if (newUser) {
                 req.session.user_id = newUser._id;
                 res.redirect('/home');
             }
@@ -176,7 +186,7 @@ const googleLogin = async (req,res) => {
     }
 }
 
-const saveOTP = asyncHandler(async ({email}, res) => {
+const saveOTP = asyncHandler(async ({ email }, res) => {
 
     const subjectt = 'eStore signup varification OTP';
     const message = 'Please verify your eStore account with OTP';
@@ -226,8 +236,8 @@ const verifyOTP = asyncHandler(async (req, res) => {
     const enteredOTP = parseInt(`${req.body.num1}${req.body.num2}${req.body.num3}${req.body.num4}${req.body.num5}${req.body.num6}`)
 
     const otpData = await OTP.findOne({ email: req.session.userSignup_email });
-    
-    console.log("=======================",req.session.userSignup_email);
+
+    console.log("=======================", req.session.userSignup_email);
     if (otpData) {
         if (otpData.otp === enteredOTP) {
             const verifyUser = await User.findOneAndUpdate({ _id: req.session.userSignup_id }, { $set: { isVerified: true } });
@@ -257,28 +267,31 @@ const verifyLogin = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
     const userData = await User.findOne({ email: email });
     if (userData) {
-    if(userData.isBlock === false){
-        const passwordMatch = await bcrypt.compare(password, userData.password);
-
-        if (passwordMatch) {
-
-            if (userData.isVerified === true) {
-                req.session.user_id = userData._id;
-                req.session.isBlock = userData.isBlock;
-                res.redirect('/home');
-            } else {
-                res.render('login', { msg: "Please verify your account with OTP!" })
+        if (userData.isBlock === false) {
+            if (userData["password"] === undefined) {
+                return res.render('login', { msg: "You don't have account!" });
             }
+            const passwordMatch = await bcrypt.compare(password, userData.password);
 
+            if (passwordMatch) {
+
+                if (userData.isVerified === true) {
+                    req.session.user_id = userData._id;
+                    req.session.isBlock = userData.isBlock;
+                    res.redirect('/home');
+                } else {
+                    res.render('login', { msg: "Please verify your account with OTP!" })
+                }
+
+            } else {
+                res.render('login', { msg: "Wrong password!" });
+            }
         } else {
-            res.render('login', { msg: "Wrong password!" });
+            res.render('login', { msg: "Access restricted!" });
         }
     } else {
-        res.render('login', { msg: "Access restricted!" });
+        res.render('login', { msg: "Invalid email or you don't have account!" });
     }
-}else{
-    res.render('login', { msg: "Invalid email!"});
-}
 
 })
 
@@ -298,5 +311,6 @@ module.exports = {
     resendOTP,
     verifyLogin,
     homeLoad,
-    profileLoad
+    accountLoad,
+    cartLoad
 }

@@ -33,12 +33,13 @@ router.get('/resendOTP', indexController.resendOTP);
 
 //home page load
 router.get('/home', indexAuth.isLogin, indexAuth.isUserBlock, indexController.homeLoad);
-router.get('/profile', indexAuth.isLogin, indexAuth.isUserBlock, indexController.profileLoad);
+router.get('/account', indexAuth.isLogin, indexAuth.isUserBlock, indexController.accountLoad);
 
 //verify login
 router.post('/login', indexController.verifyLogin);
 
-
+//cart
+router.get('/cart', indexAuth.isLogin, indexController.cartLoad);
 
 
 
