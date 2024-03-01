@@ -179,7 +179,7 @@ const addCategory = asyncHandler( async (req,res) =>{
 
 const editProduct = asyncHandler( async (req,res) =>{
 
-    const product_id = req.query.id;
+    const product_id = req.params.product_id;
     const categoryData = await Category.find();
     const product = await Product.findOne({_id: product_id});
 

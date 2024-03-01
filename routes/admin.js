@@ -31,7 +31,7 @@ router.put('/:userId/unblock',adminController.unblockUser);
 
 //add and edit product 
 router.post('/addProduct', upload.array('images', 4), adminController.addProduct);
-router.post('/editProduct', upload.array('images', 4), adminController.editProduct);
+router.post('/editProduct/:product_id', upload.array('images', 4), adminController.editProduct);
 //delete image from edit product
 router.delete('/deleteImage/:imagePath', adminController.deleteImage);
 //adding image in edit product
