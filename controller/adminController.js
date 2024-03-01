@@ -183,7 +183,6 @@ const editProduct = asyncHandler( async (req,res) =>{
     const categoryData = await Category.find();
     const product = await Product.findOne({_id: product_id});
 
-    console.log('----------------------------',product);
     
     const imageCount = product.imagePaths.length;
     const {productName, description, price, quantity, category} = req.body;
@@ -204,13 +203,11 @@ const editProduct = asyncHandler( async (req,res) =>{
         return res.status(400).render('editProduct',{warningMsg:"Give product quantity!", categoryData, product});
     };
 
-    if(imageCount > 3 && req.files.length>0){
-        return res.status(400).render('editProduct', {warningMsg:"Product Already has 4 images", categoryData, product});
-    }
+    const editedProductData = await Product.findOne({_id: product_id})
 
-    // if (!req.files || req.files.length === 0) {
-    //     return res.status(400).render('editProduct',{ warningMsg: 'No images uploaded!', categoryData, product});
-    // };
+    if(imageCount > 3 && req.files.length>0){
+        return res.status(400).render('editProduct', {warningMsg:"Product Already has 4 images", categoryData, product:editedProductData});
+    }
 
 
     const productData = await Product.findByIdAndUpdate(
@@ -230,7 +227,6 @@ const editProduct = asyncHandler( async (req,res) =>{
         )
     }
 
-    const editedProductData = await Product.findOne({_id: product_id})
 
     if(productData){
         res.redirect(`/admin/products`);
@@ -292,7 +288,7 @@ const editcategory = async (req,res) =>{
             //here return is working but not working the response
             return res.redirect(`/admin/editProduct/${product._id}`,{successMsg:'Product must have atleast one image!',product});
         }
-        const updatedProduct = await Product.updateMany(
+         await Product.updateMany(
            {},
            {
             $pull: {
@@ -300,6 +296,8 @@ const editcategory = async (req,res) =>{
             }
            }
         );
+
+        const updatedProduct = await Product.findOne({imagePaths:image});
         res.render('editProduct',{product:updatedProduct});
 
     } catch (error) {
