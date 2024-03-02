@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const mongoose = require('mongoose')
 
 const User = require('../model/userdb');
 const OTP = require('../model/otpdb');
@@ -82,20 +83,23 @@ const accountLoad = asyncHandler((req, res) => {
 
 const cartLoad = async (req,res)=>{
     try {
-        const userId = req.session.user_id;
+        const userId = new mongoose.Types.ObjectId(req.session.user_id);
+        console.log('==========================',userId)
         const cartProducts = await Cart.aggregate([
-            {$match:{userId:userId}},
+            { $match: { userId: userId } },
             {$unwind:"$items"},
             {$lookup:{
-                form: "products",
-                localField: "productId",
+                from:"products",
+                localField: "items.productId",
                 foreignField: "_id",
-                as:"productDetails"
-            }}
+                as: "productDetails"
+            }},
+            {$unwind:"$productDetails"}
         ]);
-        console.log(cartProduct);
+        console.log('------------------------',cartProducts);
         res.render('cart');
     } catch (error) {
+        console.log(error);
         res.status(404).send("Page note Found");
     }
 }
