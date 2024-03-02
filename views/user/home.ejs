@@ -123,7 +123,7 @@
                             <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>                        </div><!-- End .product-action -->
 
                         <div class="product-action">
-                            <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                            <a href="/addToCart/<%= item._id %>"  class="btn-product btn-cart"><span>add to cart</span></a>
                         </div><!-- End .product-action -->
                     </figure><!-- End .product-media -->
 
@@ -144,7 +144,16 @@
         
     </div><!-- End .bg-lighter pt-5 pb-5 -->
 
-
-
             
         <%-include('../layout/footer')-%>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    async function addToCart(productId){
+        try {
+            await axios.post(`addToCart/${productId}`);
+        } catch (error) {
+            console.log(error.message);
+        }
+    } 
+</script>

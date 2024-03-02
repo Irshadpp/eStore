@@ -1,8 +1,11 @@
 const bcrypt = require('bcrypt');
+
 const User = require('../model/userdb');
 const OTP = require('../model/otpdb');
 const Product = require('../model/productdb');
-const Category = require('../model/categorydb')
+const Category = require('../model/categorydb');
+const Cart = require('../model/cartdb');
+
 const generateOTP = require('../util/generateOtp')
 const asyncHandler = require('express-async-handler');
 const sendEmail = require('../util/sendEmail');
@@ -79,7 +82,27 @@ const accountLoad = asyncHandler((req, res) => {
 
 const cartLoad = async (req,res)=>{
     try {
+        const userId = req.session.user_id;
+        const cartProducts = await Cart.aggregate([
+            {$match:{userId:userId}},
+            {$unwind:"$items"},
+            {$lookup:{
+                form: "products",
+                localField: "productId",
+                foreignField: "_id",
+                as:"productDetails"
+            }}
+        ]);
+        console.log(cartProduct);
         res.render('cart');
+    } catch (error) {
+        res.status(404).send("Page note Found");
+    }
+}
+
+const editAddressLoad = async (req,res)=>{
+    try {
+        res.render('editAddress');
     } catch (error) {
         res.status(404).send("Page note Found");
     }
@@ -293,7 +316,43 @@ const verifyLogin = asyncHandler(async (req, res) => {
         res.render('login', { msg: "Invalid email or you don't have account!" });
     }
 
-})
+});
+
+const addToCart = async (req,res) => {
+    try {
+
+        console.log('===============================');
+        const productId = req.params.productId;
+        const user_id = req.session.user_id;
+        
+        const checkCart = await Cart.findOne({userId:user_id});
+
+        if(checkCart){
+            const existingItem = await Cart.findOne({$and:[{userId:user_id},{"items.productId":productId}]})
+            if(existingItem){
+                res.status(201).redirect('/cart');
+            }else{
+                await Cart.updateOne(
+                    {userId:user_id},
+                    {$push:{items:{productId:productId}}}
+                );
+                res.status(201).redirect('/cart');
+            }
+        }else{
+
+            const cartProduct = new Cart({
+                userId: user_id,
+                items: [{productId}]
+            });
+            const newCartProduct = await cartProduct.save();
+            res.status(201).redirect('/cart');
+        }
+
+    } catch (error) {
+        res.status(500).send("Something went wrong with add to cart");
+        console.log(error);
+    }
+}
 
 
 
@@ -312,5 +371,7 @@ module.exports = {
     verifyLogin,
     homeLoad,
     accountLoad,
-    cartLoad
+    cartLoad,
+    addToCart,
+    editAddressLoad,
 }
