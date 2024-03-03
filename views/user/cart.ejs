@@ -33,52 +33,92 @@
 									</thead>
 
 									<tbody>
+                                        <% if (cartProducts.length > 0) {
+                                            cartProducts.forEach(element => { %>
 										<tr>
+                                            <div class="cart-product" data-cart-item-id="<%= element._id %>">
 											<td class="product-col">
 												<div class="product">
 													<figure class="product-media">
 														<a href="#">
-															<img src="/user/assets/images/products/table/product-1.jpg" alt="Product image">
+															<img src="/<%= element.image %>" alt="Product image">
 														</a>
 													</figure>
 
 													<h3 class="product-title">
-														<a href="#">Beige knitted elastic runner shoes</a>
+														<a href="#"><%= element.productName %></a>
 													</h3><!-- End .product-title -->
 												</div><!-- End .product -->
 											</td>
-											<td class="price-col">$84.00</td>
+											<td class="price-col"><%= element.price %></td>
 											<td class="quantity-col">
                                                 <div class="cart-product-quantity">
-                                                    <input type="number" class="form-control" value="1" min="1" max="10" step="1" data-decimals="0" required>
+                                                    <input type="number" class="quantityInput form-control" value="<%= element.quantity %>" min="1" max="5" step="1" data-decimals="0" required>
                                                 </div><!-- End .cart-product-quantity -->
                                             </td>
-											<td class="total-col">$84.00</td>
-											<td class="remove-col"><button class="btn-remove"><i class="icon-close"></i></button></td>
+											<td class="total-col"><%= element.price %></td>
+											<td class="remove-col"><button class="btn-remove" data-product-id="<%= element.productId %>"><i class="icon-close"></i></button></td>
 										</tr>
-										<tr>
-											<td class="product-col">
-												<div class="product">
-													<figure class="product-media">
-														<a href="#">
-															<img src="/user/assets/images/products/table/product-2.jpg" alt="Product image">
-														</a>
-													</figure>
+                                    </div>
+                                    <%})%>
+                                    <% } %>
+                                        <script>
 
-													<h3 class="product-title">
-														<a href="#">Blue utility pinafore denim dress</a>
-													</h3><!-- End .product-title -->
-												</div><!-- End .product -->
-											</td>
-											<td class="price-col">$76.00</td>
-											<td class="quantity-col">
-                                                <div class="cart-product-quantity">
-                                                    <input type="number" class="form-control" value="1" min="1" max="10" step="1" data-decimals="0" required>
-                                                </div><!-- End .cart-product-quantity -->                                 
-                                            </td>
-											<td class="total-col">$76.00</td>
-											<td class="remove-col"><button class="btn-remove"><i class="icon-close"></i></button></td>
-										</tr>
+                                            $(document).ready(function(){
+                                                $('.quantityInput').on('change', function(){
+                                                    var newQuantity = $(this).val();
+                                                    var cartItemId = $(this).closest('tr').find('.cart-product').data('cart-item-id');
+                                                    console.log('Cart Item ID:', cartItemId); 
+
+                                                    $.ajax({
+                                                        type: 'POST',
+                                                        url: '/updateQuantity',
+                                                        data: {
+                                                            cartItemId:cartItemId,
+                                                            newQuantity:newQuantity
+                                                        },
+                                                        success: function(response){
+                                                            console.log('Quantity updated successfully');
+                                                        },
+                                                        error: function(xhr, status, error){
+                                                            console.log("Error updating quantity:", error, cartItemId);
+                                                        }
+                                                    })
+                                                })
+                                            })
+
+
+                                            document.addEventListener('DOMContentLoaded', ()=>{
+                                                const removeButtons  = document.querySelectorAll('.btn-remove');
+
+                                                removeButtons.forEach( button => {
+                                                    button.addEventListener('click', async event =>{
+                                                        const productId = event.target.dataset.productId;
+
+                                                        try {
+                                                            const response = await fetch(`http://localhost:3000/cart/deleteProduct/${productId}`,{
+                                                                methode: 'DELETE',
+                                                                header:{
+                                                                    'Content-Type' : 'applicaiton/json'
+                                                                }
+                                                            });
+
+                                                            if(!response.ok){
+                                                                throw new Error("Network response was not ok")
+                                                            }
+
+                                                            event.target.closest('tr').remove();
+                                                            console.log('Product removed successfully')
+                                                        } catch (error) {
+                                                            console.log("Error with product delete from cart")
+                                                        }
+                                                    })
+                                                })
+                                            })
+                                        
+                                        </script>
+
+                                   
 									</tbody>
 								</table><!-- End .table table-wishlist -->
 	                		</div><!-- End .col-lg-9 -->

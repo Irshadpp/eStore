@@ -28,6 +28,10 @@ const loadLogin = async (req, res) => {
     }
 }
 
+const forgotPasswordLoad = asyncHandler(async(req,res)=>{
+    res.render('forgotPassword');
+})
+
 const loadSignup = async (req, res) => {
     try {
         res.render('signup')
@@ -94,10 +98,19 @@ const cartLoad = async (req,res)=>{
                 foreignField: "_id",
                 as: "productDetails"
             }},
-            {$unwind:"$productDetails"}
+            {$unwind:"$productDetails"},
+            {$project:{
+                // "_id":0,
+                "itemsId":"$items._id",
+                "productId":"$productDetails._id",
+                "productName":"$productDetails.productName",
+                "price": "$productDetails.price",
+                "image": {$arrayElemAt:["$productDetails.imagePaths", 0]},
+                "quantity": "$items.quantity"
+            }}
         ]);
         console.log('------------------------',cartProducts);
-        res.render('cart');
+        res.render('cart',{cartProducts});
     } catch (error) {
         console.log(error);
         res.status(404).send("Page note Found");
@@ -322,6 +335,21 @@ const verifyLogin = asyncHandler(async (req, res) => {
 
 });
 
+const handleForgotPassword = async (req,re) =>{
+    try {
+        const email = req.body.email;
+        const checkUser = await User.findOne({email:email});
+
+        if(!checkUser){
+            return res.status(500).render('forgotPassword',{warningMsg:"Invalid email or you don't have account!"})
+        }
+
+        res.redirect('')
+    } catch (error) {
+        
+    }
+}
+
 const addToCart = async (req,res) => {
     try {
 
@@ -358,12 +386,48 @@ const addToCart = async (req,res) => {
     }
 }
 
+const deleteProduct = async (req,res) =>{
+    try {
+        const productId = req.params.productId;
+        const userId = req.session.user_id;
+
+        const updatedCart = await Cart.findOneAndUpdate(
+            {userId:userId},
+            {$pull:{items:{productId:productId}}},
+            {new:true}
+            );
+        
+        res.render('cart',{cartProducts:updatedCart});
+    } catch (error) {
+        
+    }
+}
+
+const updateQuantity = async (req,res) =>{
+    try {
+
+        console.log('========================================');
+        const { cartItemId, newQuantity } = req.body;
+        console.log('---------------------------------',cartItemId)
+        const cartItem = await Cart.findByIdAndUpdate(
+            {"items._id":cartItemId},
+            {$set:{"items.$.quntity":newQuantity}},
+            {new:true}
+            );
+        res.status(200).json({success: true, message:"Quantity updated successfully"})
+    } catch (error) {
+        res.status(500).json({message:"Something went wrong with update quantity"});
+        console.log(error);
+    }
+}
+
 
 
 
 module.exports = {
     loadIndex,
     loadLogin,
+    forgotPasswordLoad,
     loadSignup,
     signup,
     googleLogin,
@@ -377,5 +441,7 @@ module.exports = {
     accountLoad,
     cartLoad,
     addToCart,
+    deleteProduct,
     editAddressLoad,
+    updateQuantity,
 }
