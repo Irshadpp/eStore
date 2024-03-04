@@ -30,6 +30,14 @@ const loadLogin = async (req, res) => {
 
 const forgotPasswordLoad = asyncHandler(async(req,res)=>{
     res.render('forgotPassword');
+});
+
+const fPasswordOtpLoad = asyncHandler(async(req,res)=>{
+    res.render('fPasswordOtp');
+});
+
+const changePasswordLoad = asyncHandler(async(req,res)=>{
+    res.render('changePassword');
 })
 
 const loadSignup = async (req, res) => {
@@ -334,7 +342,7 @@ const verifyLogin = asyncHandler(async (req, res) => {
 
 });
 
-const handleForgotPassword = async (req,re) =>{
+const handleForgotPassword = async (req,res) =>{
     try {
         const email = req.body.email;
         const checkUser = await User.findOne({email:email});
@@ -342,10 +350,61 @@ const handleForgotPassword = async (req,re) =>{
         if(!checkUser){
             return res.status(500).render('forgotPassword',{warningMsg:"Invalid email or you don't have account!"})
         }
+        req.session.fPasswordEmail = checkUser.email;
 
-        res.redirect('')
+        const userData = await User.findOne({ email: req.session.fPasswordEmail });
+        saveOTP(userData);
+        res.redirect('/fPasswordOtp');
+
     } catch (error) {
         
+    }
+}
+
+const fPasswordVerifyOtp = async (req,res) =>{
+
+    try {
+        const enteredOTP = parseInt(`${req.body.num1}${req.body.num2}${req.body.num3}${req.body.num4}${req.body.num5}${req.body.num6}`)
+        
+    const otpData = await OTP.findOne({ email: req.session.fPasswordEmail });
+    if (otpData) {
+        if (otpData.otp === enteredOTP) {
+                res.redirect('/changePassword');
+        } else {
+            res.render('fPasswordOtp', { msg: 'Please enter the correct OTP!' });
+        }
+
+    } else {
+        res.render('fPasswordOtp', { msg: 'Something went wrong!' });
+    }
+    } catch (error) {
+        res.status(500).json("error with verify otp in forgot password");
+
+    }
+}
+
+const changePassword = async (req,res) =>{
+    const {password1, password2} = req.body;
+    if(password1 !== password2){
+        return res.render('changePassword',{msg:"Two password are not same!"});
+    }
+    console.log("__________________________",req.session.fPasswordEmail)
+    const userData = await User.findOne({email:req.session.fPasswordEmail});
+    console.log("__________________________",userData)
+    if(userData){
+        const sPassword = await securePassword(password1);
+        const newUserData = await User.findOneAndUpdate(
+            {email:req.session.fPasswordEmail},
+            {$set:{password:sPassword}}
+            );
+        if(newUserData){
+            req.session.fPasswordEmail = null;
+            res.redirect('login');
+        }else{
+            res.render('changePassword',{msg:"Password change faild!"});
+        }
+    }else{
+        res.render('changePassword',{msg:"Something went wrong!"});
     }
 }
 
@@ -469,6 +528,11 @@ module.exports = {
     loadIndex,
     loadLogin,
     forgotPasswordLoad,
+    fPasswordOtpLoad,
+    handleForgotPassword,
+    fPasswordVerifyOtp,
+    changePasswordLoad,
+    changePassword,
     loadSignup,
     signup,
     googleLogin,

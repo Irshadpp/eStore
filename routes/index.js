@@ -17,6 +17,12 @@ router.get('/login',indexAuth.isLogout, indexController.loadLogin);
 router.get('/signup', indexAuth.isLogout, indexController.loadSignup);
 
 router.get('/forgotPassword', indexAuth.isLogout, indexController.forgotPasswordLoad);
+router.post('/forgotPassword', indexAuth.isLogout, indexController.handleForgotPassword);
+router.get('/fPasswordOtp', indexAuth.isLogout, indexController.fPasswordOtpLoad);
+router.post('/fPasswordOtp', indexAuth.isLogout, indexController.fPasswordVerifyOtp);
+router.get('/changePassword', indexAuth.isLogout, indexController.changePasswordLoad);
+router.post('/changePassword', indexAuth.isLogout, indexController.changePassword);
+
 
 router.get('/product/:product_id', indexAuth.isLogin, indexAuth.isUserBlock, indexController.productLoad);
 
