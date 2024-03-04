@@ -53,7 +53,9 @@
 											<td class="price-col"><%= element.price %></td>
 											<td class="quantity-col">
                                                 <div class="cart-product-quantity">
-                                                    <input type="number" class="quantityInput form-control" value="<%= element.quantity %>" min="1" max="5" step="1" data-decimals="0" required>
+                                                    <input type="number" class="quantityInput form-control" readonly value="<%= element.quantity %>" min="1" max="5" step="1" data-decimals="0" required>
+                                                    <input type="text" id="cartId" value="<%=element.itemsId%>" hidden>
+                                                    <input type="text" id="productId" value="<%=element.productId%>" hidden>
                                                 </div><!-- End .cart-product-quantity -->
                                             </td>
 											<td class="total-col"><%= element.price %></td>
@@ -67,21 +69,24 @@
                                             $(document).ready(function(){
                                                 $('.quantityInput').on('change', function(){
                                                     var newQuantity = $(this).val();
-                                                    var cartItemId = $(this).closest('tr').find('.cart-product').data('cart-item-id');
-                                                    console.log('Cart Item ID:', cartItemId); 
+                                                    var cartItemId = document.querySelectorAll('cartId').value;
+                                                    var productId = document.getElementById('productId').value;
+                                                    console.log('Cart Item ID:', cartItemId);
+                                                    console.log('Cart product ID:', productId); 
 
                                                     $.ajax({
                                                         type: 'POST',
                                                         url: '/updateQuantity',
                                                         data: {
                                                             cartItemId:cartItemId,
-                                                            newQuantity:newQuantity
+                                                            newQuantity:newQuantity,
+                                                            productId:productId
                                                         },
                                                         success: function(response){
                                                             console.log('Quantity updated successfully');
                                                         },
                                                         error: function(xhr, status, error){
-                                                            console.log("Error updating quantity:", error, cartItemId);
+                                                            console.log("Error updating quantity:", error);
                                                         }
                                                     })
                                                 })

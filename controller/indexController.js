@@ -109,6 +109,7 @@ const cartLoad = async (req,res)=>{
                 "quantity": "$items.quantity"
             }}
         ]);
+        
         console.log('------------------------',cartProducts);
         res.render('cart',{cartProducts});
     } catch (error) {
@@ -175,7 +176,6 @@ const signup = async (req, res) => {
                     if (checkEmail && checkVerified.isVerified === false) {
                         req.session.userSignup_id = checkEmail._id
                         req.session.userSignup_email = checkEmail.email;
-                        console.log()
                         saveOTP(checkEmail, res);
                         res.redirect('/otp');
                     } else {
@@ -277,7 +277,6 @@ const verifyOTP = asyncHandler(async (req, res) => {
 
     const otpData = await OTP.findOne({ email: req.session.userSignup_email });
 
-    console.log("=======================", req.session.userSignup_email);
     if (otpData) {
         if (otpData.otp === enteredOTP) {
             const verifyUser = await User.findOneAndUpdate({ _id: req.session.userSignup_id }, { $set: { isVerified: true } });
@@ -353,7 +352,6 @@ const handleForgotPassword = async (req,re) =>{
 const addToCart = async (req,res) => {
     try {
 
-        console.log('===============================');
         const productId = req.params.productId;
         const user_id = req.session.user_id;
         
@@ -367,6 +365,10 @@ const addToCart = async (req,res) => {
                 await Cart.updateOne(
                     {userId:user_id},
                     {$push:{items:{productId:productId}}}
+                );
+                await Product.findOneAndUpdate(
+                    {_id:productId},
+                    {$inc:{quantity: -1}}
                 );
                 res.status(201).redirect('/cart');
             }
@@ -405,15 +407,54 @@ const deleteProduct = async (req,res) =>{
 
 const updateQuantity = async (req,res) =>{
     try {
+        const { cartItemId, newQuantity, productId } = req.body;
+        const checkProduct = await Product.findOne({_id:productId},{_id:0,quantity:1});
 
-        console.log('========================================');
-        const { cartItemId, newQuantity } = req.body;
-        console.log('---------------------------------',cartItemId)
-        const cartItem = await Cart.findByIdAndUpdate(
+        if(checkProduct.quantity<newQuantity){
+            return res.json('out of stock');
+        }
+
+        
+        const oldQtyData = await Cart.findOne(
             {"items._id":cartItemId},
-            {$set:{"items.$.quntity":newQuantity}},
-            {new:true}
+            {_id:0,"items.$":1}
+        );
+
+        console.log("--------------------------",cartItemId);
+        const oldQty = oldQtyData.items[0].quantity;
+
+        
+        if(oldQty < newQuantity){
+            // updateProductQty = oldQty + 1;
+            await Product.findOneAndUpdate(
+                {_id:productId},
+                {$inc:{quantity: -1}}
+            )
+        }else{
+            // updateProductQty = oldQty - 1; 
+            await Product.findOneAndUpdate(
+            {_id:productId},
+            {$inc:{quantity: 1}}
+        )
+        }
+
+
+        const cartItem = await Cart.findOneAndUpdate(
+            {"items._id": cartItemId},
+            {$set:{"items.$.quantity": newQuantity}},
+            {new: true}
             );
+        
+        // await Product.findOneAndUpdate(
+        //     {_id:productId},
+        //     {$set:{quantity: updateProductQty}}
+        // )
+
+        // const quantityBalance = checkProduct.quantity - newQuantity
+        // const updateProduct = await Product.findByIdAndUpdate(
+        //     cartItemId,
+        //     {}
+        // )
         res.status(200).json({success: true, message:"Quantity updated successfully"})
     } catch (error) {
         res.status(500).json({message:"Something went wrong with update quantity"});
