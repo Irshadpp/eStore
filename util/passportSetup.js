@@ -19,7 +19,6 @@ passport.use(new googleStrategy({
     callbackURL: process.env.GOOGLE_CALLBACK_URL,
     passReqToCallback: true
 },function(request, accessToken, refreshToken, profile, done){
-    console.log("-------------------------------",profile);
     return done(null,profile);
 }
 ));

@@ -71,19 +71,21 @@
                                     </div><!-- End .details-filter-row -->
 
                                     <div class="product-details-action">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-
-                                       
+                                        <% if(product.quantity<1) {%>
+                                        <p class="h6 text-danger">Out of stock</p>
+                                        <% }else{ %>
+                                            <a href="/addToCart/<%=product._id%>" class="btn-product btn-cart"><span>add to cart</span></a>
+                                       <% } %>
                                         <div class="details-action-wrapper">
                                             <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
                                         </div><!-- End .details-action-wrapper -->
                                     </div><!-- End .product-details-action -->
 
-                                    <% if(product.quantity<1) {%>
+                                   
                                         <div class="product-content">
-                                            <p class="h6 text-danger">Out of stock</p>
+                                            
                                         </div><!-- End .product-content -->
-                                        <% } %>
+                                        
 
                                     <div class="product-details-footer">
                                         <div class="product-cat">
@@ -299,6 +301,7 @@
     <script src="/user/assets/js/jquery.magnific-popup.min.js"></script>
     <!-- Main JS File -->
     <script src="/user/assets/js/main.js"></script>
+    
 </body>
 
 

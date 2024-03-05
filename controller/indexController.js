@@ -96,7 +96,6 @@ const accountLoad = asyncHandler((req, res) => {
 const cartLoad = async (req,res)=>{
     try {
         const userId = new mongoose.Types.ObjectId(req.session.user_id);
-        console.log('==========================',userId)
         const cartProducts = await Cart.aggregate([
             { $match: { userId: userId } },
             {$unwind:"$items"},
@@ -118,7 +117,6 @@ const cartLoad = async (req,res)=>{
             }}
         ]);
         
-        console.log('------------------------',cartProducts);
         res.render('cart',{cartProducts});
     } catch (error) {
         console.log(error);
@@ -388,9 +386,7 @@ const changePassword = async (req,res) =>{
     if(password1 !== password2){
         return res.render('changePassword',{msg:"Two password are not same!"});
     }
-    console.log("__________________________",req.session.fPasswordEmail)
     const userData = await User.findOne({email:req.session.fPasswordEmail});
-    console.log("__________________________",userData)
     if(userData){
         const sPassword = await securePassword(password1);
         const newUserData = await User.findOneAndUpdate(
@@ -412,10 +408,10 @@ const addToCart = async (req,res) => {
     try {
 
         const productId = req.params.productId;
+        
         const user_id = req.session.user_id;
         
         const checkCart = await Cart.findOne({userId:user_id});
-
         if(checkCart){
             const existingItem = await Cart.findOne({$and:[{userId:user_id},{"items.productId":productId}]})
             if(existingItem){
@@ -433,11 +429,17 @@ const addToCart = async (req,res) => {
             }
         }else{
 
+
             const cartProduct = new Cart({
                 userId: user_id,
                 items: [{productId}]
             });
             const newCartProduct = await cartProduct.save();
+
+            await Product.findOneAndUpdate(
+                {_id:productId},
+                {$inc:{quantity: -1}}
+            );
             res.status(201).redirect('/cart');
         }
 
@@ -452,15 +454,30 @@ const deleteProduct = async (req,res) =>{
         const productId = req.params.productId;
         const userId = req.session.user_id;
 
+        const cartData = await Cart.findOne(
+            {"items.productId":productId},
+            {_id:0,"items.$":1}
+        )
+        const cartItemQty = cartData.items[0].quantity;
+        console.log("===========================",cartItemQty);
+
+        
+
         const updatedCart = await Cart.findOneAndUpdate(
             {userId:userId},
             {$pull:{items:{productId:productId}}},
             {new:true}
             );
         
+        await Product.findOneAndUpdate(
+            {_id:productId},
+            {$inc:{quantity:cartItemQty}}
+            )
+
         res.render('cart',{cartProducts:updatedCart});
     } catch (error) {
-        
+        res.status(500).json('Error occured with deleteProduct');
+        console.log(error);
     }
 }
 
@@ -469,7 +486,7 @@ const updateQuantity = async (req,res) =>{
         const { cartItemId, newQuantity, productId } = req.body;
         const checkProduct = await Product.findOne({_id:productId},{_id:0,quantity:1});
 
-        if(checkProduct.quantity<newQuantity){
+        if(checkProduct.quantity === 0){
             return res.json('out of stock');
         }
 
@@ -479,23 +496,24 @@ const updateQuantity = async (req,res) =>{
             {_id:0,"items.$":1}
         );
 
-        console.log("--------------------------",cartItemId);
         const oldQty = oldQtyData.items[0].quantity;
 
-        
-        if(oldQty < newQuantity){
-            // updateProductQty = oldQty + 1;
+
+        if(parseInt(newQuantity) === oldQty){
+            return res.status(401).json('quantity limit exeeded');
+        }
+            if(oldQty < newQuantity){
             await Product.findOneAndUpdate(
                 {_id:productId},
                 {$inc:{quantity: -1}}
             )
         }else{
-            // updateProductQty = oldQty - 1; 
             await Product.findOneAndUpdate(
             {_id:productId},
             {$inc:{quantity: 1}}
         )
         }
+    
 
 
         const cartItem = await Cart.findOneAndUpdate(
@@ -504,16 +522,6 @@ const updateQuantity = async (req,res) =>{
             {new: true}
             );
         
-        // await Product.findOneAndUpdate(
-        //     {_id:productId},
-        //     {$set:{quantity: updateProductQty}}
-        // )
-
-        // const quantityBalance = checkProduct.quantity - newQuantity
-        // const updateProduct = await Product.findByIdAndUpdate(
-        //     cartItemId,
-        //     {}
-        // )
         res.status(200).json({success: true, message:"Quantity updated successfully"})
     } catch (error) {
         res.status(500).json({message:"Something went wrong with update quantity"});
