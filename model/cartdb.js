@@ -10,6 +10,9 @@ const cartItemSchema = new mongoose.Schema({
         type:Number,
         default: 1,
         min: 1
+    },
+    total: {
+        type:Number,
     }
 })
 
@@ -19,8 +22,8 @@ const cartSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    items:[cartItemSchema]
-
+    items:[cartItemSchema],
+    subTotal:{type:Number}
 });
 
 module.exports = mongoose.model('Cart', cartSchema);

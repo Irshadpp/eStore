@@ -53,7 +53,8 @@ router.get('/addToCart/:productId', indexController.addToCart);
 router.post('/updateQuantity', indexAuth.isLogin, indexController.updateQuantity);
 router.delete('/cart/deleteProduct/:productId', indexAuth.isLogin, indexController.deleteProduct)
 
-
+//checkout
+router.get('/checkout', indexAuth.isLogin, indexAuth.isUserBlock, indexController.checkoutLoad)
 
 router.get('/test',(req,res)=>{
     res.render('test');

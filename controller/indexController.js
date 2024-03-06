@@ -116,13 +116,21 @@ const cartLoad = async (req,res)=>{
                 "quantity": "$items.quantity"
             }}
         ]);
+
+        const subTotal = cartProducts.reduce((acc,crr)=>{
+           return acc = acc + crr.price * crr.quantity;
+        },0)
         
-        res.render('cart',{cartProducts});
+        res.render('cart',{cartProducts,subTotal});
     } catch (error) {
         console.log(error);
         res.status(404).send("Page note Found");
     }
 }
+
+const checkoutLoad = asyncHandler(async(req,res)=>{
+    res.render('checkout');
+})
 
 const editAddressLoad = async (req,res)=>{
     try {
@@ -557,4 +565,5 @@ module.exports = {
     deleteProduct,
     editAddressLoad,
     updateQuantity,
+    checkoutLoad
 }

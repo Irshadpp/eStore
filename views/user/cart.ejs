@@ -50,7 +50,7 @@
 													</h3><!-- End .product-title -->
 												</div><!-- End .product -->
 											</td>
-											<td class="price-col"><%= element.price %></td>
+											<td class="price-col"><%= parseFloat(element.price).toFixed(2) %></td>
 											<td class="quantity-col">
                                                 <div class="cart-product-quantity">
                                                     <input type="number" class="quantityInput form-control" readonly value="<%= element.quantity %>" min="1" max="5" step="1" data-decimals="0" required>
@@ -58,7 +58,7 @@
                                                     <input type="text" class="productId" value="<%=element.productId%>" hidden>
                                                 </div><!-- End .cart-product-quantity -->
                                             </td>
-											<td class="total-col"><%= element.price %></td>
+											<td class="total-col"><%= (element.price * element.quantity).toFixed(2) %></td>
 											<td class="remove-col"><button class="btn-remove" data-product-id="<%= element.productId %>"><i class="icon-close"></i></button></td>
 										</tr>
                                     </div>
@@ -94,25 +94,7 @@
 	                							<td>$0.00</td>
 	                						</tr><!-- End .summary-shipping-row -->
 
-	                						<tr class="summary-shipping-row">
-	                							<td>
-	                								<div class="custom-control custom-radio">
-														<input type="radio" id="standart-shipping" name="shipping" class="custom-control-input">
-														<label class="custom-control-label" for="standart-shipping">Standart:</label>
-													</div><!-- End .custom-control -->
-	                							</td>
-	                							<td>$10.00</td>
-	                						</tr><!-- End .summary-shipping-row -->
-
-	                						<tr class="summary-shipping-row">
-	                							<td>
-	                								<div class="custom-control custom-radio">
-														<input type="radio" id="express-shipping" name="shipping" class="custom-control-input">
-														<label class="custom-control-label" for="express-shipping">Express:</label>
-													</div><!-- End .custom-control -->
-	                							</td>
-	                							<td>$20.00</td>
-	                						</tr><!-- End .summary-shipping-row -->
+	                						
 
 	                						<tr class="summary-shipping-estimate">
 	                							<td>Estimate for Your Country<br> <a href="dashboard.html">Change address</a></td>
@@ -141,7 +123,7 @@
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
     <script>
-$(document).ready(function(){
+		$(document).ready(function(){
     $('.quantityInput').on('change', function(){
         var newQuantity = $(this).val();
         var $parentrow = $(this).closest('tr')
