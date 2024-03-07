@@ -108,29 +108,6 @@
         }
     </style>
 
-
-    <!-- Modal HTML -->
-    <div id="myModal" class="modal fade">
-        <div class="modal-dialog modal-confirm">
-            <div class="modal-content">
-                <div class="modal-header flex-column">
-                    <div class="icon-box">
-                        <i class="material-icons">&#xE5CD;</i>
-                    </div>
-                    <h4 class="modal-title w-100">Are you sure?</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <p>Do you really want to logout this account?</p>
-                </div>
-                <div class="modal-footer text-center justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <a href="/logout" class="btn btn-danger text-light">Logout</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <main class="main">
         <div class="page-content">
             <div class="dashboard">
@@ -139,32 +116,51 @@
                         <div class="col-md-8 col-lg-9">
                             <div class="tab-content">
                                 <div class="">
-                                    <form action="#">
-
+                                    <form action="#" method="post">
                                         <label>Full Name</label>
-                                        <input type="text" class="form-control" required>
-                                        <small class="text-danger ">fjdaskfjakdlsjfkljaldsjljs</small>
+                                        <% if (typeof nameMsg !== 'undefined') {%>
+                                            <small class="text-danger mt-0 "><%= nameMsg %></small>
+                                            <%} %>
+                                        <input type="text" name="name" class="form-control" required>
 
                                         <label>Address</label>
+                                        <% if (typeof addressMsg !== 'undefined') {%>
+                                            <small class="text-danger mt-0 "><%= addressMsg %></small>
+                                            <%} %>
                                         <textarea name="address" class="form-control" rows="3" required></textarea>
 
                                         <label>Landmark</label>
-                                        <input type="text" class="form-control" required>
+                                        <% if (typeof landmarkMsg !== 'undefined') {%>
+                                            <small class="text-danger mt-0 "><%= landmarkMsg %></small>
+                                            <%} %>
+                                        <input type="text" name="landmark" class="form-control" required>
 
                                         <label>City</label>
-                                        <input type="text" class="form-control" required>
+                                        <% if (typeof cityMsg !== 'undefined') {%>
+                                            <small class="text-danger mt-0 "><%= cityMsg %></small>
+                                            <%} %>
+                                        <input type="text" name="city" class="form-control" required>
 
                                         <label>Pincode</label>
-                                        <input type="tel" class="form-control" required>
+                                        <% if (typeof pincodeMsg !== 'undefined') {%>
+                                            <small class="text-danger mt-0 "><%= pincodeMsg %></small>
+                                            <%} %>
+                                        <input type="tel" name="pincode" class="form-control" required>
 
                                         <label>Email address</label>
-                                        <input type="email" class="form-control" required>
+                                        <% if (typeof emailMsg !== 'undefined') {%>
+                                            <small class="text-danger mt-0 "><%= emailMsg %></small>
+                                            <%} %>
+                                        <input type="email" name="email" class="form-control" required>
 
                                         <label>Mobile</label>
-                                        <input type="tel" class="form-control" required>
+                                        <% if (typeof mobileMsg !== 'undefined') {%>
+                                            <small class="text-danger mt-0 "><%= mobileMsg %></small>
+                                            <%} %>
+                                        <input type="tel" name="mobile" class="form-control" required>
 
                                         <button type="submit" class="btn btn-outline-primary-2">
-                                            <span>SAVE CHANGES</span>
+                                            <span>SAVE ADDRESS</span>
                                             <i class="icon-long-arrow-right"></i>
                                         </button>
                                     </form>

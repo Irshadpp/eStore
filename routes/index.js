@@ -51,10 +51,15 @@ router.post('/login', indexController.verifyLogin);
 router.get('/cart', indexAuth.isLogin, indexController.cartLoad);
 router.get('/addToCart/:productId', indexController.addToCart);
 router.post('/updateQuantity', indexAuth.isLogin, indexController.updateQuantity);
-router.delete('/cart/deleteProduct/:productId', indexAuth.isLogin, indexController.deleteProduct)
+router.delete('/cart/deleteProduct/:productId', indexAuth.isLogin, indexController.deleteProduct);
+
+router.get('/addAddress', indexAuth.isLogin, indexAuth.isUserBlock, indexController.addAddressLoad);
+router.post('/addAddress', indexAuth.isLogin, indexAuth.isUserBlock, indexController.addAddress)
 
 //checkout
-router.get('/checkout', indexAuth.isLogin, indexAuth.isUserBlock, indexController.checkoutLoad)
+router.get('/checkout', indexAuth.isLogin, indexAuth.isUserBlock, indexController.checkoutLoad);
+
+router.post('/editProfile/:userId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.editProfile);
 
 router.get('/test',(req,res)=>{
     res.render('test');

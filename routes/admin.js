@@ -26,8 +26,6 @@ router.get('/logout',adminController.logout);
 //block user
 router.put('/:userId/block',adminController.blockUser);
 
-//unblock user
-router.put('/:userId/unblock',adminController.unblockUser);
 
 //add and edit product 
 router.post('/addProduct', upload.array('images', 4), adminController.addProduct);

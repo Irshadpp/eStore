@@ -8,7 +8,6 @@
                                         <th>Customers</th>
                                         <th>Email</th>
                                         <th>Registered</th>
-                                        <th>Status</th>
                                         <th class="text-end">Action</th>
                                     </tr>
                                 </thead>
@@ -23,17 +22,18 @@
                                         </td>
                                         <td><%= item.email %></td>
                                         <td><%= item.createDate %></td>
-                                        <% if(item.isBlock === true){%>
-                                            <td width="10%"><span class="badge rounded-pill alert-danger">Blocked</span></td>
-                                            <%}else{%>
-                                                <td width="10%"><span class="badge rounded-pill alert-success">Not blocked</span></td>
-                                                <%}%>
-                                        <td class="text-end">
-                                            <a href="" onclick="blockUser('<%=item._id%>')" class="btn btn-sm alert-danger rounded font-sm ">Block</a>
+                                      
+                                            <%if(item.isBlock === true){%>
+                                                <td class="text-end">
+                                            <a href="" onclick="blockUser('<%=item._id%>')" class="btn btn-sm alert-success rounded font-sm ">Unblock</a>
                                         </td>
-                                        <td class="text-end">
-                                            <a href="" onclick="unblockUser('<%=item._id%>')" class="btn btn-sm alert-success rounded font-sm ">Unblock</a>
-                                        </td>
+                                                <%}else{%>
+                                                    <td class="text-end">
+                                                        <a href="" onclick="blockUser('<%=item._id%>')" class="btn btn-sm alert-danger rounded font-sm ">Block</a>
+                                                   </td>
+                                                    <%}%>
+                                            
+                                       
                                     </tr>
                                     <%})
                                 }else{%>

@@ -6,7 +6,6 @@ const userSchema = new mongoose.Schema({
     mobile:{type:Number, default:''},
     googleId:{type:String, default:''},
     password:{type:String},
-    address:{type:Array},
     createDate:{type:Date, default:Date.now},
     isVerified:{type:Boolean, required: true, default:false},
     isBlock:{type:Boolean, required:true, default:false},

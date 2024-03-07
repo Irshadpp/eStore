@@ -93,7 +93,12 @@ const verifyLogin = asyncHandler( async (req,res) => {
 
 const blockUser = asyncHandler( async (req,res) => {
     const userId = req.params.userId;
-    await User.findByIdAndUpdate(userId,{isBlock:true});
+    const blockStatus = await User.findOne({_id:userId});
+    if(blockStatus.isBlock === true){
+        await User.updateOne({_id:userId},{isBlock:false});
+    }else{
+        await User.updateOne({_id:userId},{isBlock:true});
+    }
 });
 
 const unblockUser = asyncHandler( async (req,res) => {

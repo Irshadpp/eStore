@@ -14,7 +14,7 @@ const cartItemSchema = new mongoose.Schema({
     total: {
         type:Number,
     }
-})
+});
 
 const cartSchema = new mongoose.Schema({
     userId: {
