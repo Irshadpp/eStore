@@ -1,476 +1,540 @@
 <%-include('../layout/header')-%>
 
-<!-- modal styling -->
-<style>
-    body {
-        font-family: 'Varela Round', sans-serif;
-    }
+    <!-- modal styling -->
+    <style>
+        body {
+            font-family: 'Varela Round', sans-serif;
+        }
 
-    .modal-confirm {
-        color: #636363;
-        width: 400px;
-    }
+        .modal-confirm {
+            color: #636363;
+            width: 400px;
+        }
 
-    .modal-confirm .modal-content {
-        padding: 20px;
-        border-radius: 5px;
-        border: none;
-        text-align: center;
-        font-size: 14px;
-    }
+        .modal-confirm .modal-content {
+            padding: 20px;
+            border-radius: 5px;
+            border: none;
+            text-align: center;
+            font-size: 14px;
+        }
 
-    .modal-confirm .modal-header {
-        border-bottom: none;
-        position: relative;
-    }
+        .modal-confirm .modal-header {
+            border-bottom: none;
+            position: relative;
+        }
 
-    .modal-confirm h4 {
-        text-align: center;
-        font-size: 26px;
-        margin: 30px 0 -10px;
-    }
+        .modal-confirm h4 {
+            text-align: center;
+            font-size: 26px;
+            margin: 30px 0 -10px;
+        }
 
-    .modal-confirm .close {
-        position: absolute;
-        top: -5px;
-        right: -2px;
-    }
+        .modal-confirm .close {
+            position: absolute;
+            top: -5px;
+            right: -2px;
+        }
 
-    .modal-confirm .modal-body {
-        color: #999;
-    }
+        .modal-confirm .modal-body {
+            color: #999;
+        }
 
-    .modal-confirm .modal-footer {
-        border: none;
-        text-align: center;
-        border-radius: 5px;
-        font-size: 13px;
-        padding: 10px 15px 25px;
-    }
+        .modal-confirm .modal-footer {
+            border: none;
+            text-align: center;
+            border-radius: 5px;
+            font-size: 13px;
+            padding: 10px 15px 25px;
+        }
 
-    .modal-confirm .modal-footer a {
-        color: #999;
-    }
+        .modal-confirm .modal-footer a {
+            color: #999;
+        }
 
-    .modal-confirm .icon-box {
-        width: 80px;
-        height: 80px;
-        margin: 0 auto;
-        border-radius: 50%;
-        z-index: 9;
-        text-align: center;
-        border: 3px solid #f15e5e;
-    }
+        .modal-confirm .icon-box {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            border-radius: 50%;
+            z-index: 9;
+            text-align: center;
+            border: 3px solid #f15e5e;
+        }
 
-    .modal-confirm .icon-box i {
-        color: #f15e5e;
-        font-size: 46px;
-        display: inline-block;
-        margin-top: 13px;
-    }
+        .modal-confirm .icon-box i {
+            color: #f15e5e;
+            font-size: 46px;
+            display: inline-block;
+            margin-top: 13px;
+        }
 
-    .modal-confirm .btn,
-    .modal-confirm .btn:active {
-        color: #fff;
-        border-radius: 4px;
-        background: #60c7c1;
-        text-decoration: none;
-        transition: all 0.4s;
-        line-height: normal;
-        min-width: 120px;
-        border: none;
-        min-height: 40px;
-        border-radius: 3px;
-        margin: 0 5px;
-    }
+        .modal-confirm .btn,
+        .modal-confirm .btn:active {
+            color: #fff;
+            border-radius: 4px;
+            background: #60c7c1;
+            text-decoration: none;
+            transition: all 0.4s;
+            line-height: normal;
+            min-width: 120px;
+            border: none;
+            min-height: 40px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
 
-    .modal-confirm .btn-secondary {
-        background: #c1c1c1;
-    }
+        .modal-confirm .btn-secondary {
+            background: #c1c1c1;
+        }
 
-    .modal-confirm .btn-secondary:hover,
-    .modal-confirm .btn-secondary:focus {
-        background: #a8a8a8;
-    }
+        .modal-confirm .btn-secondary:hover,
+        .modal-confirm .btn-secondary:focus {
+            background: #a8a8a8;
+        }
 
-    .modal-confirm .btn-danger {
-        background: #f15e5e;
-    }
+        .modal-confirm .btn-danger {
+            background: #f15e5e;
+        }
 
-    .modal-confirm .btn-danger:hover,
-    .modal-confirm .btn-danger:focus {
-        background: #ee3535;
-    }
+        .modal-confirm .btn-danger:hover,
+        .modal-confirm .btn-danger:focus {
+            background: #ee3535;
+        }
 
-    .trigger-btn {
-        display: inline-block;
-        margin: 100px auto;
-    }
-</style>
+        .trigger-btn {
+            display: inline-block;
+            margin: 100px auto;
+        }
+    </style>
 
 
-<!-- Modal HTML -->
-<div id="myModal" class="modal fade">
-    <div class="modal-dialog modal-confirm">
-        <div class="modal-content">
-            <div class="modal-header flex-column">
-                <div class="icon-box">
-                    <i class="material-icons">&#xE5CD;</i>
+    <!-- Modal HTML -->
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <div class="icon-box">
+                        <i class="material-icons">&#xE5CD;</i>
+                    </div>
+                    <h4 class="modal-title w-100">Are you sure?</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
-                <h4 class="modal-title w-100">Are you sure?</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Do you really want to logout this account?</p>
-            </div>
-            <div class="modal-footer text-center justify-content-center">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <a href="/logout" class="btn btn-danger text-light">Logout</a>
+                <div class="modal-body">
+                    <p>Do you really want to logout this account?</p>
+                </div>
+                <div class="modal-footer text-center justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <a href="/logout" class="btn btn-danger text-light">Logout</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-  aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-        <form action="/editProfile/<%= userData._id %>" method="post">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">Edit info</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        
-        <div class="md-form mb-2">
-            <label data-error="wrong" data-success="right" for="defaultForm-email">Full Name</label>
-          <input type="text" name="name" value="<%= userData.username %>" class="form-control validate">
+    <div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="/editProfile/<%= userData._id %>" method="post">
+                    <div class="modal-header text-center">
+                        <h4 class="modal-title w-100 font-weight-bold">Edit info</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body mx-3">
+
+                        <div class="md-form mb-2">
+                            <label data-error="wrong" data-success="right" for="defaultForm-email">Full Name</label>
+                            <input type="text" name="name" value="<%= userData.username %>"
+                                class="form-control validate">
+                        </div>
+
+                        <div class="md-form mb-4">
+                            <label data-error="wrong" data-success="right" for="defaultForm-pass">Your Mobile</label>
+                            <input type="tel" name="mobile" value="<%= userData.mobile %>"
+                                class="form-control validate">
+                        </div>
+
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button type="submit" class="btn btn-default">Update</button>
+                    </div>
+                </form>
+            </div>
         </div>
-
-        <div class="md-form mb-4">
-            <label data-error="wrong" data-success="right" for="defaultForm-pass">Your Mobile</label>
-          <input type="tel" name="mobile"  value="<%= userData.mobile %>" class="form-control validate">
-        </div>
-
-      </div>
-      <div class="modal-footer d-flex justify-content-center">
-        <button type="submit"  class="btn btn-default">Update</button>
-      </div>
-    </form>
     </div>
-  </div>
-</div>
 
-<div class="text-center">
-  <a href="" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Launch
-    Modal Login Form</a>
-</div>
 
-        <main class="main">
-        	<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
-        		<div class="container">
-        			<h1 class="page-title">My Account<span>Shop</span></h1>
-        		</div><!-- End .container -->
-        	</div><!-- End .page-header -->
-            <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+    <main class="main">
+        <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+            <div class="container">
+                <h1 class="page-title">My Account<span>Shop</span></h1>
+            </div><!-- End .container -->
+        </div><!-- End .page-header -->
+        <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+            <div class="container">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">My Account</li>
+                </ol>
+            </div><!-- End .container -->
+        </nav><!-- End .breadcrumb-nav -->
+
+        <div class="page-content">
+            <div class="dashboard">
                 <div class="container">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">My Account</li>
-                    </ol>
-                </div><!-- End .container -->
-            </nav><!-- End .breadcrumb-nav -->
+                    <div class="row">
+                        <aside class="col-md-4 col-lg-3">
+                            <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab"
+                                        href="#tab-dashboard" role="tab" aria-controls="tab-dashboard"
+                                        aria-selected="true">Profile</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders"
+                                        role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address"
+                                        role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account"
+                                        role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-account-link" data-toggle="modal" href="#myModal"
+                                        role="tab" aria-controls="tab-account" aria-selected="false">Logout</a>
+                                </li>
+                            </ul>
+                        </aside><!-- End .col-lg-3 -->
 
-            <div class="page-content">
-            	<div class="dashboard">
-	                <div class="container">
-	                	<div class="row">
-	                		<aside class="col-md-4 col-lg-3">
-	                			<ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
-								    <li class="nav-item">
-								        <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard" role="tab" aria-controls="tab-dashboard" aria-selected="true">Profile</a>
-								    </li>
-								    <li class="nav-item">
-								        <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
-								    </li>
-								    <li class="nav-item">
-								        <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
-								    </li>
-								    <li class="nav-item">
-								        <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
-								    </li>
-                                    <li class="nav-item">
-								        <a class="nav-link" id="tab-account-link" data-toggle="modal" href="#myModal" role="tab" aria-controls="tab-account" aria-selected="false">Logout</a>
-								    </li>   
-								</ul>
-	                		</aside><!-- End .col-lg-3 -->
-
-	                		<div class="col-md-8 col-lg-9">
-	                			<div class="tab-content">
-								    <!-- <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link"> -->
-								    	<div class="col-md-8 tab-pane fade show active" id="tab-dashboard">
-                                            <div class="card mb-3">
-                                              <div class="card-body">
-                                                <div class="row">
-                                                  <div class="col-sm-3">
+                        <div class="col-md-8 col-lg-9">
+                            <div class="tab-content">
+                                <!-- <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link"> -->
+                                <div class="col-md-8 tab-pane fade show active" id="tab-dashboard">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-sm-3">
                                                     <h6 class="mb-0">Full Name</h6>
-                                                  </div>
-                                                  <div class="col-sm-9 text-secondary">
+                                                </div>
+                                                <div class="col-sm-9 text-secondary">
                                                     <%= userData.username %>
-                                                  </div>
                                                 </div>
-                                                <hr>
-                                                <div class="row">
-                                                  <div class="col-sm-3">
-                                                    <h6 class="mb-0">Mobile</h6>
-                                                  </div>
-                                                  <div class="col-sm-9 text-secondary">
-                                                    <%= userData.mobile %>
-                                                  </div>
-                                                </div>
-                                                <hr>
-                                                <div class="row">
-                                                  <div class="col-sm-12">
-                                                    <a class="btn btn-outline-primary-2" data-toggle="modal" href="#modalLoginForm">Edit</a>
-                                                  </div>
-                                                </div>
-                                              </div>
                                             </div>
-								    </div><!-- .End .tab-pane -->
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-sm-3">
+                                                    <h6 class="mb-0">Mobile</h6>
+                                                </div>
+                                                <div class="col-sm-9 text-secondary">
+                                                    <%= userData.mobile %>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <a class="btn btn-outline-primary-2" data-toggle="modal"
+                                                        href="#modalLoginForm">Edit</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- .End .tab-pane -->
 
-								    <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
-								    	<p>No order has been made yet.</p>
-								    	<a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
-                                        
-<div class="container">
-    <div class="row">
-        <div class="col-lg-9">
-            <table class="table table-cart table-mobile">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                        <th></th>
-                    </tr>
-                </thead>
+                                <div class="tab-pane fade" id="tab-orders" role="tabpanel"
+                                    aria-labelledby="tab-orders-link">
+                                    <p>No order has been made yet.</p>
+                                    <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i
+                                            class="icon-long-arrow-right"></i></a>
 
-                <tbody>
-                    <tr>
-                        <td class="product-col">
-                            <div class="product">
-                                <figure class="product-media">
-                                    <a href="#">
-                                        <img src="/user/assets/images/products/table/product-1.jpg" alt="Product image">
-                                    </a>
-                                </figure>
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-lg-9">
+                                                <table class="table table-cart table-mobile">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Product</th>
+                                                            <th>Price</th>
+                                                            <th>Quantity</th>
+                                                            <th>Total</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
 
-                                <h3 class="product-title">
-                                    <a href="#">Beige knitted elastic runner shoes</a>
-                                </h3><!-- End .product-title -->
-                            </div><!-- End .product -->
-                        </td>
-                        <td class="price-col">$84.00</td>
-                        <td class="quantity-col">
-                            <div class="cart-product-quantity">
-                                <input type="number" class="form-control" value="1" min="1" max="10" step="1" data-decimals="0" required>
-                            </div><!-- End .cart-product-quantity -->
-                        </td>
-                        <td class="total-col">$84.00</td>
-                        <td class="remove-col"><button class="btn-remove"><i class="icon-close"></i></button></td>
-                    </tr>
-                    <tr>
-                        <td class="product-col">
-                            <div class="product">
-                                <figure class="product-media">
-                                    <a href="#">
-                                        <img src="/user/assets/images/products/table/product-2.jpg" alt="Product image">
-                                    </a>
-                                </figure>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="product-col">
+                                                                <div class="product">
+                                                                    <figure class="product-media">
+                                                                        <a href="#">
+                                                                            <img src="/user/assets/images/products/table/product-1.jpg"
+                                                                                alt="Product image">
+                                                                        </a>
+                                                                    </figure>
 
-                                <h3 class="product-title">
-                                    <a href="#">Blue utility pinafore denim dress</a>
-                                </h3><!-- End .product-title -->
-                            </div><!-- End .product -->
-                        </td>
-                        <td class="price-col">$76.00</td>
-                        <td class="quantity-col">
-                            <div class="cart-product-quantity">
-                                <input type="number" class="form-control" value="1" min="1" max="10" step="1" data-decimals="0" required>
-                            </div><!-- End .cart-product-quantity -->                                 
-                        </td>
-                        <td class="total-col">$76.00</td>
-                        <td class="remove-col"><button class="btn-remove"><i class="icon-close"></i></button></td>
-                    </tr>
-                </tbody>
-            </table><!-- End .table table-wishlist -->
+                                                                    <h3 class="product-title">
+                                                                        <a href="#">Beige knitted elastic runner
+                                                                            shoes</a>
+                                                                    </h3><!-- End .product-title -->
+                                                                </div><!-- End .product -->
+                                                            </td>
+                                                            <td class="price-col">$84.00</td>
+                                                            <td class="quantity-col">
+                                                                <div class="cart-product-quantity">
+                                                                    <input type="number" class="form-control" value="1"
+                                                                        min="1" max="10" step="1" data-decimals="0"
+                                                                        required>
+                                                                </div><!-- End .cart-product-quantity -->
+                                                            </td>
+                                                            <td class="total-col">$84.00</td>
+                                                            <td class="remove-col"><button class="btn-remove"><i
+                                                                        class="icon-close"></i></button></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="product-col">
+                                                                <div class="product">
+                                                                    <figure class="product-media">
+                                                                        <a href="#">
+                                                                            <img src="/user/assets/images/products/table/product-2.jpg"
+                                                                                alt="Product image">
+                                                                        </a>
+                                                                    </figure>
 
-            
-        </div><!-- End .col-lg-9 -->
-        <aside class="col-lg-3">
-            <div class="summary summary-cart">
-                <h3 class="summary-title">Cart Total</h3><!-- End .summary-title -->
+                                                                    <h3 class="product-title">
+                                                                        <a href="#">Blue utility pinafore denim
+                                                                            dress</a>
+                                                                    </h3><!-- End .product-title -->
+                                                                </div><!-- End .product -->
+                                                            </td>
+                                                            <td class="price-col">$76.00</td>
+                                                            <td class="quantity-col">
+                                                                <div class="cart-product-quantity">
+                                                                    <input type="number" class="form-control" value="1"
+                                                                        min="1" max="10" step="1" data-decimals="0"
+                                                                        required>
+                                                                </div><!-- End .cart-product-quantity -->
+                                                            </td>
+                                                            <td class="total-col">$76.00</td>
+                                                            <td class="remove-col"><button class="btn-remove"><i
+                                                                        class="icon-close"></i></button></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table><!-- End .table table-wishlist -->
 
-                <table class="table table-summary">
-                    <tbody>
-                        <tr class="summary-subtotal">
-                            <td>Subtotal:</td>
-                            <td>$160.00</td>
-                        </tr><!-- End .summary-subtotal -->
-                        <tr class="summary-shipping">
-                            <td>Shipping:</td>
-                            <td>&nbsp;</td>
-                        </tr>
 
-                        <tr class="summary-shipping-row">
-                            <td>
-                                <div class="custom-control custom-radio">
-                                    <input type="radio" id="free-shipping" name="shipping" class="custom-control-input">
-                                    <label class="custom-control-label" for="free-shipping">Free Shipping</label>
-                                </div><!-- End .custom-control -->
-                            </td>
-                            <td>$0.00</td>
-                        </tr><!-- End .summary-shipping-row -->
+                                            </div><!-- End .col-lg-9 -->
+                                            <aside class="col-lg-3">
+                                                <div class="summary summary-cart">
+                                                    <h3 class="summary-title">Cart Total</h3><!-- End .summary-title -->
 
-                        <tr class="summary-shipping-row">
-                            <td>
-                                <div class="custom-control custom-radio">
-                                    <input type="radio" id="standart-shipping" name="shipping" class="custom-control-input">
-                                    <label class="custom-control-label" for="standart-shipping">Standart:</label>
-                                </div><!-- End .custom-control -->
-                            </td>
-                            <td>$10.00</td>
-                        </tr><!-- End .summary-shipping-row -->
+                                                    <table class="table table-summary">
+                                                        <tbody>
+                                                            <tr class="summary-subtotal">
+                                                                <td>Subtotal:</td>
+                                                                <td>$160.00</td>
+                                                            </tr><!-- End .summary-subtotal -->
+                                                            <tr class="summary-shipping">
+                                                                <td>Shipping:</td>
+                                                                <td>&nbsp;</td>
+                                                            </tr>
 
-                        <tr class="summary-shipping-row">
-                            <td>
-                                <div class="custom-control custom-radio">
-                                    <input type="radio" id="express-shipping" name="shipping" class="custom-control-input">
-                                    <label class="custom-control-label" for="express-shipping">Express:</label>
-                                </div><!-- End .custom-control -->
-                            </td>
-                            <td>$20.00</td>
-                        </tr><!-- End .summary-shipping-row -->
+                                                            <tr class="summary-shipping-row">
+                                                                <td>
+                                                                    <div class="custom-control custom-radio">
+                                                                        <input type="radio" id="free-shipping"
+                                                                            name="shipping"
+                                                                            class="custom-control-input">
+                                                                        <label class="custom-control-label"
+                                                                            for="free-shipping">Free Shipping</label>
+                                                                    </div><!-- End .custom-control -->
+                                                                </td>
+                                                                <td>$0.00</td>
+                                                            </tr><!-- End .summary-shipping-row -->
 
-                        <tr class="summary-shipping-estimate">
-                            <td>Estimate for Your Country<br> <a href="dashboard.html">Change address</a></td>
-                            <td>&nbsp;</td>
-                        </tr><!-- End .summary-shipping-estimate -->
+                                                            <tr class="summary-shipping-row">
+                                                                <td>
+                                                                    <div class="custom-control custom-radio">
+                                                                        <input type="radio" id="standart-shipping"
+                                                                            name="shipping"
+                                                                            class="custom-control-input">
+                                                                        <label class="custom-control-label"
+                                                                            for="standart-shipping">Standart:</label>
+                                                                    </div><!-- End .custom-control -->
+                                                                </td>
+                                                                <td>$10.00</td>
+                                                            </tr><!-- End .summary-shipping-row -->
 
-                        <tr class="summary-total">
-                            <td>Total:</td>
-                            <td>$160.00</td>
-                        </tr><!-- End .summary-total -->
-                    </tbody>
-                </table><!-- End .table table-summary -->
+                                                            <tr class="summary-shipping-row">
+                                                                <td>
+                                                                    <div class="custom-control custom-radio">
+                                                                        <input type="radio" id="express-shipping"
+                                                                            name="shipping"
+                                                                            class="custom-control-input">
+                                                                        <label class="custom-control-label"
+                                                                            for="express-shipping">Express:</label>
+                                                                    </div><!-- End .custom-control -->
+                                                                </td>
+                                                                <td>$20.00</td>
+                                                            </tr><!-- End .summary-shipping-row -->
 
-                <a href="checkout.html" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
-            </div><!-- End .summary -->
+                                                            <tr class="summary-shipping-estimate">
+                                                                <td>Estimate for Your Country<br> <a
+                                                                        href="dashboard.html">Change address</a></td>
+                                                                <td>&nbsp;</td>
+                                                            </tr><!-- End .summary-shipping-estimate -->
 
-            <a href="category.html" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
-        </aside><!-- End .col-lg-3 -->
-    </div><!-- End .row -->
-</div><!-- End .container -->
-								    </div><!-- .End .tab-pane -->
+                                                            <tr class="summary-total">
+                                                                <td>Total:</td>
+                                                                <td>$160.00</td>
+                                                            </tr><!-- End .summary-total -->
+                                                        </tbody>
+                                                    </table><!-- End .table table-summary -->
 
-								    <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
-								    	<p>No downloads available yet.</p>
-								    	<a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
-								    </div><!-- .End .tab-pane -->
+                                                    <a href="checkout.html"
+                                                        class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO
+                                                        CHECKOUT</a>
+                                                </div><!-- End .summary -->
 
-								    <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
-								    	<p>The following addresses will be used on the checkout page by default.</p>
+                                                <a href="category.html"
+                                                    class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE
+                                                        SHOPPING</span><i class="icon-refresh"></i></a>
+                                            </aside><!-- End .col-lg-3 -->
+                                        </div><!-- End .row -->
+                                    </div><!-- End .container -->
+                                </div><!-- .End .tab-pane -->
 
-								    	<div class="row">
-								    		<div class="col-lg-6">
-								    			<div class="card card-dashboard">
-								    				<div class="card-body">
-								    					<h3 class="card-title">Billing Address</h3><!-- End .card-title -->
-														<p>User Name<br>
-														User Company<br>
-														John str<br>
-														New York, NY 10001<br>
-														1-234-987-6543<br>
-														yourmail@mail.com<br>
-														<a href="/editAddress">Edit <i class="icon-edit"></i></a>
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                        <a href="#" class="text-danger ">Delete</a></p>
-								    				</div><!-- End .card-body -->
-								    			</div><!-- End .card-dashboard -->
-								    		</div><!-- End .col-lg-6 -->
+                                <div class="tab-pane fade" id="tab-downloads" role="tabpanel"
+                                    aria-labelledby="tab-downloads-link">
+                                    <p>No downloads available yet.</p>
+                                    <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i
+                                            class="icon-long-arrow-right"></i></a>
+                                </div><!-- .End .tab-pane -->
+
+                                <div class="tab-pane fade" id="tab-address" role="tabpanel"
+                                    aria-labelledby="tab-address-link">
+                                    <p>The following addresses will be used on the checkout page by default.</p>
+
+                                    <div class="row">
+                                        <% if(addressData.length> 0){
+                                            addressData.forEach(data =>{ %>
+                                            <div id="deleteAddress" class="modal fade">
+                                                <div class="modal-dialog modal-confirm">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header flex-column">
+                                                            <div class="icon-box">
+                                                                <i class="material-icons">&#xE5CD;</i>
+                                                            </div>
+                                                            <h4 class="modal-title w-100">Are you sure?</h4>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                aria-hidden="true">&times;</button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Do you really want to delete this address?</p>
+                                                        </div>
+                                                        <div class="modal-footer text-center justify-content-center">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal">Cancel</button>
+                                                            <a href="/deleteAddress/<%= data._id%>"
+                                                                class="btn btn-danger text-light">Delete</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
 
                                             <div class="col-lg-6">
-								    			<div class="card card-dashboard">
-								    				<div class="card-body">
-								    					<h3 class="card-title">Billing Address</h3><!-- End .card-title -->
-														<p>User Name<br>
-														User Company<br>
-														John str<br>
-														New York, NY 10001<br>
-														1-234-987-6543<br>
-														yourmail@mail.com<br>
-														<a href="#">Edit <i class="icon-edit"></i></a>
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                        <a href="#" class="text-danger ">Delete</a></p>
-								    				</div><!-- End .card-body -->
-								    			</div><!-- End .card-dashboard -->
-								    		</div><!-- End .col-lg-6 -->
-								    		<div class="col-sm-12">
-                                                <a class="btn btn-outline-primary-2" href="/addAddress" >Add new</a>
-                                              </div>
-								    	</div><!-- End .row -->
-								    </div><!-- .End .tab-pane -->
-                                    
+                                                <div class="card card-dashboard">
+                                                    <div class="card-body">
+                                                        <h3 class="card-title">Billing Address</h3>
+                                                        <!-- End .card-title -->
+                                                        <p>
+                                                            <%= data.name%> <br>
+                                                                <%= data.address%><br>
+                                                                    <%= data.landmark%><br>
+                                                                        <%= data.city%><br>
+                                                                            <%= data.pincode%><br>
+                                                                                <%= data.email%><br>
+                                                                                    <%= data.mobile%><br>
+                                                                                        <a
+                                                                                            href="/editAddress/<%= data._id%>">Edit
+                                                                                            <i
+                                                                                                class="icon-edit"></i></a>
+                                                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                        <a href="#deleteAddress"
+                                                                                            data-toggle="modal"
+                                                                                            class="text-danger ">Delete</a>
+                                                        </p>
+                                                    </div><!-- End .card-body -->
+                                                </div><!-- End .card-dashboard -->
+                                            </div><!-- End .col-lg-6 -->
+                                            <% }) }else{%>
+                                                <p>Address not added yet</p>
+                                                <div class="col-sm-12">
+                                                    <a class="btn btn-outline-primary-2" href="/addAddress">Add
+                                                        Address</a>
+                                                </div>
+                                                <% } %>
+                                                    <% if(addressData.length<3){%>
+                                                        <div class="col-sm-12">
+                                                            <a class="btn btn-outline-primary-2" href="/addAddress">Add
+                                                                New</a>
+                                                        </div>
+                                                        <%}%>
+                                    </div><!-- End .row -->
+                                </div><!-- .End .tab-pane -->
 
-								    <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
-								    	<form action="#">
-			                				<div class="row">
-			                					<div class="col-sm-6">
-			                						<label>First Name *</label>
-			                						<input type="text" class="form-control" required>
-			                					</div><!-- End .col-sm-6 -->
 
-			                					<div class="col-sm-6">
-			                						<label>Last Name *</label>
-			                						<input type="text" class="form-control" required>
-			                					</div><!-- End .col-sm-6 -->
-			                				</div><!-- End .row -->
+                                <div class="tab-pane fade" id="tab-account" role="tabpanel"
+                                    aria-labelledby="tab-account-link">
+                                    <form action="#">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label>First Name *</label>
+                                                <input type="text" class="form-control" required>
+                                            </div><!-- End .col-sm-6 -->
 
-		            						<label>Display Name *</label>
-		            						<input type="text" class="form-control" required>
-		            						<small class="form-text">This will be how your name will be displayed in the account section and in reviews</small>
+                                            <div class="col-sm-6">
+                                                <label>Last Name *</label>
+                                                <input type="text" class="form-control" required>
+                                            </div><!-- End .col-sm-6 -->
+                                        </div><!-- End .row -->
 
-		                					<label>Email address *</label>
-		        							<input type="email" class="form-control" required>
+                                        <label>Display Name *</label>
+                                        <input type="text" class="form-control" required>
+                                        <small class="form-text">This will be how your name will be displayed in the
+                                            account section and in reviews</small>
 
-		            						<label>Current password (leave blank to leave unchanged)</label>
-		            						<input type="password" class="form-control">
+                                        <label>Email address *</label>
+                                        <input type="email" class="form-control" required>
 
-		            						<label>New password (leave blank to leave unchanged)</label>
-		            						<input type="password" class="form-control">
+                                        <label>Current password (leave blank to leave unchanged)</label>
+                                        <input type="password" class="form-control">
 
-		            						<label>Confirm new password</label>
-		            						<input type="password" class="form-control mb-2">
+                                        <label>New password (leave blank to leave unchanged)</label>
+                                        <input type="password" class="form-control">
 
-		                					<button type="submit" class="btn btn-outline-primary-2">
-			                					<span>SAVE CHANGES</span>
-			            						<i class="icon-long-arrow-right"></i>
-			                				</button>
-			                			</form>
-								    </div><!-- .End .tab-pane -->
-								</div>
-	                		</div><!-- End .col-lg-9 -->
-	                	</div><!-- End .row -->
-	                </div><!-- End .container -->
-                </div><!-- End .dashboard -->
-            </div><!-- End .page-content -->
-        </main><!-- End .main -->
+                                        <label>Confirm new password</label>
+                                        <input type="password" class="form-control mb-2">
 
-        
+                                        <button type="submit" class="btn btn-outline-primary-2">
+                                            <span>SAVE CHANGES</span>
+                                            <i class="icon-long-arrow-right"></i>
+                                        </button>
+                                    </form>
+                                </div><!-- .End .tab-pane -->
+                            </div>
+                        </div><!-- End .col-lg-9 -->
+                    </div><!-- End .row -->
+                </div><!-- End .container -->
+            </div><!-- End .dashboard -->
+        </div><!-- End .page-content -->
+    </main><!-- End .main -->
+
+
     </div><!-- End .page-wrapper -->
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
@@ -483,10 +547,11 @@
 
             <form action="#" method="get" class="mobile-search">
                 <label for="mobile-search" class="sr-only">Search</label>
-                <input type="search" class="form-control" name="mobile-search" id="mobile-search" placeholder="Search in..." required>
+                <input type="search" class="form-control" name="mobile-search" id="mobile-search"
+                    placeholder="Search in..." required>
                 <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
             </form>
-            
+
             <nav class="mobile-nav">
                 <ul class="mobile-menu">
                     <li class="active">
@@ -526,10 +591,12 @@
                             <li><a href="category-2cols.html">Shop Grid 2 Columns</a></li>
                             <li><a href="category.html">Shop Grid 3 Columns</a></li>
                             <li><a href="category-4cols.html">Shop Grid 4 Columns</a></li>
-                            <li><a href="category-boxed.html"><span>Shop Boxed No Sidebar<span class="tip tip-hot">Hot</span></span></a></li>
+                            <li><a href="category-boxed.html"><span>Shop Boxed No Sidebar<span
+                                            class="tip tip-hot">Hot</span></span></a></li>
                             <li><a href="category-fullwidth.html">Shop Fullwidth No Sidebar</a></li>
                             <li><a href="product-category-boxed.html">Product Category Boxed</a></li>
-                            <li><a href="product-category-fullwidth.html"><span>Product Category Fullwidth<span class="tip tip-new">New</span></span></a></li>
+                            <li><a href="product-category-fullwidth.html"><span>Product Category Fullwidth<span
+                                            class="tip tip-new">New</span></span></a></li>
                             <li><a href="cart.html">Cart</a></li>
                             <li><a href="checkout.html">Checkout</a></li>
                             <li><a href="wishlist.html">Wishlist</a></li>
@@ -541,7 +608,8 @@
                         <ul>
                             <li><a href="product.html">Default</a></li>
                             <li><a href="product-centered.html">Centered</a></li>
-                            <li><a href="product-extended.html"><span>Extended Info<span class="tip tip-new">New</span></span></a></li>
+                            <li><a href="product-extended.html"><span>Extended Info<span
+                                            class="tip tip-new">New</span></span></a></li>
                             <li><a href="product-gallery.html">Gallery</a></li>
                             <li><a href="product-sticky.html">Sticky Info</a></li>
                             <li><a href="product-sidebar.html">Boxed With Sidebar</a></li>
@@ -659,23 +727,28 @@
                         <div class="form-tab">
                             <ul class="nav nav-pills nav-fill" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link active" id="signin-tab" data-toggle="tab" href="#signin" role="tab" aria-controls="signin" aria-selected="true">Sign In</a>
+                                    <a class="nav-link active" id="signin-tab" data-toggle="tab" href="#signin"
+                                        role="tab" aria-controls="signin" aria-selected="true">Sign In</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" id="register-tab" data-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="false">Register</a>
+                                    <a class="nav-link" id="register-tab" data-toggle="tab" href="#register" role="tab"
+                                        aria-controls="register" aria-selected="false">Register</a>
                                 </li>
                             </ul>
                             <div class="tab-content" id="tab-content-5">
-                                <div class="tab-pane fade show active" id="signin" role="tabpanel" aria-labelledby="signin-tab">
+                                <div class="tab-pane fade show active" id="signin" role="tabpanel"
+                                    aria-labelledby="signin-tab">
                                     <form action="#">
                                         <div class="form-group">
                                             <label for="singin-email">Username or email address *</label>
-                                            <input type="text" class="form-control" id="singin-email" name="singin-email" required>
+                                            <input type="text" class="form-control" id="singin-email"
+                                                name="singin-email" required>
                                         </div><!-- End .form-group -->
 
                                         <div class="form-group">
                                             <label for="singin-password">Password *</label>
-                                            <input type="password" class="form-control" id="singin-password" name="singin-password" required>
+                                            <input type="password" class="form-control" id="singin-password"
+                                                name="singin-password" required>
                                         </div><!-- End .form-group -->
 
                                         <div class="form-footer">
@@ -685,8 +758,10 @@
                                             </button>
 
                                             <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="signin-remember">
-                                                <label class="custom-control-label" for="signin-remember">Remember Me</label>
+                                                <input type="checkbox" class="custom-control-input"
+                                                    id="signin-remember">
+                                                <label class="custom-control-label" for="signin-remember">Remember
+                                                    Me</label>
                                             </div><!-- End .custom-checkbox -->
 
                                             <a href="#" class="forgot-link">Forgot Your Password?</a>
@@ -714,12 +789,14 @@
                                     <form action="#">
                                         <div class="form-group">
                                             <label for="register-email">Your email address *</label>
-                                            <input type="email" class="form-control" id="register-email" name="register-email" required>
+                                            <input type="email" class="form-control" id="register-email"
+                                                name="register-email" required>
                                         </div><!-- End .form-group -->
 
                                         <div class="form-group">
                                             <label for="register-password">Password *</label>
-                                            <input type="password" class="form-control" id="register-password" name="register-password" required>
+                                            <input type="password" class="form-control" id="register-password"
+                                                name="register-password" required>
                                         </div><!-- End .form-group -->
 
                                         <div class="form-footer">
@@ -729,8 +806,10 @@
                                             </button>
 
                                             <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="register-policy" required>
-                                                <label class="custom-control-label" for="register-policy">I agree to the <a href="#">privacy policy</a> *</label>
+                                                <input type="checkbox" class="custom-control-input" id="register-policy"
+                                                    required>
+                                                <label class="custom-control-label" for="register-policy">I agree to the
+                                                    <a href="#">privacy policy</a> *</label>
                                             </div><!-- End .custom-checkbox -->
                                         </div><!-- End .form-footer -->
                                     </form>
@@ -769,9 +848,21 @@
     <script src="assets/js/owl.carousel.min.js"></script>
     <!-- Main JS File -->
     <script src="assets/js/main.js"></script>
-   
-    
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+        // async function editAddress(addressId){
+        //     try {
+        //         await axios.get(`/aditAddress/${addressId}`);
+        //     } catch (error) {
+        //         console.log(error);
+        //     }
+        // }
+    </script>
 
 
-</html>
+
+    </body>
+
+
+    </html>

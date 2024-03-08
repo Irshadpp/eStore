@@ -54,7 +54,10 @@ router.post('/updateQuantity', indexAuth.isLogin, indexController.updateQuantity
 router.delete('/cart/deleteProduct/:productId', indexAuth.isLogin, indexController.deleteProduct);
 
 router.get('/addAddress', indexAuth.isLogin, indexAuth.isUserBlock, indexController.addAddressLoad);
-router.post('/addAddress', indexAuth.isLogin, indexAuth.isUserBlock, indexController.addAddress)
+router.post('/addAddress', indexAuth.isLogin, indexAuth.isUserBlock, indexController.addAddress);
+router.get('/editAddress/:addressId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.editAddressLoad);
+router.post('/editAddress/:addressId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.editAddress);
+router.get('/deleteAddress/:addressId',indexAuth.isLogin, indexAuth.isUserBlock, indexController.deleteAddress)
 
 //checkout
 router.get('/checkout', indexAuth.isLogin, indexAuth.isUserBlock, indexController.checkoutLoad);

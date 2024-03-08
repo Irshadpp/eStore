@@ -48,6 +48,8 @@ router.put('/products/list/:productId', adminController.listProduct);
 router.put('/products/unlist/:productId', adminController.unlistProduct);
 router.delete('/products/delete/:productId', adminController.deleteProduct);
 
-
+//orders
+router.get('/orders', adminAuth.isLogin, adminController.ordresLoad);
+router.get('/orderDetail', adminAuth.isLogin, adminController.orderDetailLoad);
 
 module.exports = router;

@@ -64,6 +64,24 @@ const editProductLoad = asyncHandler( async (req,res) =>{
 
 })
 
+const ordresLoad = async (req,res) =>{
+    try {
+        res.render('orders')
+    } catch (error) {
+        res.status(404).json('Page not found');
+        console.log(error);
+    }
+}
+
+const orderDetailLoad = async (req,res) =>{
+    try {
+        res.render('orderDetail');
+    } catch (error) {
+        res.status(404).json('Page not found');
+        console.log(error);
+    }
+}
+
 const verifyLogin = asyncHandler( async (req,res) => {
 
     const { email, password } = req.body;
@@ -401,4 +419,6 @@ module.exports = {
     unlistProduct,
     listProduct,
     deleteProduct,
+    ordresLoad,
+    orderDetailLoad,
 }

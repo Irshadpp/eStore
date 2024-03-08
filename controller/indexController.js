@@ -90,17 +90,20 @@ const productLoad = asyncHandler(async (req, res) => {
 
 const accountLoad = asyncHandler(async (req, res) => {
 
-    const userData = await User.findOne({ _id: req.session.user_id });
-    const addressData = await Address.aggregate([
-        {$lookup:{
-            
-        }}
-    ])
-    res.render('account', { userData });
-
+    const userData = await User.findOne({_id:req.session.user_id});
+    await Address.find({ userId: req.session.user_id })
+    .populate('userId')
+    .then(addresses=>{
+    const addressData = addresses.flatMap(address => address.addresses); 
+    res.render('account',{userData,addressData});
+    }).catch(error=>{
+        console.log(error)
+    })
 });
 
+
 const addAddressLoad = asyncHandler(async (req, res) => {
+    const checkAddress = await Address.findOne({userId:req.session.user_id});
     res.render('addAddress');
 })
 
@@ -149,9 +152,83 @@ const checkoutLoad = asyncHandler(async (req, res) => {
 
 const editAddressLoad = async (req, res) => {
     try {
-        res.render('editAddress');
-    } catch (error) {
+        const addressId = req.params.addressId;
+        const userId = req.session.user_id
+        const addressCheck = await Address.findOne({'userId': userId, "addresses._id":addressId});
+        const addressData = addressCheck.addresses.find(addrs => addrs._id.equals(addressId));
+        res.render('editAddress',{addressData});
+    } catch (error) {    
         res.status(404).send("Page note Found");
+        console.log(error)
+    }
+}
+
+
+const editAddress = async (req,res) =>{
+    try {
+        const addressId = req.params.addressId;
+        const { name, address, landmark, city, pincode, email, mobile } = req.body;
+
+        if(!(/^[A-Za-z]+(?: [A-Za-z]+)?$/.test(name))){
+            return res.render('addAddress',{nameMsg:"Give proper name!"});
+        }
+
+        if(address.trim() === ''){
+            return res.render('addAddress',{addressMsg:"Address should not be empty!"});
+        };
+
+        if(landmark.trim() === ''){
+            return res.render('addAddress',{landmarkMsg:"landmark should not be empty!"});
+        };
+
+        if(city.trim() === ''){
+            return res.render('addAddress',{cityMsg:"city should not be empty!"});
+        };
+
+        if(pincode.trim() === ''){
+            return res.render('addAddress',{pincodeMsg:"Give valid pincode!"});
+        }; 
+        
+        if(!(/[A-Za-z0-9._%+-]+@gmail.com/.test(email))){
+            return res.render('addAddress',{emailMsg:"Give valid email!"});
+        }
+
+        if(mobile.trim() === '' && mobile.length<10){
+            return res.render('addAddress',{mobileMsg:"Give valid mobile number!"});
+        };
+
+        await Address.updateOne(
+            {userId:req.session.user_id, "addresses._id":addressId},
+            {$set:{
+                "addresses.$.name": name,
+                "addresses.$.address": address,
+                "addresses.$.landmark": landmark,
+                "addresses.$.city": city,
+                "addresses.$.pincode": pincode,
+                "addresses.$.email": email,
+                "addresses.$.mobile": mobile,
+            }}
+            );
+
+        res.redirect('/account')
+
+
+    } catch (error) {
+        res.status(500).json('error with editing address')
+        console.log(error)
+    }
+}
+
+const deleteAddress = async (req,res) =>{
+    try {
+        const addressId = req.params.addressId;
+        await Address.findOneAndUpdate(
+            {userId:req.session.user_id},
+            {$pull:{"addresses":{_id:addressId}}}
+        );
+    res.redirect('/account')
+    } catch (error) {
+        console.log(error);
     }
 }
 
@@ -603,10 +680,7 @@ const addAddress = async (req, res) => {
             return res.render('addAddress',{mobileMsg:"Give valid mobile number!"});
         };
 
-       
-
-
-        const addressDoc = new Address({
+        const addressDoc = {
             name: name,
             address: address,
             landmark: landmark,
@@ -614,13 +688,24 @@ const addAddress = async (req, res) => {
             pincode: pincode,
             email: email,
             mobile: mobile
-        });
+        };
+
+        const checkAddress = await Address.findOne({userId:req.session.user_id});
+
+        if(checkAddress){
+            await Address.updateOne(
+                {userId:req.session.user_id},
+                {$push:{addresses:addressDoc}}
+                );
+        }else{
+                const newAddress = new Address({
+                    userId: req.session.user_id,
+                    addresses: [addressDoc]
+                });
         
-        const newAddressDoc = await addressDoc.save();
-        const saveAddress = await User.updateOne(
-            {_id:req.session.user_id},
-            {$push:{address:newAddressDoc._id}}
-            )
+                await newAddress.save();
+        }
+       
         res.redirect('/account');
     } catch (error) {
         res.status(500).json(error.message);
@@ -652,6 +737,8 @@ module.exports = {
     homeLoad,
     accountLoad,
     addAddressLoad,
+    editAddress,
+    deleteAddress,
     cartLoad,
     addToCart,
     deleteProduct,

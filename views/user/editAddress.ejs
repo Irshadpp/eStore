@@ -139,32 +139,52 @@
                         <div class="col-md-8 col-lg-9">
                             <div class="tab-content">
                                 <div class="">
-                                    <form action="#">
+                                    <form action="#" method="post" >
 
                                         <label>Full Name</label>
-                                        <input type="text" class="form-control" required>
-                                        <small class="text-danger ">fjdaskfjakdlsjfkljaldsjljs</small>
+                                        <% if (typeof nameMsg !== 'undefined') {%>
+                                            <small class="text-danger mt-0 "><%= nameMsg %></small>
+                                            <%} %>
+                                        <input type="text" name="name" value="<%= addressData.name %>" class="form-control" required>
 
                                         <label>Address</label>
-                                        <textarea name="address" class="form-control" rows="3" required></textarea>
+                                        <% if (typeof addressMsg !== 'undefined') {%>
+                                            <small class="text-danger mt-0 "><%= addressMsg %></small>
+                                            <%} %>
+                                        <textarea name="address" class="form-control" rows="3" required><%= addressData.address %></textarea>
 
                                         <label>Landmark</label>
-                                        <input type="text" class="form-control" required>
+                                        <% if (typeof landmarkMsg !== 'undefined') {%>
+                                            <small class="text-danger mt-0 "><%= landmarkMsg %></small>
+                                            <%} %>
+                                        <input type="text" name="landmark" value="<%= addressData.landmark %>" class="form-control" required>
 
                                         <label>City</label>
-                                        <input type="text" class="form-control" required>
+                                        <% if (typeof cityMsg !== 'undefined') {%>
+                                            <small class="text-danger mt-0 "><%= cityMsg %></small>
+                                            <%} %>
+                                        <input type="text" name="city" value="<%= addressData.city %>" class="form-control" required>
 
                                         <label>Pincode</label>
-                                        <input type="tel" class="form-control" required>
+                                        <% if (typeof pincodeMsg !== 'undefined') {%>
+                                            <small class="text-danger mt-0 "><%= pincodeMsg %></small>
+                                            <%} %>
+                                        <input type="tel" name="pincode" value="<%= addressData.pincode %>" class="form-control" required>
 
                                         <label>Email address</label>
-                                        <input type="email" class="form-control" required>
+                                        <% if (typeof emailMsg !== 'undefined') {%>
+                                            <small class="text-danger mt-0 "><%= emailMsg %></small>
+                                            <%} %>
+                                        <input type="email" name="email" value="<%= addressData.email %>" class="form-control" required>
 
                                         <label>Mobile</label>
-                                        <input type="tel" class="form-control" required>
+                                        <% if (typeof mobileMsg !== 'undefined') {%>
+                                            <small class="text-danger mt-0 "><%= mobileMsg %></small>
+                                            <%} %>
+                                        <input type="tel" name="mobile" value="<%= addressData.mobile %>" class="form-control" required>
 
                                         <button type="submit" class="btn btn-outline-primary-2">
-                                            <span>SAVE CHANGES</span>
+                                            <span>SAVE ADDRESS</span>
                                             <i class="icon-long-arrow-right"></i>
                                         </button>
                                     </form>
