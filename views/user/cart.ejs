@@ -56,9 +56,10 @@
                                                     <input type="number" class="quantityInput form-control" readonly value="<%= element.quantity %>" min="1" max="5" step="1" data-decimals="0" required>
                                                     <input type="text" class="cartId" value="<%=element.itemsId%>" hidden>
                                                     <input type="text" class="productId" value="<%=element.productId%>" hidden>
+                                                    <input type="text" class="productPrice" value="<%=element.price%>" hidden>
                                                 </div><!-- End .cart-product-quantity -->
                                             </td>
-											<td class="total-col"><%= (element.price * element.quantity).toFixed(2) %></td>
+											<td class="total-col"><%= parseFloat(element.total).toFixed(2) %></td>
 											<td class="remove-col"><button class="btn-remove" data-product-id="<%= element.productId %>"><i class="icon-close"></i></button></td>
 										</tr>
                                     </div>
@@ -77,7 +78,7 @@
 	                					<tbody>
 	                						<tr class="summary-subtotal">
 	                							<td>Subtotal:</td>
-	                							<td class="subtotal"><%=subTotal%></td>
+	                							<td class="subtotal">₹<%=parseFloat(subTotal).toFixed(2)%></td>
 	                						</tr><!-- End .summary-subtotal -->
 	                						<tr class="summary-shipping">
 	                							<td>Shipping:</td>
@@ -91,7 +92,7 @@
 														<label class="custom-control-label" for="free-shipping">Free Shipping</label>
 													</div><!-- End .custom-control -->
 	                							</td>
-	                							<td>$0.00</td>
+	                							<td>₹0.00</td>
 	                						</tr><!-- End .summary-shipping-row -->
 
 	                						
@@ -103,7 +104,7 @@
 
 	                						<tr class="summary-total">
 	                							<td>Total:</td>
-	                							<td>$160.00</td>
+	                							<td class="subtotal">₹<%=parseFloat(subTotal).toFixed(2)%></td>
 	                						</tr><!-- End .summary-total -->
 	                					</tbody>
 	                				</table><!-- End .table table-summary -->
@@ -129,8 +130,9 @@
         var $parentrow = $(this).closest('tr')
         var cartItemId = $parentrow.find('.cartId').val();
         var productId = $parentrow.find('.productId').val();
+        var productPrice = $parentrow.find('.productPrice').val();
         console.log('Cart Item ID:', cartItemId);
-        console.log('Cart product ID:', productId); 
+        console.log('Cart product price:', productPrice); 
 
         $.ajax({
             type: 'POST',
@@ -138,11 +140,14 @@
             data: {
                 cartItemId:cartItemId,
                 newQuantity:newQuantity,
-                productId:productId
+                productId:productId,
+                productPrice:productPrice
             },
             success: function(response){
-                console.log('Quantity updated successfully');
-            },
+                const productTotal = $(this).closest('tr').find('.total-col');
+                $('.subtotal').html(parseFloat(response.subTotal).toFixed(2))
+                productTotal.html(parseFloat(response.updatedProductPrice).toFixed(2))
+            }.bind(this),
             error: function(xhr, status, error){
                 console.log("Error updating quantity:", error);
             }

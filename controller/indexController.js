@@ -90,20 +90,20 @@ const productLoad = asyncHandler(async (req, res) => {
 
 const accountLoad = asyncHandler(async (req, res) => {
 
-    const userData = await User.findOne({_id:req.session.user_id});
+    const userData = await User.findOne({ _id: req.session.user_id });
     await Address.find({ userId: req.session.user_id })
-    .populate('userId')
-    .then(addresses=>{
-    const addressData = addresses.flatMap(address => address.addresses); 
-    res.render('account',{userData,addressData});
-    }).catch(error=>{
-        console.log(error)
-    })
+        .populate('userId')
+        .then(addresses => {
+            const addressData = addresses.flatMap(address => address.addresses);
+            res.render('account', { userData, addressData });
+        }).catch(error => {
+            console.log(error)
+        })
 });
 
 
 const addAddressLoad = asyncHandler(async (req, res) => {
-    const checkAddress = await Address.findOne({userId:req.session.user_id});
+    const checkAddress = await Address.findOne({ userId: req.session.user_id });
     res.render('addAddress');
 })
 
@@ -126,6 +126,7 @@ const cartLoad = async (req, res) => {
                 $project: {
                     // "_id":0,
                     "itemsId": "$items._id",
+                    "total": "$items.total",
                     "productId": "$productDetails._id",
                     "productName": "$productDetails.productName",
                     "price": "$productDetails.price",
@@ -147,68 +148,89 @@ const cartLoad = async (req, res) => {
 }
 
 const checkoutLoad = asyncHandler(async (req, res) => {
-    res.render('checkout');
+    try {
+        const cart = await Cart.findOne({ userId: req.session.user_id }).populate('items.productId').exec();
+        
+        if (!cart) {
+            console.log('Cart not found');
+            return res.status(404).send('Cart not found');
+        }
+
+        const products = cart.items.map(item => ({
+            productName: item.productId.productName,
+            total: item.total,
+        }));
+
+        const subTotal = cart.subTotal;
+
+        res.render('checkout', { products, subTotal });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
 })
 
 const editAddressLoad = async (req, res) => {
     try {
         const addressId = req.params.addressId;
         const userId = req.session.user_id
-        const addressCheck = await Address.findOne({'userId': userId, "addresses._id":addressId});
+        const addressCheck = await Address.findOne({ 'userId': userId, "addresses._id": addressId });
         const addressData = addressCheck.addresses.find(addrs => addrs._id.equals(addressId));
-        res.render('editAddress',{addressData});
-    } catch (error) {    
+        res.render('editAddress', { addressData });
+    } catch (error) {
         res.status(404).send("Page note Found");
         console.log(error)
     }
 }
 
 
-const editAddress = async (req,res) =>{
+const editAddress = async (req, res) => {
     try {
         const addressId = req.params.addressId;
         const { name, address, landmark, city, pincode, email, mobile } = req.body;
 
-        if(!(/^[A-Za-z]+(?: [A-Za-z]+)?$/.test(name))){
-            return res.render('addAddress',{nameMsg:"Give proper name!"});
+        if (!(/^[A-Za-z]+(?: [A-Za-z]+)?$/.test(name))) {
+            return res.render('addAddress', { nameMsg: "Give proper name!" });
         }
 
-        if(address.trim() === ''){
-            return res.render('addAddress',{addressMsg:"Address should not be empty!"});
+        if (address.trim() === '') {
+            return res.render('addAddress', { addressMsg: "Address should not be empty!" });
         };
 
-        if(landmark.trim() === ''){
-            return res.render('addAddress',{landmarkMsg:"landmark should not be empty!"});
+        if (landmark.trim() === '') {
+            return res.render('addAddress', { landmarkMsg: "landmark should not be empty!" });
         };
 
-        if(city.trim() === ''){
-            return res.render('addAddress',{cityMsg:"city should not be empty!"});
+        if (city.trim() === '') {
+            return res.render('addAddress', { cityMsg: "city should not be empty!" });
         };
 
-        if(pincode.trim() === ''){
-            return res.render('addAddress',{pincodeMsg:"Give valid pincode!"});
-        }; 
-        
-        if(!(/[A-Za-z0-9._%+-]+@gmail.com/.test(email))){
-            return res.render('addAddress',{emailMsg:"Give valid email!"});
+        if (pincode.trim() === '') {
+            return res.render('addAddress', { pincodeMsg: "Give valid pincode!" });
+        };
+
+        if (!(/[A-Za-z0-9._%+-]+@gmail.com/.test(email))) {
+            return res.render('addAddress', { emailMsg: "Give valid email!" });
         }
 
-        if(mobile.trim() === '' && mobile.length<10){
-            return res.render('addAddress',{mobileMsg:"Give valid mobile number!"});
+        if (mobile.trim() === '' && mobile.length < 10) {
+            return res.render('addAddress', { mobileMsg: "Give valid mobile number!" });
         };
 
         await Address.updateOne(
-            {userId:req.session.user_id, "addresses._id":addressId},
-            {$set:{
-                "addresses.$.name": name,
-                "addresses.$.address": address,
-                "addresses.$.landmark": landmark,
-                "addresses.$.city": city,
-                "addresses.$.pincode": pincode,
-                "addresses.$.email": email,
-                "addresses.$.mobile": mobile,
-            }}
-            );
+            { userId: req.session.user_id, "addresses._id": addressId },
+            {
+                $set: {
+                    "addresses.$.name": name,
+                    "addresses.$.address": address,
+                    "addresses.$.landmark": landmark,
+                    "addresses.$.city": city,
+                    "addresses.$.pincode": pincode,
+                    "addresses.$.email": email,
+                    "addresses.$.mobile": mobile,
+                }
+            }
+        );
 
         res.redirect('/account')
 
@@ -219,14 +241,14 @@ const editAddress = async (req,res) =>{
     }
 }
 
-const deleteAddress = async (req,res) =>{
+const deleteAddress = async (req, res) => {
     try {
         const addressId = req.params.addressId;
         await Address.findOneAndUpdate(
-            {userId:req.session.user_id},
-            {$pull:{"addresses":{_id:addressId}}}
+            { userId: req.session.user_id },
+            { $pull: { "addresses": { _id: addressId } } }
         );
-    res.redirect('/account')
+        res.redirect('/account')
     } catch (error) {
         console.log(error);
     }
@@ -508,18 +530,30 @@ const addToCart = async (req, res) => {
     try {
 
         const productId = req.params.productId;
-
+        const productData = await Product.findById(productId);
+        const productPrice = productData.price;
         const user_id = req.session.user_id;
 
         const checkCart = await Cart.findOne({ userId: user_id });
+
         if (checkCart) {
             const existingItem = await Cart.findOne({ $and: [{ userId: user_id }, { "items.productId": productId }] })
             if (existingItem) {
                 res.status(201).redirect('/cart');
             } else {
+
+                const subTotal = checkCart.items.reduce((acc, crr) => {
+                    return acc + crr.total;
+                }, productPrice);
+
+                // console.log(subtotal,"---------------------------")
+
                 await Cart.updateOne(
                     { userId: user_id },
-                    { $push: { items: { productId: productId } } }
+                    {
+                        $set: { subTotal: subTotal },
+                        $push: { items: { productId: productId, total: productPrice } }
+                    }
                 );
                 await Product.findOneAndUpdate(
                     { _id: productId },
@@ -529,10 +563,10 @@ const addToCart = async (req, res) => {
             }
         } else {
 
-
             const cartProduct = new Cart({
                 userId: user_id,
-                items: [{ productId }]
+                items: [{ productId, total: productPrice }],
+                subTotal: productPrice
             });
             const newCartProduct = await cartProduct.save();
 
@@ -554,15 +588,21 @@ const deleteProduct = async (req, res) => {
         const productId = req.params.productId;
         const userId = req.session.user_id;
 
+        const cart = await Cart.findOne({ userId: userId });
         const cartData = await Cart.findOne(
             { "items.productId": productId },
             { _id: 0, "items.$": 1 }
         )
+
+        const updatedSubTotal = cart.subTotal - cartData.items[0].total;
         const cartItemQty = cartData.items[0].quantity;
 
         const updatedCart = await Cart.findOneAndUpdate(
             { userId: userId },
-            { $pull: { items: { productId: productId } } },
+            {
+                $set: { subTotal: updatedSubTotal },
+                $pull: { items: { productId: productId } }
+            },
             { new: true }
         );
 
@@ -580,13 +620,12 @@ const deleteProduct = async (req, res) => {
 
 const updateQuantity = async (req, res) => {
     try {
-        const { cartItemId, newQuantity, productId } = req.body;
+        const { cartItemId, newQuantity, productId, productPrice } = req.body;
         const checkProduct = await Product.findOne({ _id: productId }, { _id: 0, quantity: 1 });
 
         if (checkProduct.quantity === 0) {
             return res.json('out of stock');
         }
-
 
         const oldQtyData = await Cart.findOne(
             { "items._id": cartItemId },
@@ -603,7 +642,8 @@ const updateQuantity = async (req, res) => {
             await Product.findOneAndUpdate(
                 { _id: productId },
                 { $inc: { quantity: -1 } }
-            )
+            );
+
         } else {
             await Product.findOneAndUpdate(
                 { _id: productId },
@@ -619,9 +659,24 @@ const updateQuantity = async (req, res) => {
             { new: true }
         );
 
+        const productData = cartItem.items.find(product => product.productId.equals(productId))
+        const updatedProductPrice = productData.quantity * productPrice;
 
+        const updatedCartItem = await Cart.findOneAndUpdate(
+            { "items._id": cartItemId },
+            { $set: { "items.$.total": updatedProductPrice } },
+            { new: true }
+        );
 
-        res.status(200).json({ success: true, message: "Quantity updated successfully" })
+        const subTotalData = await Cart.findOne({ userId: req.session.user_id });
+        const subTotal = subTotalData.items.reduce((acc, crr) => {
+            return acc + crr.total
+        }, 0);
+        await Cart.updateOne(
+            { userId: req.session.user_id },
+            { $set: { subTotal: subTotal } }
+        )
+        res.status(200).json({ success: true, message: "Quantity updated successfully", updatedProductPrice, subTotal })
     } catch (error) {
         res.status(500).json({ message: "Something went wrong with update quantity" });
         console.log(error);
@@ -652,32 +707,32 @@ const addAddress = async (req, res) => {
     try {
         const { name, address, landmark, city, pincode, email, mobile } = req.body;
 
-        if(!(/^[A-Za-z]+(?: [A-Za-z]+)?$/.test(name))){
-            return res.render('addAddress',{nameMsg:"Give proper name!"});
+        if (!(/^[A-Za-z]+(?: [A-Za-z]+)?$/.test(name))) {
+            return res.render('addAddress', { nameMsg: "Give proper name!" });
         }
 
-        if(address.trim() === ''){
-            return res.render('addAddress',{addressMsg:"Address should not be empty!"});
+        if (address.trim() === '') {
+            return res.render('addAddress', { addressMsg: "Address should not be empty!" });
         };
 
-        if(landmark.trim() === ''){
-            return res.render('addAddress',{landmarkMsg:"landmark should not be empty!"});
+        if (landmark.trim() === '') {
+            return res.render('addAddress', { landmarkMsg: "landmark should not be empty!" });
         };
 
-        if(city.trim() === ''){
-            return res.render('addAddress',{cityMsg:"city should not be empty!"});
+        if (city.trim() === '') {
+            return res.render('addAddress', { cityMsg: "city should not be empty!" });
         };
 
-        if(pincode.trim() === ''){
-            return res.render('addAddress',{pincodeMsg:"Give valid pincode!"});
-        }; 
-        
-        if(!(/[A-Za-z0-9._%+-]+@gmail.com/.test(email))){
-            return res.render('addAddress',{emailMsg:"Give valid email!"});
+        if (pincode.trim() === '') {
+            return res.render('addAddress', { pincodeMsg: "Give valid pincode!" });
+        };
+
+        if (!(/[A-Za-z0-9._%+-]+@gmail.com/.test(email))) {
+            return res.render('addAddress', { emailMsg: "Give valid email!" });
         }
 
-        if(mobile.trim() === '' && mobile.length<10){
-            return res.render('addAddress',{mobileMsg:"Give valid mobile number!"});
+        if (mobile.trim() === '' && mobile.length < 10) {
+            return res.render('addAddress', { mobileMsg: "Give valid mobile number!" });
         };
 
         const addressDoc = {
@@ -690,22 +745,22 @@ const addAddress = async (req, res) => {
             mobile: mobile
         };
 
-        const checkAddress = await Address.findOne({userId:req.session.user_id});
+        const checkAddress = await Address.findOne({ userId: req.session.user_id });
 
-        if(checkAddress){
+        if (checkAddress) {
             await Address.updateOne(
-                {userId:req.session.user_id},
-                {$push:{addresses:addressDoc}}
-                );
-        }else{
-                const newAddress = new Address({
-                    userId: req.session.user_id,
-                    addresses: [addressDoc]
-                });
-        
-                await newAddress.save();
+                { userId: req.session.user_id },
+                { $push: { addresses: addressDoc } }
+            );
+        } else {
+            const newAddress = new Address({
+                userId: req.session.user_id,
+                addresses: [addressDoc]
+            });
+
+            await newAddress.save();
         }
-       
+
         res.redirect('/account');
     } catch (error) {
         res.status(500).json(error.message);
