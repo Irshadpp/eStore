@@ -1,3 +1,4 @@
+"use strict";
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose')
 
@@ -7,6 +8,7 @@ const Product = require('../model/productdb');
 const Category = require('../model/categorydb');
 const Cart = require('../model/cartdb');
 const Address = require('../model/addressdb');
+const Order = require('../model/orderdb');
 
 const generateOTP = require('../util/generateOtp')
 const asyncHandler = require('express-async-handler');
@@ -150,20 +152,25 @@ const cartLoad = async (req, res) => {
 const checkoutLoad = asyncHandler(async (req, res) => {
     try {
         const cart = await Cart.findOne({ userId: req.session.user_id }).populate('items.productId').exec();
-        
+
         if (!cart) {
             console.log('Cart not found');
             return res.status(404).send('Cart not found');
         }
 
+
         const products = cart.items.map(item => ({
+            productId: item.productId._id,
             productName: item.productId.productName,
+            quantity: item.quantity,
             total: item.total,
         }));
 
         const subTotal = cart.subTotal;
 
-        res.render('checkout', { products, subTotal });
+        const addressData = await Address.findOne({ userId: req.session.user_id }, { addresses: 1, _id: 0 });
+
+        res.render('checkout', { products, subTotal, address: addressData.addresses });
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
@@ -697,7 +704,7 @@ const editProfile = async (req, res) => {
             }
         );
         const updatedUser = await User.findOne({ _id: userId });
-        res.render('account', { userData: updatedUser });
+        res.redirect('/account');
     } catch (error) {
         console.log(error.message);
     }
@@ -768,6 +775,61 @@ const addAddress = async (req, res) => {
     }
 
 }
+const placeOrder = async (req, res) => {
+
+    try {
+        const { address, productId, total, subTotal, quantity } = req.body;
+
+        function generateOrderId(length) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWZYZ0123456789';
+            let id = '';
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * chars.length);
+                id += chars.charAt(randomIndex);
+            }
+            return id;
+        }
+
+        const checkAddress = await Address.findOne({ userId: req.session.user_id }).populate('addresses');
+        const addressData = checkAddress.addresses.find(addrs => addrs.address === address);
+
+
+        let productDoc = [];
+        if (Array.isArray(productId)) {
+            productId.forEach((item,index)=>{
+              let  productDocItem = {
+                    productId: item,
+                    quantity: parseInt(quantity[index]),
+                    total: total[index],
+                }
+
+                productDoc.push(productDocItem);
+            })
+        } else {
+            let productDocItem = {
+                productId: productId,
+                quantity: parseInt(quantity),
+                total: total,
+            }
+            productDoc.push(productDocItem);
+        }
+
+
+
+        const order = new Order({
+            userId: req.session.user_id,
+            orderId: generateOrderId(6),
+            products: productDoc,
+            subTotal: subTotal,
+            address: addressData
+        })
+        await order.save();
+        res.send('order placed');
+    } catch (error) {
+        res.status(500).json('Internal server error');
+        console.log(error)
+    }
+}
 
 
 
@@ -802,4 +864,5 @@ module.exports = {
     editProfile,
     updateQuantity,
     checkoutLoad,
+    placeOrder,
 }

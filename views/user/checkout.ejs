@@ -21,27 +21,38 @@
             	<div class="checkout">
 	                <div class="container">
             			<div class="checkout-discount">
-            				<form action="#">
+            				<form action="#" method="post">
         						<input type="text" class="form-control" required id="checkout-discount-input">
             					<label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
             				</form>
             			</div><!-- End .checkout-discount -->
-            			<form action="#">
+            			<form action="/checkout" method="post">
 		                	<div class="row">
 		                		<div class="col-lg-9">
-		                			<h2 class="checkout-title">Billing Address</h2><!-- End .checkout-title -->
-		                				
-
+                                    <% if(address.length < 1){ %>
+                                        <h2 class="checkout-title">Please add your Address</h2><!-- End .checkout-title -->
+                                        <%}else{ %>
+                                            <h2 class="checkout-title">Select your Address here</h2><!-- End .checkout-title -->
+                                            <% } %>
+		                			
+                                    <% if(address.length > 0){ %>
                                     <div class="col-lg- ">
                                         <div class="mb-4">
                                             <select name="address" class="form-select btn btn-primary dropdown-toggle" style="max-width: 200px;">
-                                               
-                                                <option>helloood[fiakldsjfkljdawklsfjklajsdklfjlkasdfyhiuoqewhfnjkaldshfnjkaldshfhajlkdshfjlk</option>
-                                                   
+                                               <% address.forEach(element=>{%>
+                                                <option><%=element.address%></option>
+                                                <% }) %>
                                             </select>
                                         </div>
                                     </div>
+                                    <%} %>
 
+                                    <% if(address.length < 3){ %>
+                                        <div class="col-sm-">
+                                            <a class="btn btn-outline-primary-2" href="/addAddress">Add
+                                                Address</a>
+                                        </div>
+                                        <% } %>
 		                		</div><!-- End .col-lg-9 -->
 		                		<aside class="col-lg-3">
 		                			<div class="summary">
@@ -58,14 +69,18 @@
 		                					<tbody>
 		                						<tr>
                                                     <% products.forEach(product => {%>
-                                                        <td><a href="#"><%= product.productName %></a></td>
+                                                    <td><a href="#"><%= product.productName %></a></td>
 		                							<td>₹<%= parseFloat(product.total).toFixed(2) %></td>
+                                                    <input type="text" name="productId" value="<%= product.productId %>" hidden>
+                                                    <input type="text" name="quantity" value="<%= product.quantity%>" hidden>
+                                                    <input type="text" name="total" value="<%= product.total %>" hidden>
                                                    <% }); %>
 		                						</tr>
 
 		                						
 		                						<tr class="summary-subtotal">
 		                							<td>Subtotal:</td>
+                                                    <input type="text" name="subTotal" value="<%= subTotal %>" hidden>
 		                							<td>₹<%= parseFloat(subTotal).toFixed(2) %></td>
 		                						</tr><!-- End .summary-subtotal -->
 		                						<tr>
@@ -117,7 +132,7 @@
         <div class="mobile-menu-wrapper">
             <span class="mobile-menu-close"><i class="icon-close"></i></span>
 
-            <form action="#" method="get" class="mobile-search">
+            <form action="#" method="post" class="mobile-search">
                 <label for="mobile-search" class="sr-only">Search</label>
                 <input type="search" class="form-control" name="mobile-search" id="mobile-search" placeholder="Search in..." required>
                 <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>

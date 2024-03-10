@@ -26,76 +26,83 @@
               Verify
             </button>
           </form>
+          <p class="resend text-muted mb-0">
+            Resend code in <div id="timer"></div> &nbsp;<a id="resendLink" href="/resendOTP" disabled>Resend OTP</a>
+        </p>
           </div>
         </div>
       </div>
     </div>
 
+  
     <script>
-       // Set the time limit for the timer (in seconds)
-  const timeLimit = 120; // 2 minutes
+      // Set the time limit for the timer (in seconds)
+      const timeLimit = 12; // 2 minutes
   
-  // Get the timer element from the HTML
-  const timerDisplay = document.getElementById('timer');
+      // Get the timer element from the HTML
+      const timerDisplay = document.getElementById('timer');
+      const resendLink = document.getElementById('resendLink');
   
-  let timerInterval; // Variable to hold the timer interval
-  let remainingTime = timeLimit; // Variable to hold the remaining time
+      let timerInterval; // Variable to hold the timer interval
+      let remainingTime = timeLimit; // Variable to hold the remaining time
   
-  // Function to update the timer display
-  function updateTimerDisplay() {
-    // Calculate minutes and seconds
-    const minutes = Math.floor(remainingTime / 60);
-    const seconds = remainingTime % 60;
+      // Function to update the timer display
+      function updateTimerDisplay() {
+          // Calculate minutes and seconds
+          const minutes = Math.floor(remainingTime / 60);
+          const seconds = remainingTime % 60;
   
-    // Display the time in the format MM:SS
-    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  }
-  
-  // Function to start the timer
-  function startTimer() {
-    // Update the timer display immediately
-    updateTimerDisplay();
-  
-    // Update the timer every second
-    timerInterval = setInterval(() => {
-      remainingTime--;
-  
-      // Update the timer display
-      updateTimerDisplay();
-  
-      // If the time is up, stop the timer
-      if (remainingTime <= 0) {
-        clearInterval(timerInterval);
-        // Optionally, you can perform any actions when time is up
-        // For example: alert('Time is up!');
+          // Display the time in the format MM:SS
+          timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
       }
-    }, 1000); // 1000 milliseconds = 1 second
-  }
   
-  // Start the timer when the OTP page is loaded
-  startTimer();
+      // Function to start the timer
+      function startTimer() {
+          // Update the timer display immediately
+          updateTimerDisplay();
   
-  // Function to handle form submission
-  const form = document.querySelector('form');
-  form.addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent the default form submission
-    
-    // Simulating a server response (replace this with your actual server request)
-    const isOTPVerified = Math.random() < 0.5; // Example: randomly generate true or false
+          // Disable resend OTP link
+          resendLink.style.pointerEvents = "none";
+          resendLink.style.color = "grey"; // Optional: Change color to indicate it's disabled
+  
+          // Update the timer every second
+          timerInterval = setInterval(() => {
+              remainingTime--;
+  
+              // Update the timer display
+              updateTimerDisplay();
+  
+              // If the time is up, stop the timer and enable the resend OTP link
+              if (remainingTime <= 0) {
+                  clearInterval(timerInterval);
+                  resendLink.style.pointerEvents = "auto";
+                  resendLink.style.color = "blue"; // Optional: Change color to indicate it's enabled
+              }
+          }, 1000); // 1000 milliseconds = 1 second
+      }
+  
+      // Start the timer when the OTP page is loaded
+      startTimer();
+  
+      // Function to handle form submission
+      const form = document.querySelector('form');
+      form.addEventListener('submit', function(event) {
+          event.preventDefault(); // Prevent the default form submission
+  
+          // Simulating a server response (replace this with your actual server request)
+          const isOTPVerified = Math.random() < 0.5; // Example: randomly generate true or false
+  
+          if (isOTPVerified) {
+              // Clear the form fields or handle any other necessary actions after successful form submission
+              this.reset();
+          } else {
+              // Handle incorrect OTP case here
+              console.log('Incorrect OTP. Timer will continue.');
+          }
+      });
+  </script>
 
-    if (isOTPVerified) {
-      // Clear the form fields or handle any other necessary actions after successful form submission
-      this.reset();
-    } else {
-      // Handle incorrect OTP case here
-      console.log('Incorrect OTP. Timer will continue.');
-    }
-  });
-      
 
-    
-    </script>
-      
       <!-- Script JS -->
       <!-- <script src="user/assets/js/otpscript.js"></script> -->
       <script>

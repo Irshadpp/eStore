@@ -3,6 +3,7 @@ var router = express();
 const passport = require('passport');
 const indexController = require('../controller/indexController');
 const indexAuth = require('../middlewares/indexAuth');
+const orderdb = require('../model/orderdb');
 
 
 
@@ -59,8 +60,9 @@ router.get('/editAddress/:addressId', indexAuth.isLogin, indexAuth.isUserBlock, 
 router.post('/editAddress/:addressId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.editAddress);
 router.get('/deleteAddress/:addressId',indexAuth.isLogin, indexAuth.isUserBlock, indexController.deleteAddress)
 
-//checkout
+//checkout and place order
 router.get('/checkout', indexAuth.isLogin, indexAuth.isUserBlock, indexController.checkoutLoad);
+router.post('/checkout', indexAuth.isLogin, indexAuth.isUserBlock, indexController.placeOrder);
 
 router.post('/editProfile/:userId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.editProfile);
 
