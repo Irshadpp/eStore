@@ -90,18 +90,26 @@ const productLoad = asyncHandler(async (req, res) => {
 
 });
 
-const accountLoad = asyncHandler(async (req, res) => {
+const accountLoad = async (req, res) => {
+    try {
+        const orderData = await Order.find({userId: req.session.user_id})
+        // .populate('products');
+        console.log(orderData)
 
-    const userData = await User.findOne({ _id: req.session.user_id });
-    await Address.find({ userId: req.session.user_id })
-        .populate('userId')
-        .then(addresses => {
-            const addressData = addresses.flatMap(address => address.addresses);
-            res.render('account', { userData, addressData });
-        }).catch(error => {
-            console.log(error)
-        })
-});
+        const userData = await User.findOne({ _id: req.session.user_id });
+        await Address.find({ userId: req.session.user_id })
+            .populate('userId')
+            .then(addresses => {
+                const addressData = addresses.flatMap(address => address.addresses);
+                res.render('account', { userData, addressData });
+            }).catch(error => {
+                console.log(error)
+            })
+        
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 
 const addAddressLoad = asyncHandler(async (req, res) => {
@@ -824,11 +832,22 @@ const placeOrder = async (req, res) => {
             address: addressData
         })
         await order.save();
-        res.send('order placed');
+
+        setTimeout(() => {
+            res.redirect('/orderDetials');
+        }, 1000);
+
+       
     } catch (error) {
         res.status(500).json('Internal server error');
         console.log(error)
     }
+}
+
+
+const orderDetailsLoad = async (req,res)=>{
+
+    res.render('orderDetails');
 }
 
 
@@ -865,4 +884,5 @@ module.exports = {
     updateQuantity,
     checkoutLoad,
     placeOrder,
+    orderDetailsLoad,
 }
