@@ -19,35 +19,38 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
         <div class="col-lg-10 col-xl-8">
           <div class="card" style="border-radius: 10px;">
             <div class="card-header px-4 py-5">
-              <h5 class="text-muted mb-0">Thanks for your Order, <span style="color: #bf8040;">Anna</span>!</h5>
+              <h5 class="text-muted mb-0">Thanks for your Order, <span style="color: #bf8040;"><%= orderData.userId.username %></span>!</h5>
             </div>
             <div class="card-body p-4">
               <div class="d-flex justify-content-between align-items-center mb-4">
                 <p class="lead fw-normal mb-0" style="color: #bf8040;">Receipt</p>
-                <p class="small text-muted mb-0">Order ID : 1KAU9-84UIL</p>
+                <p class="small text-muted mb-0">Order ID : <%= orderData.orderId %></p>
               </div>
+              <% orderData.products.forEach(element => { %>  
               <div class="card shadow-0 border mb-4">
                 <div class="card-body">
                   <div class="row">
+                   
                     <div class="col-md-2">
-                      <img src="/1710064820996.jpg"
-                        class="img-fluid" alt="Phone">
+                      <img src="/<%=element.productId.imagePaths[0] %>"
+                        class="img-fluid" alt="">
                     </div>
                     <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                        <p class="text-muted mb-0">Samsung Galaxy</p>
+                        <p class="text-muted mb-0"><%=element.productId.productName%></p>
                       </div>
                       <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                        <p class="text-muted mb-0 small">White</p>
+                        <p class="text-muted mb-0 small">Qty: <%=element.quantity%></p>
                       </div>
                       <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                        <p class="text-muted mb-0 small">Capacity: 64GB</p>
+                        <p class="text-muted mb-0 small"><%=parseFloat(element.productId.price).toFixed(2)%></p>
                       </div>
                       <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                        <p class="text-muted mb-0 small">Qty: 1</p>
+                        <p class="text-muted mb-0 small"><%=parseFloat(element.total).toFixed(2)%></p>
                       </div>
                       <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                        <p class="text-muted mb-0 small">$499</p>
+                        <p class="text-muted mb-0 small"><%=element.status%></p>
                       </div>
+                     
                   </div>
                   <!-- <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
                   <div class="row d-flex align-items-center">
@@ -67,25 +70,26 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
                     </div> -->
                   </div>
                 </div>
+                <% }) %>
               </div>
               
   
-              <div class="d-flex justify-content-between pt-2">
+              <div class="d-flex justify-content-between pl-5 pr-5  pt-2">
                 <p class="fw-bold mb-0">Order Details</p>
-                <p class="text-muted mb-0"><span class="fw-bold me-4">Total</span> $898.00</p>
               </div>
   
-              <div class="d-flex justify-content-between pt-2">
+              <div class="d-flex justify-content-between pl-5 pr-5   pt-2">
                 <p class="text-muted mb-0">Invoice Number : 788152</p>
-                <p class="text-muted mb-0"><span class="fw-bold me-4">Discount</span> $19.00</p>
+                <p class="text-muted mb-0"><span class="fw-bold me-4">Total</span>₹<%= orderData.subTotal %></p>
               </div>
   
-              <div class="d-flex justify-content-between">
+              <div class="d-flex justify-content-between pl-5 pr-5 ">
                 <p class="text-muted mb-0">Invoice Date : 22 Dec,2019</p>
-                <p class="text-muted mb-0"><span class="fw-bold me-4">GST 18%</span> 123</p>
+                <p class="text-muted mb-0"><span class="fw-bold me-4">Discount</span> ₹0.00</p>
+                <!-- <p class="text-muted mb-0"><span class="fw-bold me-4">GST 18%</span> 123</p> -->
               </div>
-  
-              <div class="d-flex justify-content-between mb-5">
+
+              <div class="d-flex justify-content-between pl-5 pr-5  mb-5">
                 <p class="text-muted mb-0">Recepits Voucher : 18KU-62IIK</p>
                 <p class="text-muted mb-0"><span class="fw-bold me-4">Delivery Charges</span> Free</p>
               </div>
@@ -93,7 +97,7 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
             <div class="card-footer border-0 px-4 py-5"
               style="background-color: #bf8040; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
               <h5 class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0">Total
-                paid: <span class="h2 mb-0 ms-2">$1040</span></h5>
+                paid: <span class="h2 mb-0 ms-2">₹<%= orderData.subTotal %></span></h5>
             </div>
           </div>
         </div>

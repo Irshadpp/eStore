@@ -92,16 +92,13 @@ const productLoad = asyncHandler(async (req, res) => {
 
 const accountLoad = async (req, res) => {
     try {
-        const orderData = await Order.find({userId: req.session.user_id})
-        // .populate('products');
-        console.log(orderData)
-
+        const orderData = await Order.find({userId:req.session.user_id}).populate('products.productId');
         const userData = await User.findOne({ _id: req.session.user_id });
         await Address.find({ userId: req.session.user_id })
             .populate('userId')
             .then(addresses => {
                 const addressData = addresses.flatMap(address => address.addresses);
-                res.render('account', { userData, addressData });
+                res.render('account', { userData, addressData, orderData });
             }).catch(error => {
                 console.log(error)
             })
@@ -163,7 +160,7 @@ const checkoutLoad = asyncHandler(async (req, res) => {
 
         if (!cart) {
             console.log('Cart not found');
-            return res.status(404).send('Cart not found');
+            return res.status(404).render('Cart not found');
         }
 
 
@@ -831,10 +828,10 @@ const placeOrder = async (req, res) => {
             subTotal: subTotal,
             address: addressData
         })
-        await order.save();
-
+        const newOrder = await order.save();
+        await Cart.deleteOne({userId:req.session.user_id});
         setTimeout(() => {
-            res.redirect('/orderDetials');
+            res.redirect(`/orderDetails/${newOrder._id}`);
         }, 1000);
 
        
@@ -846,11 +843,13 @@ const placeOrder = async (req, res) => {
 
 
 const orderDetailsLoad = async (req,res)=>{
-
-    res.render('orderDetails');
+    const orderId = req.params.orderId;
+    const orderData = await Order.findById(orderId).populate('products.productId userId');
+    orderData.products.forEach(element => console.log(element.productId.productName))
+    res.render('orderDetails', {orderData});
 }
 
-
+       
 
 module.exports = {
     loadIndex,

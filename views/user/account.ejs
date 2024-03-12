@@ -214,28 +214,20 @@
 
                         <div class="col-md-8 col-lg-9">
                             <div class="tab-content">
-                                <!-- <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link"> -->
-                                <div class="col-md-8 tab-pane fade show active" id="tab-dashboard">
-                                    <div class="card mb-3">
+                                <div class="col-lg-6">
+                                    <div class="card card-dashboard">
                                         <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-sm-3">
-                                                    <h6 class="mb-0">Full Name</h6>
-                                                </div>
-                                                <div class="col-sm-9 text-secondary">
-                                                    <%= userData.username %>
-                                                </div>
-                                            </div>
-                                            <hr>
-                                            <div class="row">
-                                                <div class="col-sm-3">
-                                                    <h6 class="mb-0">Mobile</h6>
-                                                </div>
-                                                <div class="col-sm-9 text-secondary">
-                                                    <%= userData.mobile %>
-                                                </div>
-                                            </div>
-                                            <hr>
+                                            <h3 class="card-title">Billing Address</h3>
+                                            <!-- End .card-title -->
+                                            <p>
+                                                <%= userData.username%> <br>
+                                                    <%= userData.email%><br>
+                                                        <%= userData.mobile%><br>
+                                            </p>
+                                        </div><!-- End .card-body -->
+                                    </div><!-- End .card-dashboard -->
+                                </div><!-- End .col-lg-6 -->
+                               
                                             <div class="row">
                                                 <div class="col-sm-12">
                                                     <a class="btn btn-outline-primary-2" data-toggle="modal"
@@ -248,10 +240,7 @@
 
                                 <div class="tab-pane fade" id="tab-orders" role="tabpanel"
                                     aria-labelledby="tab-orders-link">
-                                    <p>No order has been made yet.</p>
-                                    <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i
-                                            class="icon-long-arrow-right"></i></a>
-
+                                            <% if(orderData.length !== 0){%>
                                     <div class="container">
                                         <div class="row">
                                             <div class="col-lg-9">
@@ -259,33 +248,34 @@
                                                     <thead>
                                                         <tr>
                                                             <th>Product</th>
-                                                            <th>Price</th>
+                                                            <th>Total</th>
                                                             <th>Status</th>
                                                         </tr>
                                                     </thead>
 
                                                     <tbody>
+                                                        
+                                                        <%  orderData.forEach((order, index)=>{ %>
                                                         <tr>
                                                             <td class="product-col">
                                                                 <div class="product">
                                                                     <figure class="product-media">
-                                                                        <a href="#">
-                                                                            <img src="/user/assets/images/products/table/product-1.jpg"
+                                                                        <a href="/orderDetails/<%=order._id%>">
+                                                                            <img src="/<%=order.products[0].productId.imagePaths[0]%>"
                                                                                 alt="Product image">
                                                                         </a>
                                                                     </figure>
 
                                                                     <h3 class="product-title">
-                                                                        <a href="#">Beige knitted elastic runner
-                                                                            shoes</a>
+                                                                        <a href="/orderDetails/<%=order._id%>"><%=order.products[0].productId.productName%></a>
                                                                     </h3><!-- End .product-title -->
                                                                 </div><!-- End .product -->
                                                             </td>
-                                                            <td class="price-col">$84.00</td>
+                                                            <td class="price-col">₹<%=parseFloat(order.subTotal).toFixed(2)%></td>
                                                             
-                                                            <td class="total-col">$84.00</td>
-                                                            
+                                                            <td class="total-col"><%=order.products[0].status%></td>
                                                         </tr>
+                                                        <%})%>
                                                     </tbody>
                                                 </table><!-- End .table table-wishlist -->
 
@@ -294,6 +284,11 @@
                                             
                                         </div><!-- End .row -->
                                     </div><!-- End .container -->
+                                <% }else{%>
+                                 <p>No order has been made yet.</p>
+                                    <a href="/products" class="btn btn-outline-primary-2"><span>GO SHOP</span><i
+                                            class="icon-long-arrow-right"></i></a>
+<% } %>
                                 </div><!-- .End .tab-pane -->
 
                                 <div class="tab-pane fade" id="tab-downloads" role="tabpanel"

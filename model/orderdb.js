@@ -11,7 +11,6 @@ const orderItemSchema = new mongoose.Schema({
     total:{type:Number, required: true},
     reason:{type:String},
     paymentMode:{type:String, required: true, default: 'COD'},
-    date:{type:Date, required: true, default: Date.now}
 })
 
 const orderSchema = new mongoose.Schema({
@@ -23,7 +22,8 @@ const orderSchema = new mongoose.Schema({
     orderId:{type:String, required: true},
     products:[orderItemSchema],
     subTotal:{type:Number, required: true},
-    address:{type:Object, required: true}
+    address:{type:Object, required: true},
+    date:{type:Date, required: true, default: Date.now}
 });
 
 module.exports = mongoose.model('Order', orderSchema);
