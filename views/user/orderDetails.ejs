@@ -54,7 +54,9 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
                       <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
                         <p class="text-muted mb-0 small"><%=element.status%></p>
                       </div>
-                     
+                      <% if (element.status !== 'Cancelled') { %>
+                        <button class="btn btn-danger mt-1 mb-0" onclick="cancelOrder('<%= element.productId._id%>', '<%=orderData._id%>')">Cancel</button>
+                        <% } %>
                   </div>
                   <!-- <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
                   <div class="row d-flex align-items-center">
@@ -74,9 +76,7 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
                     </div> -->
                   </div>
                 </div>
-                <% if (element.status !== 'Cancelled') { %>
-                <button class="btn btn-danger mb-3" onclick="cancelOrder('<%= element.productId._id%>', '<%=orderData._id%>')">Cancel</button>
-                <% } %>
+               
                 <% }) %>
               </div>
               
@@ -91,7 +91,7 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
               </div>
   
               <div class="d-flex justify-content-between pl-5 pr-5 ">
-                <p class="text-muted mb-0">Invoice Date : 22 Dec,2019</p>
+                <p class="text-muted mb-0">Invoice Date : <%= date %></p>
                 <p class="text-muted mb-0"><span class="fw-bold me-4">Discount</span> ₹0.00</p>
                 <!-- <p class="text-muted mb-0"><span class="fw-bold me-4">GST 18%</span> 123</p> -->
               </div>
@@ -142,13 +142,15 @@ function cancelOrder(productId, order_id) {
         body: JSON.stringify({qty,order_id})
       })
       .then(response=>{
-        if(!response.Ok){
+        console.log('=====================',response.ok)
+        if(!response.ok){
           throw new Error('Network resoponse was not ok');
         }
-        // return response.json;
-        window.location.reload();
+        return response.json();
+        // window.location.reload();
       })
       .then(data =>{
+        console('cancel sucess', data);
         Swal.fire({
         icon: 'success',
         title: 'Cancelled!',

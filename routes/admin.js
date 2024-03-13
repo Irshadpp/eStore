@@ -50,6 +50,6 @@ router.delete('/products/delete/:productId', adminController.deleteProduct);
 
 //orders
 router.get('/orders', adminAuth.isLogin, adminController.ordresLoad);
-router.get('/orderDetail', adminAuth.isLogin, adminController.orderDetailLoad);
+router.get('/orderDetail/:order_id', adminAuth.isLogin, adminController.orderDetailLoad);
 
 module.exports = router;

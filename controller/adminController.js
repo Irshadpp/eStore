@@ -1,10 +1,12 @@
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
+const moment = require('moment');
 
 const Admin = require('../model/userdb');
 const User = require('../model/userdb');
 const Product = require('../model/productdb');
 const Category = require('../model/categorydb');
+const Order = require('../model/orderdb');
 
 
 //login load
@@ -64,23 +66,7 @@ const editProductLoad = asyncHandler( async (req,res) =>{
 
 })
 
-const ordresLoad = async (req,res) =>{
-    try {
-        res.render('orders')
-    } catch (error) {
-        res.status(404).json('Page not found');
-        console.log(error);
-    }
-}
 
-const orderDetailLoad = async (req,res) =>{
-    try {
-        res.render('orderDetail');
-    } catch (error) {
-        res.status(404).json('Page not found');
-        console.log(error);
-    }
-}
 
 const verifyLogin = asyncHandler( async (req,res) => {
 
@@ -391,6 +377,29 @@ const listProduct = async (req,res) =>{
         );
     } catch (error) {
         res.status(500).send(error.message);
+    }
+}
+
+const ordresLoad = async (req,res) =>{
+    try {
+        const orderData = await Order.find({}).populate('products.productId').populate('userId');
+        res.render('orders',{orderData})
+    } catch (error) {
+        res.status(404).json('Page not found');
+        console.log(error);
+    }
+}
+
+const orderDetailLoad = async (req,res) =>{
+    try {
+        const order_id = req.params.order_id;
+        const orderData = await Order.findOne({_id:order_id}).populate('products.productId').populate('userId');
+        const date = orderData.date;
+        const formatedDate = moment(date).format('ddd, MMM, YYYY, h:mma');
+        res.render('orderDetail',{orderData,formatedDate});
+    } catch (error) {
+        res.status(404).json('Page not found');
+        console.log(error);
     }
 }
 

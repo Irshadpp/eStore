@@ -1,6 +1,7 @@
 "use strict";
 const bcrypt = require('bcrypt');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const moment = require('moment');
 
 const User = require('../model/userdb');
 const OTP = require('../model/otpdb');
@@ -852,7 +853,9 @@ const orderDetailsLoad = async (req,res)=>{
     const orderId = req.params.orderId;
     const orderData = await Order.findById(orderId).populate('products.productId userId');
     orderData.products.forEach(element => console.log(element.productId.productName))
-    res.render('orderDetails', {orderData});
+    const orderDate = moment(orderData.date);
+    const date = orderDate.format('DD-MM-YYYY');
+    res.render('orderDetails', {orderData, date});
 }
 
 const cancelOrder = async (req,res) =>{

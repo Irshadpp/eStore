@@ -37,7 +37,7 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>#ID</th>
+                                        <th>Order ID</th>
                                         <th scope="col">Name</th>
                                         <th scope="col">Email</th>
                                         <th scope="col">Total</th>
@@ -47,15 +47,16 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <% orderData.forEach(element => { %>
                                     <tr>
-                                        <td>2323</td>
-                                        <td><b>Leslie Alexander</b></td>
-                                        <td>leslie@example.com</td>
-                                        <td>$46.61</td>
+                                        <td><%= element.orderId %></td>
+                                        <td><b><%= element.userId.username %></b></td>
+                                        <td><%= element.userId.email %></td>
+                                        <td>₹<%= parseFloat(element.subTotal).toFixed(2) %></td>
                                         <td><span class="badge rounded-pill alert-warning">Pending</span></td>
-                                        <td>21.02.2020</td>
+                                        <td></td>
                                         <td class="text-end">
-                                            <a href="/admin/orderDetail" class="btn btn-md rounded font-sm">Detail</a>
+                                            <a href="/admin/orderDetail/<%= element._id %>" class="btn btn-md rounded font-sm">Detail</a>
                                             <div class="dropdown">
                                                 <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
                                                 <div class="dropdown-menu">
@@ -67,46 +68,8 @@
                                             <!-- dropdown //end -->
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td>1233</td>
-                                        <td><b>Esther Howard</b></td>
-                                        <td>esther@example.com</td>
-                                        <td>$12.00</td>
-                                        <td><span class="badge rounded-pill alert-danger">Canceled</span></td>
-                                        <td>03.07.2020</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-md rounded font-sm">Detail</a>
-                                            <div class="dropdown">
-                                                <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="#">View detail</a>
-                                                    <a class="dropdown-item" href="#">Edit info</a>
-                                                    <a class="dropdown-item text-danger" href="#">Delete</a>
-                                                </div>
-                                            </div>
-                                            <!-- dropdown //end -->
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2323</td>
-                                        <td><b>Jenny Wilson</b></td>
-                                        <td>jenny@example.com</td>
-                                        <td>$589.99</td>
-                                        <td><span class="badge rounded-pill alert-success">Received</span></td>
-                                        <td>22.05.2020</td>
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-md rounded font-sm">Detail</a>
-                                            <div class="dropdown">
-                                                <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="#">View detail</a>
-                                                    <a class="dropdown-item" href="#">Edit info</a>
-                                                    <a class="dropdown-item text-danger" href="#">Delete</a>
-                                                </div>
-                                            </div>
-                                            <!-- dropdown //end -->
-                                        </td>
-                                    </tr>
+                                    <% }) %>
+                                    
                                 </tbody>
                             </table>
                         </div>
@@ -118,6 +81,22 @@
             </section>
             <!-- content-main end// -->
         </main>
+        <script>
+            const orderData = <%- JSON.stringify(orderData) %>
+            const orderDateArray =  orderData.map(order => order.date);
+            function formatDate(dateString){
+                const date = new Date(dateString);
+                return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
+            }
+                document.querySelectorAll('tbody tr').forEach((row, index) => {
+        const dateCell = row.querySelector('td:nth-child(6)');
+        const formattedDate = formatDate(orderDateArray[index]);
+        dateCell.textContent = formattedDate;
+    });
+            
+
+
+        </script>
         <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
         <script src="/admin/assets/js/vendors/bootstrap.bundle.min.js"></script>
         <script src="/admin/assets/js/vendors/select2.min.js"></script>
