@@ -64,6 +64,7 @@ router.get('/deleteAddress/:addressId',indexAuth.isLogin, indexAuth.isUserBlock,
 router.get('/checkout', indexAuth.isLogin, indexAuth.isUserBlock, indexController.checkoutLoad);
 router.post('/checkout', indexAuth.isLogin, indexAuth.isUserBlock, indexController.placeOrder);
 router.get('/orderDetails/:orderId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.orderDetailsLoad);
+router.put('/cancelOrder/:productId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.cancelOrder);
 
 router.post('/editProfile/:userId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.editProfile);
 

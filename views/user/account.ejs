@@ -214,81 +214,91 @@
 
                         <div class="col-md-8 col-lg-9">
                             <div class="tab-content">
-                                <div class="col-lg-6">
-                                    <div class="card card-dashboard">
-                                        <div class="card-body">
-                                            <h3 class="card-title">Billing Address</h3>
-                                            <!-- End .card-title -->
-                                            <p>
-                                                <%= userData.username%> <br>
-                                                    <%= userData.email%><br>
-                                                        <%= userData.mobile%><br>
-                                            </p>
-                                        </div><!-- End .card-body -->
-                                    </div><!-- End .card-dashboard -->
-                                </div><!-- End .col-lg-6 -->
-                               
-                                            <div class="row">
-                                                <div class="col-sm-12">
-                                                    <a class="btn btn-outline-primary-2" data-toggle="modal"
-                                                        href="#modalLoginForm">Edit</a>
-                                                </div>
-                                            </div>
+                                <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel"
+                                    aria-labelledby="tab-dashboard-link">
+                                    <div class="col-lg-6">
+                                        <div class="card card-dashboard">
+                                            <div class="card-body">
+                                                <h3 class="card-title">Your Profile</h3>
+                                                <!-- End .card-title -->
+                                                <p class="text-primary h6">
+                                                    <%= userData.username%>
+                                                </p>
+                                                <p class="h6">
+                                                    <%= userData.email%>
+                                                </p>
+                                                <p class="h6">
+                                                    <%= userData.mobile%>
+                                                </p>
+                                            </div><!-- End .card-body -->
+                                        </div><!-- End .card-dashboard -->
+                                    </div><!-- End .col-lg-6 -->
+
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <a class="btn btn-outline-primary-2 ml-3" data-toggle="modal"
+                                                href="#modalLoginForm">Edit</a>
                                         </div>
                                     </div>
-                                </div><!-- .End .tab-pane -->
+                                </div>
 
                                 <div class="tab-pane fade" id="tab-orders" role="tabpanel"
                                     aria-labelledby="tab-orders-link">
-                                            <% if(orderData.length !== 0){%>
-                                    <div class="container">
-                                        <div class="row">
-                                            <div class="col-lg-9">
-                                                <table class="table table-cart table-mobile">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Product</th>
-                                                            <th>Total</th>
-                                                            <th>Status</th>
-                                                        </tr>
-                                                    </thead>
+                                    <% if(orderData.length !==0){%>
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-lg-9">
+                                                    <table class="table table-cart table-mobile">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Product</th>
+                                                                <th>Items</th>
+                                                                <th>Total</th>
+                                                            </tr>
+                                                        </thead>
 
-                                                    <tbody>
-                                                        
-                                                        <%  orderData.forEach((order, index)=>{ %>
-                                                        <tr>
-                                                            <td class="product-col">
-                                                                <div class="product">
-                                                                    <figure class="product-media">
-                                                                        <a href="/orderDetails/<%=order._id%>">
-                                                                            <img src="/<%=order.products[0].productId.imagePaths[0]%>"
-                                                                                alt="Product image">
-                                                                        </a>
-                                                                    </figure>
+                                                        <tbody>
 
-                                                                    <h3 class="product-title">
-                                                                        <a href="/orderDetails/<%=order._id%>"><%=order.products[0].productId.productName%></a>
-                                                                    </h3><!-- End .product-title -->
-                                                                </div><!-- End .product -->
-                                                            </td>
-                                                            <td class="price-col">₹<%=parseFloat(order.subTotal).toFixed(2)%></td>
-                                                            
-                                                            <td class="total-col"><%=order.products[0].status%></td>
-                                                        </tr>
-                                                        <%})%>
-                                                    </tbody>
-                                                </table><!-- End .table table-wishlist -->
+                                                            <% orderData.forEach((order, index)=>{ %>
+                                                                <tr>
+                                                                    <td class="product-col">
+                                                                        <div class="product">
+                                                                            <figure class="product-media">
+                                                                                <a href="/orderDetails/<%=order._id%>">
+                                                                                    <img src="/<%=order.products[0].productId.imagePaths[0]%>"
+                                                                                        alt="Product image">
+                                                                                </a>
+                                                                            </figure>
+
+                                                                            <h3 class="product-title">
+                                                                                <a href="/orderDetails/<%=order._id%>">
+                                                                                    <%=order.products[0].productId.productName%>
+                                                                                </a>
+                                                                            </h3><!-- End .product-title -->
+                                                                        </div><!-- End .product -->
+                                                                    </td>
+                                                                    <td class="price-col">
+                                                                        <%=order.products.length%> Item
+                                                                    </td>
+                                                                    <td class="price-col">₹
+                                                                        <%=parseFloat(order.subTotal).toFixed(2)%>
+                                                                    </td>
+                                                                    
+                                                                </tr>
+                                                                <%})%>
+                                                        </tbody>
+                                                    </table><!-- End .table table-wishlist -->
 
 
-                                            </div><!-- End .col-lg-9 -->
-                                            
-                                        </div><!-- End .row -->
-                                    </div><!-- End .container -->
-                                <% }else{%>
-                                 <p>No order has been made yet.</p>
-                                    <a href="/products" class="btn btn-outline-primary-2"><span>GO SHOP</span><i
-                                            class="icon-long-arrow-right"></i></a>
-<% } %>
+                                                </div><!-- End .col-lg-9 -->
+
+                                            </div><!-- End .row -->
+                                        </div><!-- End .container -->
+                                        <% }else{%>
+                                            <p>No order has been made yet.</p>
+                                            <a href="/products" class="btn btn-outline-primary-2"><span>GO SHOP</span><i
+                                                    class="icon-long-arrow-right"></i></a>
+                                            <% } %>
                                 </div><!-- .End .tab-pane -->
 
                                 <div class="tab-pane fade" id="tab-downloads" role="tabpanel"
@@ -355,12 +365,12 @@
                                                 </div><!-- End .card-dashboard -->
                                             </div><!-- End .col-lg-6 -->
                                             <% }) }%>
-                                                    <% if(addressData.length<3){%>
-                                                        <div class="col-sm-12">
-                                                            <a class="btn btn-outline-primary-2" href="/addAddress">Add
-                                                                Address</a>
-                                                        </div>
-                                                        <%}%>
+                                                <% if(addressData.length<3){%>
+                                                    <div class="col-sm-12">
+                                                        <a class="btn btn-outline-primary-2" href="/addAddress">Add
+                                                            Address</a>
+                                                    </div>
+                                                    <%}%>
                                     </div><!-- End .row -->
                                 </div><!-- .End .tab-pane -->
 

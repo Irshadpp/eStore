@@ -11,6 +11,10 @@ background: -webkit-linear-gradient(to top left, rgb(242, 221, 156), rgb(255, 25
 /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243))
 }
+
+.swal2-modal {
+    width: 500px; 
+}
 </style>
 
 <section class="h-100 gradient-custom">
@@ -27,7 +31,7 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
                 <p class="small text-muted mb-0">Order ID : <%= orderData.orderId %></p>
               </div>
               <% orderData.products.forEach(element => { %>  
-              <div class="card shadow-0 border mb-4">
+              <div class="card shadow-0 border mb-1">
                 <div class="card-body">
                   <div class="row">
                    
@@ -39,7 +43,7 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
                         <p class="text-muted mb-0"><%=element.productId.productName%></p>
                       </div>
                       <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                        <p class="text-muted mb-0 small">Qty: <%=element.quantity%></p>
+                        <p class="qty text-muted mb-0 small">Qty: <%=element.quantity%></p>
                       </div>
                       <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
                         <p class="text-muted mb-0 small"><%=parseFloat(element.productId.price).toFixed(2)%></p>
@@ -70,6 +74,9 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
                     </div> -->
                   </div>
                 </div>
+                <% if (element.status !== 'Cancelled') { %>
+                <button class="btn btn-danger mb-3" onclick="cancelOrder('<%= element.productId._id%>', '<%=orderData._id%>')">Cancel</button>
+                <% } %>
                 <% }) %>
               </div>
               
@@ -104,6 +111,66 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
       </div>
     </div>
   </section>
-
-
   
+  <script>
+
+function cancelOrder(productId, order_id) {
+  const qtyElement = event.target.parentNode.querySelector('.qty');
+  const qty = parseInt(qtyElement.textContent.split(':')[1].trim())
+  console.log(order_id)
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "Do you really want to cancel this order!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, cnacel it!',
+    cancelButtonText: 'No, keep it',
+    customClass: {
+      confirmButton: 'btn btn-danger me-1',
+      cancelButton: 'btn btn-label-primary'
+    },
+    buttonsStyling: false
+  }).then(function(result) {
+    if (result.value) {
+      fetch(`/cancelOrder/${productId}`,{
+        method: 'PUT',
+        headers: {
+          'Content-Type':'application/json'
+        },
+        body: JSON.stringify({qty,order_id})
+      })
+      .then(response=>{
+        if(!response.Ok){
+          throw new Error('Network resoponse was not ok');
+        }
+        // return response.json;
+        window.location.reload();
+      })
+      .then(data =>{
+        Swal.fire({
+        icon: 'success',
+        title: 'Cancelled!',
+        text: 'Your order has been cancelled.',
+        customClass: {
+          confirmButton: 'btn btn-success',
+          popup: 'swal2-modal'
+        }
+      });
+      })
+      .catch(error=>{
+        console.log("Problem with fetch", error);
+        Swal.fire("Error", "Failed to delete the file.", "error");
+      })
+     
+    } 
+  });
+}
+
+
+
+  </script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+   

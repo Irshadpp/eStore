@@ -698,6 +698,12 @@ const updateQuantity = async (req, res) => {
 const editProfile = async (req, res) => {
     try {
         const userId = req.params.userId
+        if (!(/^[A-Za-z]+(?: [A-Za-z]+)?$/.test(req.body.name))) {
+            return res.redirect('/account');
+        }
+        if(req.body.mobile < 10){
+            return res.render('/account');
+        }
         const userData = await User.findOneAndUpdate(
             { _id: userId },
             {
@@ -849,6 +855,21 @@ const orderDetailsLoad = async (req,res)=>{
     res.render('orderDetails', {orderData});
 }
 
+const cancelOrder = async (req,res) =>{
+    try {
+    const productId = req.params.productId;
+    const qty = req.body.qty;
+    const order_id = req.body.order_id;
+        await Order.updateOne(
+            {$and:[{_id:order_id},{'products.productId':productId}]},
+            {$set:{"products.$.status":"Cancelled"}}
+            );
+        await Product.updateOne({_id:productId},{$inc:{quantity:qty}});
+} catch (error) {
+    console.log(error);
+}  
+}
+
        
 
 module.exports = {
@@ -884,4 +905,5 @@ module.exports = {
     checkoutLoad,
     placeOrder,
     orderDetailsLoad,
+    cancelOrder
 }

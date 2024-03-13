@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "bootstrap-sweetalert": "^1.0.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^16.4.5",
@@ -24,7 +25,6 @@
     "passport": "^0.7.0",
     "passport-google-oauth2": "^0.2.0",
     "sharp": "^0.33.2",
-    "sweetalert2": "^11.10.6",
     "uuid": "^9.0.1"
   },
   "description": "eStore ecommerce app",
