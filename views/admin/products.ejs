@@ -47,26 +47,30 @@
                                         <span class="badge rounded-pill alert-success">In Stock</span>
                                         <%}%>
 
-                                            <% var flag=0%>
-                                            <%category.forEach((element)=>{%>
+                                           
                                                 <%console.log("=======================",item.list)%>
-                                        <%if (item.category === element.categoryName || item.list === false) {%>
+                                        <%if (item.categoryId.list === false || item.list === false) {%>
                                         <span class="badge rounded-pill alert-danger mt-1 ">Unlisted</span>
-                                        <% flag = 1%>
-                                            <%}%>
-                                            <%})%> 
-                                            <%if (flag === 0) {%>
+                                       
+                                            <%}else{%>
+                                           
+                                           
                                                 <span class="badge rounded-pill alert-success mt-1 ">listed</span>
-                                                <%}%>
+                                               <%}%>
 
 
                             </div>
                             <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
-                                <a href="" onclick="list('<%=item._id%>')"
-                                    class="btn btn-sm font-sm rounded btn-brand "> List</a>
-                                <a href="" onclick="unlist('<%=item._id%>')"
+                                <%if (item.list === true) {%>
+                                    <a href="" onclick="list('<%=item._id%>')"
                                     class="btn btn-sm font-sm rounded btn-light  "> Unlist </a>
-                                <a href="" onclick="deleteProduct('<%=item._id%>')" class="btn btn-sm mt-2 font-sm btn-danger rounded"
+                                <%} else {%>
+                                    <a href="" onclick="list('<%=item._id%>')"
+                                    class="btn btn-sm font-sm rounded btn-brand "> List</a>
+                               <%}%>
+                                
+                                
+                                <a href="" onclick="deleteProduct('<%=item._id%>')" class="btn btn-sm  font-sm btn-danger rounded"
                                     > <i class="material-icons md-delete_forever"></i> Delete </a>
                             </div>
                         </div>
@@ -104,13 +108,7 @@
 
         };
 
-        async function unlist(productId) {
-            try {
-                await axios.put(`/admin/products/unlist/${productId}`);
-            } catch (error) {
-                console.log(error.message);
-            }
-        };
+       
 
         async function deleteProduct(productId) {
             try {

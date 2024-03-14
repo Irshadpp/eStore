@@ -7,6 +7,7 @@ const User = require('../model/userdb');
 const Product = require('../model/productdb');
 const Category = require('../model/categorydb');
 const Order = require('../model/orderdb');
+const { trusted } = require('mongoose');
 
 
 //login load
@@ -33,9 +34,9 @@ const customersLoad = asyncHandler( async (req,res) => {
 
 const productsLoad = asyncHandler( async (req,res) => {
     const category = await Category.find({list:false});
-    const productData = await Product.find();
+    const productData = await Product.find().populate('categoryId');
     const imagePathsArray = productData.map(product => product.imagePaths); 
-    res.render('products',{products:productData,category,imagePathsArray});
+    res.render('products',{products:productData,imagePathsArray});
 });
 
 const categoryLoad = asyncHandler( async (req,res) => {
@@ -140,13 +141,14 @@ const addProduct = asyncHandler( async (req,res) => {
         return res.status(400).render('addProduct',{warningMsg:"Give product quantity!", categoryData});
     };
 
+    const categoryId = await Category.findOne({categoryName:category});
     
     const products = new Product({
         productName: productName,
         description: description,
         price: price,
         quantity: quantity,
-        category: category,
+        categoryId: categoryId._id,
         imagePaths: imagePaths,
     });
 
@@ -218,6 +220,7 @@ const editProduct = asyncHandler( async (req,res) =>{
         return res.status(400).render('editProduct', {warningMsg:"Product Already has 4 images", categoryData, product:editedProductData});
     }
 
+    const categoryId = await Category.findOne({categoryName:category});
 
     const productData = await Product.findByIdAndUpdate(
         {_id:product_id},
@@ -226,7 +229,7 @@ const editProduct = asyncHandler( async (req,res) =>{
             description: description, 
             price: price, 
             quantity: quantity, 
-            category: category, 
+            category: categoryId._id, 
         }});
 
     if(req.files.length>0){
@@ -354,27 +357,16 @@ const listCategory = async (req,res) => {
     }
 };
 
-const unlistProduct = async (req,res) =>{
-
-    try {
-        const productId = req.params.productId;
-    await Product.findByIdAndUpdate(
-        productId,
-        {list:false}
-    )
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
-    
-}
 
 const listProduct = async (req,res) =>{
     try {
         const productId = req.params.productId;
-        await Product.findByIdAndUpdate(
-            productId,
-            {list:true}
-        );
+        const productData = await Product.findById(productId) ;
+        if(productData.list === true){
+            await Product.findByIdAndUpdate(productId,{list:false});
+        }else{
+            await Product.findByIdAndUpdate(productId,{list:true});
+        }
     } catch (error) {
         res.status(500).send(error.message);
     }
@@ -382,7 +374,7 @@ const listProduct = async (req,res) =>{
 
 const ordresLoad = async (req,res) =>{
     try {
-        const orderData = await Order.find({}).populate('products.productId').populate('userId');
+        const orderData = await Order.find({}).sort({date:-1}).populate('products.productId').populate('userId');
         res.render('orders',{orderData})
     } catch (error) {
         res.status(404).json('Page not found');
@@ -401,6 +393,16 @@ const orderDetailLoad = async (req,res) =>{
         res.status(404).json('Page not found');
         console.log(error);
     }
+}
+
+const changeOrderStatus = (req,res) =>{
+    console.log('====================================');
+    console.log(req.body);
+    console.log('====================================');
+    res.json({
+        sucess:true,
+        message:"updated sucessfully"
+    })
 }
 
 
@@ -425,9 +427,9 @@ module.exports = {
     deleteImage,
     unlistCategory,
     listCategory,
-    unlistProduct,
     listProduct,
     deleteProduct,
     ordresLoad,
     orderDetailLoad,
+    changeOrderStatus
 }

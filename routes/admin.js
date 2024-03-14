@@ -45,11 +45,11 @@ router.put('/list/:categoryId', adminController.listCategory);
 
 //list, unlist and delete product
 router.put('/products/list/:productId', adminController.listProduct);
-router.put('/products/unlist/:productId', adminController.unlistProduct);
 router.delete('/products/delete/:productId', adminController.deleteProduct);
 
 //orders
 router.get('/orders', adminAuth.isLogin, adminController.ordresLoad);
 router.get('/orderDetail/:order_id', adminAuth.isLogin, adminController.orderDetailLoad);
+router.post('/changeStatus', adminAuth.isLogin, adminController.changeOrderStatus)
 
 module.exports = router;

@@ -42,6 +42,8 @@ router.get('/resendOTP', indexController.resendOTP);
 
 //home page load
 router.get('/home', indexAuth.isLogin, indexAuth.isUserBlock, indexController.homeLoad);
+
+router.get('/allProducts', indexAuth.isLogin, indexAuth.isUserBlock, indexController.allProductsLoad)
 router.get('/account', indexAuth.isLogin, indexAuth.isUserBlock, indexController.accountLoad);
 router.get('/editAddress', indexAuth.isLogin, indexController.editAddressLoad);
 

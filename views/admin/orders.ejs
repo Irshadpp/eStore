@@ -53,7 +53,11 @@
                                         <td><b><%= element.userId.username %></b></td>
                                         <td><%= element.userId.email %></td>
                                         <td>₹<%= parseFloat(element.subTotal).toFixed(2) %></td>
-                                        <td><span class="badge rounded-pill alert-warning">Pending</span></td>
+                                        <% if (element.products[0].status === 'Placed') { %>
+                                            <td><span class="badge rounded-pill alert-warning">Pending</span></td>
+                                        <% }else{ %>
+                                            <td><span class="badge rounded-pill alert-danger">Cancelled</span></td>
+                                       <% } %>
                                         <td></td>
                                         <td class="text-end">
                                             <a href="/admin/orderDetail/<%= element._id %>" class="btn btn-md rounded font-sm">Detail</a>

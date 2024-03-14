@@ -19,7 +19,7 @@ const sendEmail = require('../util/sendEmail');
 const loadIndex = asyncHandler(async (req, res) => {
 
     const category = await Category.find();
-    const products = await Product.find();;
+    const products = await Product.find().populate('categoryId');
     const imagePathsArray = products.map((item) => item.imagePaths);
     res.render('index', { products, category, imagePathsArray });
 })
@@ -63,26 +63,26 @@ const otpLoad = async (req, res) => {
 const homeLoad = asyncHandler(async (req, res) => {
 
     const userData = await User.findById(req.session.user_id);
-    const products = await Product.aggregate([{
-        $lookup: {
-            from: "categories",
-            localField: "category",
-            foreignField: "categoryName",
-            as: "categoryInfo"
-        }
-    },
-    { $match: { $and: [{ "categoryInfo.list": true }, { list: true }] } }
-    ]);
-
+    const productData = await Product.find({list:true}).populate('categoryId');
+    const products = productData.filter(product => product.categoryId.list === true)
     const imagePathsArray = products.map((item) => item.imagePaths);
     res.render('home', { userData, products, imagePathsArray });
 
 });
 
+const allProductsLoad = async (req,res) =>{
+    const productData = await Product.find().populate('categoryId');
+    const products = productData.filter(product => product.list === true && product.categoryId.list === true);
+    console.log('====================================');
+    console.log(products);
+    console.log('====================================');
+    res.render('allProducts',{products});
+}
+
 const productLoad = asyncHandler(async (req, res) => {
 
     const product_id = req.params.product_id;
-    const product = await Product.findOne({ _id: product_id });
+    const product = await Product.findOne({ _id: product_id }).populate('categoryId');
     const images = product.imagePaths
     if (!product) {
         return res.status(404).send("Product Not Found");
@@ -559,7 +559,6 @@ const addToCart = async (req, res) => {
                     return acc + crr.total;
                 }, productPrice);
 
-                // console.log(subtotal,"---------------------------")
 
                 await Cart.updateOne(
                     { userId: user_id },
@@ -868,6 +867,10 @@ const cancelOrder = async (req,res) =>{
             {$set:{"products.$.status":"Cancelled"}}
             );
         await Product.updateOne({_id:productId},{$inc:{quantity:qty}});
+        res.json({
+            success: true,
+            message: 'order cancel successfull'
+        })
 } catch (error) {
     console.log(error);
 }  
@@ -894,6 +897,7 @@ module.exports = {
     resendOTP,
     verifyLogin,
     homeLoad,
+    allProductsLoad,
     accountLoad,
     addAddressLoad,
     editAddress,

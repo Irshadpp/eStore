@@ -4,6 +4,7 @@
                     <div>
                         <h2 class="content-title card-title">Order detail</h2>
                         <p>Details for Order ID: <%= orderData.orderId %></p>
+                        <input id="order_id" type="text" value="<%= orderData._id %>" hidden>
                     </div>
                 </div>
                 <div class="card">
@@ -14,14 +15,14 @@
                                 <small class="text-muted">Order ID: <%= orderData.orderId %></small>
                             </div>
                             <div class="col-lg-6 col-md-6 ms-auto text-md-end">
-                                <select class="form-select d-inline-block mb-lg-0 mr-5 mw-200">
+                                <select id="statusSelect" class="form-select d-inline-block mb-lg-0 mr-5 mw-200">
                                     <option>Change status</option>
                                     <option>Awaiting payment</option>
                                     <option>Confirmed</option>
                                     <option>Shipped</option>
                                     <option>Delivered</option>
                                 </select>
-                                <a class="btn btn-primary" href="#">Save</a>
+                                <a id="saveBtn" class="btn btn-primary" href="#">Save</a>
                                 <a class="btn btn-secondary print ms-2" href="#"><i class="icon material-icons md-print"></i></a>
                             </div>
                         </div>
@@ -130,7 +131,7 @@
                                                         <dl class="dlist">
                                                             <dt class="text-muted">Status:</dt>
                                                             <dd>
-                                                                <span class="badge rounded-pill alert-success text-success">Payment done</span>
+                                                                <span class="badge rounded-pill alert-danger text-danger">Payment Pending</span>
                                                             </dd>
                                                         </dl>
                                                     </article>
@@ -169,6 +170,28 @@
             </section>
             <!-- content-main end// -->
         </main>
+        <script>
+            document.getElementById('saveBtn').addEventListener('click',function(){
+                var orderId = document.getElementById('order_id').value
+                var status = document.getElementById('statusSelect').value;
+
+                fetch('/admin/changeStatus',{
+                    method: "POST",
+                    body: JSON.stringify({status:status}),
+                    headers:{
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response =>{
+                    if (response.ok) {
+                        window.location.href = '/admin/orders'
+                    }else{
+                        console.log("responseError:", response.statusText)
+                    }
+                }).catch(error=>{
+                    console.log("Error:", error);
+                })
+            })
+        </script>
         <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
         <script src="/admin/assets/js/vendors/bootstrap.bundle.min.js"></script>
         <script src="/admin/assets/js/vendors/select2.min.js"></script>

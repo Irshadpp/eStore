@@ -13,7 +13,7 @@ const orderItemSchema = new mongoose.Schema({
     paymentMode:{type:String, required: true, default: 'COD'},
 })
 
-const orderSchema = new mongoose.Schema({
+const orderSchema = new mongoose.Schema({ 
     userId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'User',
