@@ -37,7 +37,7 @@ const uploadWithCropping = (fieldName, options) => {
             if (err instanceof multer.MulterError) {
                 const categoryData = await Category.find();
                 // Handle Multer error
-                return res.status(400).render('addProduct', { warningMsg: err.message, categoryData });
+                return res.status(400).render('addProduct', { warningMsg: "You can only upload image files!", categoryData });
             } else if (err) {
                 // Handle other errors
                 console.error(err);

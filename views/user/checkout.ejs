@@ -67,15 +67,15 @@
 		                					</thead>
 
 		                					<tbody>
+                                                <% products.forEach(product => {%>
 		                						<tr>
-                                                    <% products.forEach(product => {%>
                                                     <td><a href="#"><%= product.productName %></a></td>
 		                							<td>₹<%= parseFloat(product.total).toFixed(2) %></td>
                                                     <input type="text" name="productId" value="<%= product.productId %>" hidden>
                                                     <input type="text" name="quantity" value="<%= product.quantity%>" hidden>
                                                     <input type="text" name="total" value="<%= product.total %>" hidden>
-                                                   <% }); %>
 		                						</tr>
+                                                <% }); %>
 
 		                						
 		                						<tr class="summary-subtotal">

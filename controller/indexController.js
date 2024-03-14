@@ -73,10 +73,8 @@ const homeLoad = asyncHandler(async (req, res) => {
 const allProductsLoad = async (req,res) =>{
     const productData = await Product.find().populate('categoryId');
     const products = productData.filter(product => product.list === true && product.categoryId.list === true);
-    console.log('====================================');
-    console.log(products);
-    console.log('====================================');
-    res.render('allProducts',{products});
+    const categoryData = await Category.find();
+    res.render('allProducts',{products, categoryData});
 }
 
 const productLoad = asyncHandler(async (req, res) => {
@@ -161,7 +159,7 @@ const checkoutLoad = asyncHandler(async (req, res) => {
 
         if (!cart) {
             console.log('Cart not found');
-            return res.status(404).render('Cart not found');
+            return res.status(404).redirect('/cart');
         }
 
 

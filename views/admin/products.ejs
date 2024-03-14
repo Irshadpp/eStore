@@ -35,29 +35,24 @@
                             <div class="col-lg-2 col-sm-2 col-4 col-price"><span>
                                     <%= item.price%>
                                 </span></div>
-                            <div class="col-lg-1 col-sm-2 col-4 col-date">
+                            <div class="col-lg-1 col-sm-2 col-4 col-date mr-20" >
                                 <span>
-                                    <%= item.category%>
+                                    <%= item.categoryId.categoryName%>
                                 </span>
                             </div>
                             <div class="col-lg-2 col-sm-2 col-4 col-status">
                                 <%if (item.quantity===0) {%>
-                                    <span class="badge rounded-pill alert-danger">Out of stock</span>
-                                    <%} else {%>
-                                        <span class="badge rounded-pill alert-success">In Stock</span>
+                                    <span class="badge rounded-pill ">Out of stock</span>
+                                    <%} else if(item.quantity < 5){%>
+                                        <span class="badge rounded-pill alert-danger "><%= item.quantity %> nos left</span>
+                                        <%}else if(item.quantity < 10){%>
+                                        <span class="badge rounded-pill alert-warning "><%= item.quantity %> nos left</span>
+                                        <%}else{%>
+                                        <span class="badge rounded-pill alert-success "><%= item.quantity %> nos left</span>
                                         <%}%>
 
                                            
-                                                <%console.log("=======================",item.list)%>
-                                        <%if (item.categoryId.list === false || item.list === false) {%>
-                                        <span class="badge rounded-pill alert-danger mt-1 ">Unlisted</span>
-                                       
-                                            <%}else{%>
-                                           
-                                           
-                                                <span class="badge rounded-pill alert-success mt-1 ">listed</span>
-                                               <%}%>
-
+                                        
 
                             </div>
                             <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
@@ -67,7 +62,7 @@
                                 <%} else {%>
                                     <a href="" onclick="list('<%=item._id%>')"
                                     class="btn btn-sm font-sm rounded btn-brand "> List</a>
-                               <%}%>
+                               <%} %>
                                 
                                 
                                 <a href="" onclick="deleteProduct('<%=item._id%>')" class="btn btn-sm  font-sm btn-danger rounded"
