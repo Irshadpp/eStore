@@ -158,7 +158,6 @@ const addProduct = asyncHandler( async (req,res) => {
 });
 
 const addCategory = asyncHandler( async (req,res) =>{
-
     const {categoryName, description} = req.body;
     const regexPattern = new RegExp(categoryName, "i");
 
@@ -188,7 +187,7 @@ const addCategory = asyncHandler( async (req,res) =>{
         res.status(201).render('category',{successMsg:"Catergory added successfully", categoryData: updatedCategoryData});
 });
 
-const editProduct = asyncHandler( async (req,res) =>{
+const editProduct = async (req,res) =>{
 
     const product_id = req.params.product_id;
     const categoryData = await Category.find();
@@ -245,7 +244,7 @@ const editProduct = asyncHandler( async (req,res) =>{
     }else{
         res.send("something went wrong");
     }
-});
+}
 
 const editcategory = async (req,res) =>{
 

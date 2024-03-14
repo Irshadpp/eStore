@@ -2,7 +2,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const sharp = require('sharp');
-
+const Category = require('../model/categorydb');
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const uploadPath = 'images';
@@ -34,8 +34,14 @@ const upload = multer({
 const uploadWithCropping = (fieldName, options) => {
     return (req, res, next) => {
         upload.array(fieldName, options)(req, res, async (err) => {
-            if (err) {
-                return next(err);
+            if (err instanceof multer.MulterError) {
+                const categoryData = await Category.find();
+                // Handle Multer error
+                return res.status(400).render('addProduct', { warningMsg: err.message, categoryData });
+            } else if (err) {
+                // Handle other errors
+                console.error(err);
+                return res.status(500).render('errorPage', { errorMsg: 'Internal Server Error' });
             }
             try {
                 for (const file of req.files) {
@@ -61,5 +67,4 @@ const uploadWithCropping = (fieldName, options) => {
         });
     };
 };
-
 module.exports = { upload, uploadWithCropping };
