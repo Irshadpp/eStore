@@ -70,6 +70,17 @@ router.put('/cancelOrder/:productId', indexAuth.isLogin, indexAuth.isUserBlock, 
 
 router.post('/editProfile/:userId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.editProfile);
 
+// sort
+router.get('/popular', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortPopular);
+router.get('/allPrducts/newArrivals', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortNewArrivals);
+router.get('/allPrducts/aToZ', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortAtoZ);
+router.get('/allPrducts/zToA', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortZtoA);
+router.get('/allPrducts/lowToHigh', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortLowToHigh);
+router.get('/allPrducts/highToLow', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortHighToLow);
+
+//filter
+router.post('/filterCategory', indexAuth.isLogin, indexAuth.isUserBlock, indexController.filterCategory)
+
 
 router.get('/test',(req,res)=>{
     res.render('test');

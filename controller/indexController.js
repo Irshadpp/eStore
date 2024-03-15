@@ -874,6 +874,79 @@ const cancelOrder = async (req,res) =>{
 }  
 }
 
+const sortPopular = async (req,res) =>{
+    try {
+        const products = await Product.find().sort({createdAt: -1}).limist(8);
+        const categoryData = await Category.find();
+        res.render('allProducts',{products, categoryData})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const sortNewArrivals = async (req,res) =>{
+    try {
+        const products = await Product.find().sort({createdAt: -1}).limit(8);
+        const categoryData = await Category.find();
+        res.render('allProducts',{products, categoryData})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const sortAtoZ = async (req,res) =>{
+    try {
+        const products = await Product.find().sort({productName:1});
+        const categoryData = await Category.find()
+        res.render('allProducts',{products, categoryData});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const sortZtoA = async (req,res) =>{
+    try {
+        const products = await Product.find().sort({productName:-1});
+        const categoryData = await Category.find()
+        res.render('allProducts',{products, categoryData});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const sortLowToHigh = async (req,res) =>{
+    try {
+        const products = await Product.find().sort({price:1});
+        const categoryData = await Category.find()
+        res.render('allProducts',{products, categoryData});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const sortHighToLow = async (req,res) =>{
+    try {
+        const products = await Product.find().sort({price:-1});
+        const categoryData = await Category.find()
+        res.render('allProducts',{products, categoryData});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const filterCategory = async (req,res) =>{
+    try {
+       const categories = req.body.categories;
+        const products = await Product.find({ categoryId: { $in: categories.map(id =>new mongoose.Types.ObjectId(id)) } }).lean()
+       const categoryData = await Category.find()
+       console.log(products)
+    //    res.render('allProducts',{products,categoryData})
+        res.json({products});
+    } catch (error) {
+        console.log(error)
+    }
+}
+
        
 
 module.exports = {
@@ -910,5 +983,12 @@ module.exports = {
     checkoutLoad,
     placeOrder,
     orderDetailsLoad,
-    cancelOrder
+    cancelOrder,
+    sortPopular,
+    sortAtoZ,
+    sortZtoA,
+    sortNewArrivals,
+    sortLowToHigh,
+    sortHighToLow,
+    filterCategory
 }

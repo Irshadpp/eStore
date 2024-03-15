@@ -25,7 +25,7 @@
 
                 <div class="toolbox-center">
                     <div class="toolbox-info">
-                        Showing <span>12 of 56</span> Products
+                        Showing <span><%= products.length %> of <%= products.length %></span> Products
                     </div><!-- End .toolbox-info -->
                 </div><!-- End .toolbox-center -->
 
@@ -34,9 +34,12 @@
                         <label for="sortby">Sort by:</label>
                         <div class="select-custom">
                             <select name="sortby" id="sortby" class="form-control">
-                                <option value="popularity" selected="selected">Most Popular</option>
-                                <option value="rating">Most Rated</option>
-                                <option value="date">Date</option>
+                                <option value="allProducts">All Products</option>
+                                <option value="newArrivals">New Arrivals</option>
+                                <option value="lowToHigh">Low to High</option>
+                                <option value="highToLow">High to Low</option>
+                                <option value="aToZ">A to Z</option>
+                                <option value="zToA">Z to A</option>
                             </select>
                         </div>
                     </div><!-- End .toolbox-sort -->
@@ -97,7 +100,7 @@
                 <div class="sidebar-filter-wrapper">
                     <div class="widget widget-clean">
                         <label><i class="icon-close"></i>Filters</label>
-                        <a href="#" class="sidebar-filter-clear">Clean All</a>
+                        <a href="" onclick="cleanAll()" class="sidebar-filter-clear">Clean All</a>
                     </div><!-- End .widget -->
                     <div class="widget widget-collapsible">
                         <h3 class="widget-title">
@@ -112,8 +115,8 @@
                                     <% categoryData.forEach(element => { %>
                                     <div class="filter-item">
                                         <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="cat-1">
-                                            <label class="custom-control-label" for="cat-1"><%= element.categoryName %></label>
+                                            <input type="checkbox" class="custom-control-input" value="<%= element._id %>" id="<%= element._id %>">
+                                            <label class="custom-control-label" for="<%= element._id %>"><%= element.categoryName %></label>
                                         </div><!-- End .custom-checkbox -->
                                         <!-- <span class="item-count">3</span> -->
                                     </div><!-- End .filter-item -->
@@ -122,32 +125,117 @@
                         </div><!-- End .collapse -->
                     </div><!-- End .widget -->
                     
-                    <div class="widget widget-collapsible">
-                        <h3 class="widget-title">
-                            <a data-toggle="collapse" href="#widget-5" role="button" aria-expanded="true" aria-controls="widget-5">
-                                Price
-                            </a>
-                        </h3><!-- End .widget-title -->
-
-                        <div class="collapse show" id="widget-5">
-                            <div class="widget-body">
-                                <div class="filter-price">
-                                    <div class="filter-price-text">
-                                        Price Range:
-                                        <span id="filter-price-range"></span>
-                                    </div><!-- End .filter-price-text -->
-
-                                    <div id="price-slider"></div><!-- End #price-slider -->
-                                </div><!-- End .filter-price -->
-                            </div><!-- End .widget-body -->
-                        </div><!-- End .collapse -->
-                    </div><!-- End .widget -->
+                    
                 </div><!-- End .sidebar-filter-wrapper -->
             </aside><!-- End .sidebar-filter -->
         </div><!-- End .container-fluid -->
     </div><!-- End .page-content -->
 </main><!-- End .main -->
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // window.location.href = '/allProducts';
+
+    document.getElementById('sortby').addEventListener('change', function() {
+        var option = this.value;
+
+        if (option === 'allProducts') {
+            window.location.href = '/allProducts';
+        } else if (option === 'newArrivals') {
+            window.location.href = '/allPrducts/newArrivals';
+        } else if (option === 'lowToHigh') {
+            window.location.href = '/allPrducts/lowToHigh';
+        } else if (option === 'highToLow') {
+            window.location.href = '/allPrducts/highToLow';
+        } else if (option === 'aToZ') {
+            window.location.href = '/allPrducts/aToZ';
+        } else if (option === 'zToA') {
+            window.location.href = '/allPrducts/zToA';
+        }
+    });
+});
+   
+        const checkboxes = document.querySelectorAll('.custom-control-input');
+    checkboxes.forEach(element =>{
+        element.addEventListener('click', function(){
+            const selectedCategories = [];
+            checkboxes.forEach(element =>{
+                if(element.checked){
+                    selectedCategories.push(element.value)
+                }
+            })
+            handleSelectedCategories(selectedCategories)
+        })
+    })
+
+    function handleSelectedCategories(categories){
+
+        fetch('/filterCategory',{
+            method: 'POST',
+            body: JSON.stringify({categories:categories}),
+            headers:{
+                'Content-Type':'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data=>{
+            renderProducts(data.products)
+        })
+        .catch(error=>{
+            console.log('Error:',error);
+        })
+    }
+
+    function renderProducts(products) {
+    const container = document.querySelector('.row'); // Assuming the container has class 'row'
+    container.innerHTML = ''; // Clear existing products
+
+    products.forEach(element => {
+        const productHTML = `
+        <div class="col-6 col-md-4 col-lg-4 col-xl-3 col-xxl-2">
+            <div class="product">
+                <figure class="product-media">
+                    <!-- <span class="product-label label-new">New</span> -->
+                    <a href="/product/${element._id}">
+                        <img src="/${element.imagePaths[0]}" alt="Product image" class="product-image">
+                    </a>
+
+                    <div class="product-action-vertical">
+                        <a href="" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                    </div><!-- End .product-action -->
+
+                    <div class="product-action action-icon">
+                        <a href="/addToCart/${element._id}" class="btn-product btn-cart"><span>add to cart</span></a>
+                    </div><!-- End .product-action -->
+                </figure><!-- End .product-media -->
+
+                <div class="product-body">
+                    <div class="product-cat">
+                        <a href="#">${element.categoryId.categoryName}</a>
+                    </div><!-- End .product-cat -->
+                    <h3 class="product-title"><a href="product.html">${element.productName}</a></h3><!-- End .product-title -->
+                    <div class="product-price">
+                        ₹${element.price}
+                    </div><!-- End .product-price -->
+                    <div class="ratings-container">
+                        <div class="ratings">
+                            <div class="ratings-val" style="width: 0%;"></div><!-- End .ratings-val -->
+                        </div><!-- End .ratings -->
+                        <span class="ratings-text">( 0 Reviews )</span>
+                    </div><!-- End .rating-container -->
+                </div><!-- End .product-body -->
+            </div><!-- End .product -->
+        </div><!-- End .col-sm-6 col-lg-4 col-xl-3 -->
+        `;
+        container.insertAdjacentHTML('beforeend', productHTML); // Append product HTML to container
+    });
+}
+
+function cleanAll(){
+    window.location.href = '/allProducts'
+}
+    
+</script>
 
 <!-- Plugins JS File -->
 <script src="/user/assets/js/jquery.min.js"></script>
