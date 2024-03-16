@@ -55,20 +55,24 @@
                                         <td>₹<%= parseFloat(element.subTotal).toFixed(2) %></td>
                                         <% if (element.products[0].status === 'Placed') { %>
                                             <td><span class="badge rounded-pill alert-warning">Pending</span></td>
-                                        <% }else{ %>
-                                            <td><span class="badge rounded-pill alert-danger">Cancelled</span></td>
-                                       <% } %>
+                                        <% }else if(element.products[0].status === 'Shipped'){ %>
+                                            <td><span class="badge rounded-pill alert-info">Shipped</span></td>
+                                       <% }else if(element.products[0].status === 'Delivered'){ %>
+                                        <td><span class="badge rounded-pill alert-success">Recieved</span></td>
+                                   <% }else{ %>
+                                    <td><span class="badge rounded-pill alert-danger">Cancelled</span></td>
+                               <% } %>
                                         <td></td>
                                         <td class="text-end">
                                             <a href="/admin/orderDetail/<%= element._id %>" class="btn btn-md rounded font-sm">Detail</a>
-                                            <div class="dropdown">
+                                            <!-- <div class="dropdown">
                                                 <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
                                                 <div class="dropdown-menu">
                                                     <a class="dropdown-item" href="#">View detail</a>
                                                     <a class="dropdown-item" href="#">Edit info</a>
                                                     <a class="dropdown-item text-danger" href="#">Delete</a>
                                                 </div>
-                                            </div>
+                                            </div> -->
                                             <!-- dropdown //end -->
                                         </td>
                                     </tr>

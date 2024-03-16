@@ -15,13 +15,13 @@
                                 <small class="text-muted">Order ID: <%= orderData.orderId %></small>
                             </div>
                             <div class="col-lg-6 col-md-6 ms-auto text-md-end">
-                                <select id="statusSelect" class="form-select d-inline-block mb-lg-0 mr-5 mw-200">
+                                <!-- <select id="statusSelect" class="form-select d-inline-block mb-lg-0 mr-5 mw-200">
                                     <option>Change status</option>
                                     <option>Awaiting payment</option>
                                     <option>Confirmed</option>
                                     <option>Shipped</option>
                                     <option>Delivered</option>
-                                </select>
+                                </select> -->
                                 <a id="saveBtn" class="btn btn-primary" href="#">Save</a>
                                 <a class="btn btn-secondary print ms-2" href="#"><i class="icon material-icons md-print"></i></a>
                             </div>
@@ -83,15 +83,17 @@
                         </div>
                         <!-- row // -->
                         <div class="row">
-                            <div class="col-lg-7">
+                            <div class="col-lg-12">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th width="40%">Product</th>
-                                                <th width="20%">Unit Price</th>
-                                                <th width="20%">Quantity</th>
-                                                <th width="20%" class="text-end">Total</th>
+                                                <th width="30%">Product</th>
+                                                <th width="15%">Unit Price</th>
+                                                <th width="10%">Quantity</th>
+                                                <th width="10%">Status</th>
+                                                <th width="10%" class="text-center">Total</th>
+                                                <th width="10%" class="text-end">changeStatus</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -107,8 +109,17 @@
                                                     </a>
                                                 </td>
                                                 <td>₹<%=parseFloat(element.productId.price).toFixed(2)%></td>
-                                                <td><%= element.quantity %></td>
-                                                <td class="text-end">₹<%=parseFloat(element.total).toFixed(2)%></td>
+                                                <td class="qty"><%= element.quantity %></td>
+                                                <td><%= element.status %></td>
+                                                <td class="text-center">₹<%=parseFloat(element.total).toFixed(2)%></td>
+                                                <td class="text-end">
+                                                    <select id="statusSelect" class="form-select d-inline-block mb-lg-0 mr-5 mw-200">
+                                                        <option>Change status</option>
+                                                        <option>Cancelled</option>
+                                                        <option>Shipped</option>
+                                                        <option>Delivered</option>
+                                                    </select>
+                                                </td>
                                             </tr>
 
                                             <% }) %>
@@ -169,30 +180,47 @@
                 <!-- card end// -->
             </section>
             <!-- content-main end// -->
-        </main>
-        <script>
-            document.getElementById('saveBtn').addEventListener('click',function(){
-                var orderId = document.getElementById('order_id').value
-                var status = document.getElementById('statusSelect').value;
-
-                fetch('/admin/changeStatus',{
-                    method: "POST",
-                    body: JSON.stringify({status:status}),
-                    headers:{
-                        'Content-Type': 'application/json'
-                    }
-                }).then(response =>{
-                    if (response.ok) {
-                        window.location.href = '/admin/orders'
-                    }else{
-                        console.log("responseError:", response.statusText)
-                    }
-                }).catch(error=>{
-                    console.log("Error:", error);
+            <script>
+                var orderData = <%- JSON.stringify(orderData) %>
+            </script>
+             <script>
+                document.getElementById('saveBtn').addEventListener('click',function(){
+                    var orderId = document.getElementById('order_id').value
+                    var status = document.getElementById('statusSelect').value;
+                    var products =  []
+    
+                    document.querySelectorAll('.form-select').forEach(function (selectElement, index) {
+            var productId = orderData.products[index].productId._id;
+            var selectedStatus = selectElement.value; 
+            if (selectedStatus !== 'Change status') {
+            products.push({ productId: productId, status: selectedStatus}); 
+        } 
+        });
+    
+        console.log(products)
+    
+                    fetch('/admin/changeStatus',{
+                        method: "POST",
+                        body: JSON.stringify({products,orderId}),
+                        headers:{
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(response =>{
+                        if (response.ok) {
+                            window.location.href = '/admin/orders'
+                            return response.json()
+                        }else{
+                            console.log("responseError:", response.statusText)
+                        }
+                    }).catch(error=>{
+                        console.log("Error:", error);
+                    })
                 })
-            })
-        </script>
-        <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
+            </script>
+    
+        </main>
+       
+               <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
         <script src="/admin/assets/js/vendors/bootstrap.bundle.min.js"></script>
         <script src="/admin/assets/js/vendors/select2.min.js"></script>
         <script src="/admin/assets/js/vendors/perfect-scrollbar.js"></script>

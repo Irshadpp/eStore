@@ -201,10 +201,10 @@
                                     <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address"
                                         role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
                                 </li>
-                                <li class="nav-item">
+                                <!-- <li class="nav-item">
                                     <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account"
                                         role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
-                                </li>
+                                </li> -->
                                 <li class="nav-item">
                                     <a class="nav-link" id="tab-account-link" data-toggle="modal" href="#myModal"
                                         role="tab" aria-controls="tab-account" aria-selected="false">Logout</a>
@@ -314,7 +314,7 @@
 
                                     <div class="row">
                                         <% if(addressData.length> 0){
-                                            addressData.forEach(data =>{ %>
+                                            addressData.forEach(data=>{ %>
                                             <div id="deleteAddress" class="modal fade">
                                                 <div class="modal-dialog modal-confirm">
                                                     <div class="modal-content">
@@ -342,7 +342,7 @@
                                             <div class="col-lg-6">
                                                 <div class="card card-dashboard">
                                                     <div class="card-body">
-                                                        <h3 class="card-title">Billing Address</h3>
+                                                        <h3 class="card-title">Address</h3>
                                                         <!-- End .card-title -->
                                                         <p>
                                                             <%= data.name%> <br>

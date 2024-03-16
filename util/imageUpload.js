@@ -36,10 +36,8 @@ const uploadWithCropping = (fieldName, options) => {
         upload.array(fieldName, options)(req, res, async (err) => {
             if (err instanceof multer.MulterError) {
                 const categoryData = await Category.find();
-                // Handle Multer error
                 return res.status(400).render('addProduct', { warningMsg: "You can only upload image files!", categoryData });
             } else if (err) {
-                // Handle other errors
                 console.error(err);
                 return res.status(500).render('errorPage', { errorMsg: 'Internal Server Error' });
             }

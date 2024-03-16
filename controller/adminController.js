@@ -394,14 +394,41 @@ const orderDetailLoad = async (req,res) =>{
     }
 }
 
-const changeOrderStatus = (req,res) =>{
-    console.log('====================================');
-    console.log(req.body);
-    console.log('====================================');
+const changeOrderStatus = async (req,res) =>{
+    try {
+        const productsDatas = req.body.products;
+    const order_id = req.body.orderId
+    for (const element of productsDatas) {
+        
+        await Order.findOneAndUpdate(
+            { _id: order_id, 'products.productId': element.productId },
+            { $set: { 'products.$.status': element.status } },
+            { new: true }
+        );
+        console.log(element.status)
+        if(element.status === 'Cancelled'){
+            const orderProducts = await Order.findOne(
+                { _id: order_id, 'products.productId': element.productId },
+                { 'products.$': 1,}
+            );
+            for (const product of orderProducts.products) {
+                if (product.productId.toString() === element.productId) {
+                    const qty = product.quantity;
+                    await Product.findOneAndUpdate({_id:element.productId},{$inc:{quantity:qty}});
+                }
+            }
+
+           
+        }
+    }
     res.json({
         sucess:true,
         message:"updated sucessfully"
     })
+    } catch (error) {
+        console.log(error)
+    }
+    
 }
 
 
