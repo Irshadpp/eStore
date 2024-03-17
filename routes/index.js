@@ -43,7 +43,7 @@ router.get('/resendOTP', indexController.resendOTP);
 //home page load
 router.get('/home', indexAuth.isLogin, indexAuth.isUserBlock, indexController.homeLoad);
 
-router.get('/allProducts', indexAuth.isLogin, indexAuth.isUserBlock, indexController.allProductsLoad)
+router.get('/products', indexController.allProductsLoad)
 router.get('/account', indexAuth.isLogin, indexAuth.isUserBlock, indexController.accountLoad);
 router.get('/editAddress', indexAuth.isLogin, indexController.editAddressLoad);
 
@@ -72,15 +72,19 @@ router.post('/editProfile/:userId', indexAuth.isLogin, indexAuth.isUserBlock, in
 
 // sort
 router.get('/popular', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortPopular);
-router.get('/allPrducts/newArrivals', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortNewArrivals);
-router.get('/allPrducts/aToZ', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortAtoZ);
-router.get('/allPrducts/zToA', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortZtoA);
-router.get('/allPrducts/lowToHigh', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortLowToHigh);
-router.get('/allPrducts/highToLow', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortHighToLow);
+router.get('/products/newArrivals', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortNewArrivals);
+router.get('/products/aToZ', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortAtoZ);
+router.get('/products/zToA', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortZtoA);
+router.get('/products/lowToHigh', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortLowToHigh);
+router.get('/products/highToLow', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortHighToLow);
 
 //filter
-router.post('/filterCategory', indexAuth.isLogin, indexAuth.isUserBlock, indexController.filterCategory)
+router.post('/filterCategory', indexAuth.isLogin, indexAuth.isUserBlock, indexController.filterCategory);
 
+//wishlist
+router.get('/wishlist',indexAuth.isLogin, indexAuth.isUserBlock, indexController.wishlistLoad);
+router.get('/addToWishlist/:productId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.addtoWishlist);
+router.put('/removeProduct', indexAuth.isLogin, indexAuth.isUserBlock, indexController.removeProduct)
 
 router.get('/test',(req,res)=>{
     res.render('test');

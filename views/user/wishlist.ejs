@@ -1,0 +1,122 @@
+<%-include('../layout/header')-%>
+
+        <main class="main">
+        	<div class="page-header text-center" style="background-image: url('/user/assets/images/page-header-bg.jpg')">
+        		<div class="container">
+        			<h1 class="page-title">Wishlist<span>Shop</span></h1>
+        		</div><!-- End .container -->
+        	</div><!-- End .page-header --> 
+            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                <div class="container">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/home">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Wishlist</li>
+                    </ol>
+                </div><!-- End .container -->
+            </nav><!-- End .breadcrumb-nav -->
+
+            <div class="page-content">
+            	<div class="container">
+					<table class="table table-wishlist table-mobile">
+						<thead>
+							<tr>
+								<th>Product</th>
+								<th>Price</th>
+								<th>Stock Status</th>
+								<th></th>
+								<th></th>
+							</tr>
+						</thead>
+
+						<tbody>
+                            <% if (wishlistData.length > 0) { %>
+                             <% wishlistData[0].products.forEach(element => { %>
+                              
+							<tr>
+								<td class="product-col">
+									<div class="product">
+										<figure class="product-media">
+											<a href="#">
+												<img src="/<%= element.productId.imagePaths[0] %>" alt="Product image">
+											</a>
+										</figure>
+
+										<h3 class="product-title">
+											<a href="#"><%= element.productId.productName %></a>
+										</h3><!-- End .product-title -->
+									</div><!-- End .product -->
+								</td>
+								<td class="price-col">₹<%=parseFloat(element.productId.price).toFixed(2)%></td>
+                                <% if (element.productId.quantity<1) { %>
+                                    <td class="stock-col"><span class="out-of-stock">Out of stock</span></td>
+                                    <td class="action-col">
+                                        <button class="btn btn-block btn-outline-primary-2 disabled">Out of Stock</button>
+                                    </td>
+                                <% } else { %>
+                                    <td class="stock-col"><span class="in-stock">In stock</span></td>
+								<td class="action-col">
+									<button class="btn btn-block btn-outline-primary-2" onclick="addToCart('<%=element.productId._id%>')"><i class="icon-cart-plus"></i>Add to Cart</button>
+								</td>
+                                <% } %>
+								<td class="remove-col"><button class="btn-remove" data-product-id="<%=element.productId._id %>"><i class="icon-close"></i></button></td>
+							</tr>
+
+                            <% }) %>
+                            <% } %>
+							
+						</tbody>
+					</table><!-- End .table table-wishlist -->
+	            	
+            	</div><!-- End .container -->
+            </div><!-- End .page-content -->
+        </main><!-- End .main -->
+
+        
+    </div><!-- End .page-wrapper -->
+    <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+
+    
+    <!-- Plugins JS File -->
+    <script src="/user/assets/js/jquery.min.js"></script>
+    <script src="/user/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/user/assets/js/jquery.hoverIntent.min.js"></script>
+    <script src="/user/assets/js/jquery.waypoints.min.js"></script>
+    <script src="/user/assets/js/superfish.min.js"></script>
+    <script src="/user/assets/js/owl.carousel.min.js"></script>
+    <!-- Main JS File -->
+    <script src="/user/assets/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    async function addToCart(productId){
+        try {
+            await axios.post(`addToCart/${productId}`);
+        } catch (error) {
+            console.log(error.message);
+        }
+    } 
+
+    $(document).on('click','.btn-remove', async function(event){
+        var productId = $(this).data('product-id');
+        try {
+            const response = await fetch('/removeProduct',{
+                method: 'PUT',
+                body: JSON.stringify({productId}),
+                headers:{
+                    'Content-Type':'application/json'
+                }
+            })
+            if(!response.ok){
+                throw new Error('remove wishlist product error');
+            }
+            $(this).closest('tr').remove()
+        } catch (error) {
+            console.log('Error:',error)
+        }
+    })
+    </script>
+</body>
+
+
+<!-- molla/wishlist.html  22 Nov 2019 09:55:06 GMT -->
+</html>

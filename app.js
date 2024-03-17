@@ -1,24 +1,24 @@
 require('dotenv').config
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var session = require('express-session');
-var nocache = require('nocache');
-var {v4:uuidv4} = require('uuid');
-var passport = require('passport')
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const session = require('express-session');
+const nocache = require('nocache');
+const {v4:uuidv4} = require('uuid');
+const passport = require('passport')
 
 require('./util/passportSetup');
 
-var indexRouter = require('./routes/index');
-var adminRouter = require('./routes/admin');
+const indexRouter = require('./routes/index');
+const adminRouter = require('./routes/admin');
 
 // database connection
 const connectDB = require('./database/connection')
 connectDB()
 
-var app = express();
+const app = express();
 
 
 // view engine setup
@@ -34,7 +34,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'images')));
 
 //create session;
-var sessionSecret = uuidv4();
+const sessionSecret = uuidv4();
 app.use(session({
   secret: sessionSecret,
   resave: false,

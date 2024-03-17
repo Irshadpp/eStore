@@ -59,7 +59,7 @@
                                 </a>
 
                                 <div class="product-action-vertical">
-                                    <a href="" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                    <a href="/addTowishlist/<%=element._id%>"  class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
                                 </div><!-- End .product-action -->
 
                                 <div class="product-action action-icon">
@@ -135,17 +135,17 @@
         var option = this.value;
 
         if (option === 'allProducts') {
-            window.location.href = '/allProducts';
+            window.location.href = '/products';
         } else if (option === 'newArrivals') {
-            window.location.href = '/allPrducts/newArrivals';
+            window.location.href = '/products/newArrivals';
         } else if (option === 'lowToHigh') {
-            window.location.href = '/allPrducts/lowToHigh';
+            window.location.href = '/products/lowToHigh';
         } else if (option === 'highToLow') {
-            window.location.href = '/allPrducts/highToLow';
+            window.location.href = '/products/highToLow';
         } else if (option === 'aToZ') {
-            window.location.href = '/allPrducts/aToZ';
+            window.location.href = '/products/aToZ';
         } else if (option === 'zToA') {
-            window.location.href = '/allPrducts/zToA';
+            window.location.href = '/products/zToA';
         }
     });
 });
@@ -229,8 +229,10 @@
 function cleanAll(){
     window.location.href = '/allProducts'
 }
+
+    </script>
     
-</script>
+
 
 <!-- Plugins JS File -->
 <script src="/user/assets/js/jquery.min.js"></script>
@@ -243,6 +245,7 @@ function cleanAll(){
 <script src="/user/assets/js/bootstrap-input-spinner.js"></script>
 <script src="/user/assets/js/jquery.magnific-popup.min.js"></script>
 <script src="/user/assets/js/nouislider.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <!-- Main JS File -->
 <script src="/user/assets/js/main.js"></script>
 </body>

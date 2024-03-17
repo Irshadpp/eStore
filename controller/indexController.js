@@ -10,6 +10,7 @@ const Category = require('../model/categorydb');
 const Cart = require('../model/cartdb');
 const Address = require('../model/addressdb');
 const Order = require('../model/orderdb');
+const Wishlist = require('../model/wishlistdb');
 
 const generateOTP = require('../util/generateOtp')
 const asyncHandler = require('express-async-handler');
@@ -63,18 +64,18 @@ const otpLoad = async (req, res) => {
 const homeLoad = asyncHandler(async (req, res) => {
 
     const userData = await User.findById(req.session.user_id);
-    const productData = await Product.find({list:true}).populate('categoryId');
+    const productData = await Product.find({ list: true }).populate('categoryId');
     const products = productData.filter(product => product.categoryId.list === true)
     const imagePathsArray = products.map((item) => item.imagePaths);
     res.render('home', { userData, products, imagePathsArray });
 
 });
 
-const allProductsLoad = async (req,res) =>{
+const allProductsLoad = async (req, res) => {
     const productData = await Product.find().populate('categoryId');
     const products = productData.filter(product => product.list === true && product.categoryId.list === true);
     const categoryData = await Category.find();
-    res.render('allProducts',{products, categoryData});
+    res.render('allProducts', { products, categoryData });
 }
 
 const productLoad = asyncHandler(async (req, res) => {
@@ -91,7 +92,7 @@ const productLoad = asyncHandler(async (req, res) => {
 
 const accountLoad = async (req, res) => {
     try {
-        const orderData = await Order.find({userId:req.session.user_id}).populate('products.productId');
+        const orderData = await Order.find({ userId: req.session.user_id }).populate('products.productId');
         const userData = await User.findOne({ _id: req.session.user_id });
         await Address.find({ userId: req.session.user_id })
             .populate('userId')
@@ -101,7 +102,7 @@ const accountLoad = async (req, res) => {
             }).catch(error => {
                 console.log(error)
             })
-        
+
     } catch (error) {
         console.log(error)
     }
@@ -699,7 +700,7 @@ const editProfile = async (req, res) => {
         if (!(/^[A-Za-z]+(?: [A-Za-z]+)?$/.test(req.body.name))) {
             return res.redirect('/account');
         }
-        if(req.body.mobile < 10){
+        if (req.body.mobile < 10) {
             return res.render('/account');
         }
         const userData = await User.findOneAndUpdate(
@@ -805,8 +806,8 @@ const placeOrder = async (req, res) => {
 
         let productDoc = [];
         if (Array.isArray(productId)) {
-            productId.forEach((item,index)=>{
-              let  productDocItem = {
+            productId.forEach((item, index) => {
+                let productDocItem = {
                     productId: item,
                     quantity: parseInt(quantity[index]),
                     total: total[index],
@@ -833,12 +834,12 @@ const placeOrder = async (req, res) => {
             address: addressData
         })
         const newOrder = await order.save();
-        await Cart.deleteOne({userId:req.session.user_id});
+        await Cart.deleteOne({ userId: req.session.user_id });
         setTimeout(() => {
             res.redirect(`/orderDetails/${newOrder._id}`);
         }, 1000);
 
-       
+
     } catch (error) {
         res.status(500).json('Internal server error');
         console.log(error)
@@ -846,108 +847,157 @@ const placeOrder = async (req, res) => {
 }
 
 
-const orderDetailsLoad = async (req,res)=>{
+const orderDetailsLoad = async (req, res) => {
     const orderId = req.params.orderId;
     const orderData = await Order.findById(orderId).populate('products.productId userId');
     orderData.products.forEach(element => console.log(element.productId.productName))
     const orderDate = moment(orderData.date);
     const date = orderDate.format('DD-MM-YYYY');
-    res.render('orderDetails', {orderData, date});
+    res.render('orderDetails', { orderData, date });
 }
 
-const cancelOrder = async (req,res) =>{
+const cancelOrder = async (req, res) => {
     try {
-    const productId = req.params.productId;
-    const qty = req.body.qty;
-    const order_id = req.body.order_id;
+        const productId = req.params.productId;
+        const qty = req.body.qty;
+        const order_id = req.body.order_id;
         await Order.updateOne(
-            {$and:[{_id:order_id},{'products.productId':productId}]},
-            {$set:{"products.$.status":"Cancelled"}}
-            );
-        await Product.updateOne({_id:productId},{$inc:{quantity:qty}});
+            { $and: [{ _id: order_id }, { 'products.productId': productId }] },
+            { $set: { "products.$.status": "Cancelled" } }
+        );
+        await Product.updateOne({ _id: productId }, { $inc: { quantity: qty } });
         res.json({
             success: true,
             message: 'order cancel successfull'
         })
-} catch (error) {
-    console.log(error);
-}  
+    } catch (error) {
+        console.log(error);
+    }
 }
 
-const sortPopular = async (req,res) =>{
+const sortPopular = async (req, res) => {
     try {
-        const products = await Product.find().sort({createdAt: -1}).limist(8);
+        const products = await Product.find().sort({ createdAt: -1 }).limist(8);
         const categoryData = await Category.find();
-        res.render('allProducts',{products, categoryData})
+        res.render('allProducts', { products, categoryData })
     } catch (error) {
         console.log(error)
     }
 }
 
-const sortNewArrivals = async (req,res) =>{
+const sortNewArrivals = async (req, res) => {
     try {
-        const products = await Product.find().sort({createdAt: -1}).limit(8);
+        const products = await Product.find().sort({ createdAt: -1 }).limit(8);
         const categoryData = await Category.find();
-        res.render('allProducts',{products, categoryData})
+        res.render('allProducts', { products, categoryData })
     } catch (error) {
         console.log(error)
     }
 }
 
-const sortAtoZ = async (req,res) =>{
+const sortAtoZ = async (req, res) => {
     try {
-        const products = await Product.find().sort({productName:1});
+        const products = await Product.find().sort({ productName: 1 });
         const categoryData = await Category.find()
-        res.render('allProducts',{products, categoryData});
+        res.render('allProducts', { products, categoryData });
     } catch (error) {
         console.log(error);
     }
 }
 
-const sortZtoA = async (req,res) =>{
+const sortZtoA = async (req, res) => {
     try {
-        const products = await Product.find().sort({productName:-1});
+        const products = await Product.find().sort({ productName: -1 });
         const categoryData = await Category.find()
-        res.render('allProducts',{products, categoryData});
+        res.render('allProducts', { products, categoryData });
     } catch (error) {
         console.log(error);
     }
 }
 
-const sortLowToHigh = async (req,res) =>{
+const sortLowToHigh = async (req, res) => {
     try {
-        const products = await Product.find().sort({price:1});
+        const products = await Product.find().sort({ price: 1 });
         const categoryData = await Category.find()
-        res.render('allProducts',{products, categoryData});
+        res.render('allProducts', { products, categoryData });
     } catch (error) {
         console.log(error);
     }
 }
 
-const sortHighToLow = async (req,res) =>{
+const sortHighToLow = async (req, res) => {
     try {
-        const products = await Product.find().sort({price:-1});
+        const products = await Product.find().sort({ price: -1 });
         const categoryData = await Category.find()
-        res.render('allProducts',{products, categoryData});
+        res.render('allProducts', { products, categoryData });
     } catch (error) {
         console.log(error);
     }
 }
 
-const filterCategory = async (req,res) =>{
+const filterCategory = async (req, res) => {
     try {
-       const categories = req.body.categories;
-        const products = await Product.find({ categoryId: { $in: categories.map(id =>new mongoose.Types.ObjectId(id)) } }).lean()
-       const categoryData = await Category.find()
-       console.log(products)
-    //    res.render('allProducts',{products,categoryData})
-        res.json({products});
+        const categories = req.body.categories;
+        const products = await Product.find({ categoryId: { $in: categories.map(id => new mongoose.Types.ObjectId(id)) } }).lean()
+        const categoryData = await Category.find()
+        res.json({ products });
     } catch (error) {
         console.log(error)
     }
 }
 
-       
+const wishlistLoad = async (req, res) => {
+    try {
+        const wishlistData = await Wishlist.find().populate('products.productId');
+        res.render('wishlist', { wishlistData });
+    } catch (error) {
+        console.log(error);
+        res.render('page404')
+    }
+}
+
+const addtoWishlist = async (req, res) => {
+    try {
+        const productId = req.params.productId;
+        const userId = req.session.user_id;
+        let wishlistData = await Wishlist.findOne({ userId: userId });
+        const checkProduct = await Wishlist.findOne({
+            userId: userId,
+            'products.productId': productId
+        });
+        if (checkProduct) {
+            return res.redirect('/wishlist');
+        }
+        if (wishlistData) {
+            wishlistData.products.push({ productId: productId });
+            await wishlistData.save();
+        } else {
+            wishlistData = new Wishlist({
+                userId: userId,
+                products: [{ productId: productId }]
+            });
+            await wishlistData.save();
+        }
+        res.redirect('/wishlist')
+    } catch (error) {
+        console.log(error);
+        res.render('page404');
+    }
+}
+
+const removeProduct = async (req, res) => {
+    try {
+        const productId = req.body.productId;
+        await Wishlist.findOneAndUpdate(
+            { userId: req.session.user_id },
+            { $pull: { products: { productId: productId } } }
+        );
+        res.json(200);
+    } catch (error) {
+        console.log(error);
+        res.render('page404');
+    }
+}
 
 module.exports = {
     loadIndex,
@@ -990,5 +1040,8 @@ module.exports = {
     sortNewArrivals,
     sortLowToHigh,
     sortHighToLow,
-    filterCategory
+    filterCategory,
+    wishlistLoad,
+    addtoWishlist,
+    removeProduct
 }
