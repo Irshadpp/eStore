@@ -2,6 +2,12 @@
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const moment = require('moment');
+const razorpay = require('razorpay');
+
+const razorpayInstance = new razorpay({
+    key_id:'rzp_test_cIsaimIKhCrW7h',
+    key_secret: 'GIblKk1JR3xwE70qpa1jOo89'
+})
 
 const User = require('../model/userdb');
 const OTP = require('../model/otpdb');
@@ -788,8 +794,11 @@ const addAddress = async (req, res) => {
 const placeOrder = async (req, res) => {
 
     try {
-        const { address, productId, total, subTotal, quantity } = req.body;
-
+       console.log('====================================');
+      
+      
+        const { paymentMethod, address, productId, total, subTotal, quantity } = req.body;
+       
         function generateOrderId(length) {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWZYZ0123456789';
             let id = '';
@@ -800,6 +809,9 @@ const placeOrder = async (req, res) => {
             return id;
         }
 
+        const receipt = 'estore'+ generateOrderId(6)
+
+        
         const checkAddress = await Address.findOne({ userId: req.session.user_id }).populate('addresses');
         const addressData = checkAddress.addresses.find(addrs => addrs.address === address);
 
@@ -828,15 +840,38 @@ const placeOrder = async (req, res) => {
 
         const order = new Order({
             userId: req.session.user_id,
-            orderId: generateOrderId(6),
+            orderId: receipt,
             products: productDoc,
             subTotal: subTotal,
             address: addressData
         })
         const newOrder = await order.save();
         await Cart.deleteOne({ userId: req.session.user_id });
+        console.log('----------------------------',paymentMethod)
+        if(paymentMethod === 'razorpay'){
+            console.log('====================================');
+            const amount = subTotal;
+            const currency = "INR"
+    
+            razorpayInstance.orders.create({amount, currency, receipt},
+            (err,order)=>{
+                if(!err){
+                    console.log(order);
+                    res.json({
+                        success: true,
+                        order
+                    })
+                }else{
+                    console.log(err)
+                    res.status(500).json({ error: "Razorpay order creation failed" });
+                }
+                
+            }
+                )
+        }
+        
         setTimeout(() => {
-            res.redirect(`/orderDetails/${newOrder._id}`);
+            // res.redirect(`/orderDetails/${newOrder._id}`);
         }, 1000);
 
 

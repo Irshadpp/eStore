@@ -10,7 +10,6 @@ const orderItemSchema = new mongoose.Schema({
     quantity:{type:Number, required: true},
     total:{type:Number, required: true},
     reason:{type:String},
-    paymentMode:{type:String, required: true, default: 'COD'},
 })
 
 const orderSchema = new mongoose.Schema({ 
@@ -23,6 +22,8 @@ const orderSchema = new mongoose.Schema({
     products:[orderItemSchema],
     subTotal:{type:Number, required: true},
     address:{type:Object, required: true},
+    paymentMode:{type:String, required: true, default: 'COD'},
+    
     date:{type:Date, required: true, default: Date.now}
 });
 
