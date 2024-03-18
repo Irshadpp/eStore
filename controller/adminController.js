@@ -101,8 +101,10 @@ const blockUser = asyncHandler( async (req,res) => {
     const blockStatus = await User.findOne({_id:userId});
     if(blockStatus.isBlock === true){
         await User.updateOne({_id:userId},{isBlock:false});
+        res.json({success:true, isBlock:false});
     }else{
         await User.updateOne({_id:userId},{isBlock:true});
+        res.json({success:true, isBlock:true});
     }
 });
 

@@ -198,6 +198,7 @@ document.getElementById('place-order').addEventListener('click', function(event)
     const productId = document.querySelector('.productId').value;
     const total = document.querySelector('.total').value;
 
+
     // Prepare the data object to be sent in the request body
     const data = {
         paymentMethod: selectedValue,
@@ -220,42 +221,55 @@ document.getElementById('place-order').addEventListener('click', function(event)
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        return response.json(); // Parse the JSON data
+        return response.json(); 
     })
     .then(data => {
-        console.log('Response from backend:', data.order.receipt);
+        if(paymentMethod === 'razorpay'){
+            console.log('Response from backend:', data.key_id);
         var options = { 
-       "key": "rzp_test_cIsaimIKhCrW7h",  
-       "amount": "49900",  
-       "currency": "INR", 
-       "name": "Dummy Academy", 
-       "description": "Pay & Checkout this Course, Upgrade your DSA Skill", 
-        "image": "https://media.geeksforgeeks.org/wp-content/uploads/20210806114908/dummy-200x200.png", 
-       "order_id": "order_HdPuQW0s9hY9AU",   
-       "handler": function (response){ 
-           console.log(response) 
-           alert("This step of Payment Succeeded"); 
-       }, 
-       "prefill": { 
-          //Here we are prefilling random contact 
-         "contact":"9876543210",  
-           //name and email id, so while checkout 
-         "name": "Twinkle Sharma",   
-         "email": "smtwinkle@gmail.com"
-       }, 
-      "notes" : {},  
-       "theme": { 
-           "color": "#2300a3" 
-       } 
-   }; 
-   var razorpayObject = new Razorpay(options); 
-   console.log(razorpayObject); 
-   razorpayObject.on('payment.failed', function (response){ 
-         console.log(response); 
-         alert("This step of Payment Failed"); 
-   }); 
-     
-       razorpayObject.open(); 
+    "key": ""+data.key_id+"",  
+    "amount": ""+data.amount+"",  
+    "currency": "INR",  
+    "name": "eStore",  
+    "description": "Pay & Checkout this Course, Upgrade your DSA Skill",  
+    "image": "/user/icon/estoreLogo.png",  // Merchant logo or image
+    "order_id": ""+data.order_id+"",  
+    "handler": function (response){ 
+        fetch('/verifyOrder',{
+            method:'POST',
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                paymentId: response.razorpay_payment_id,
+                order_id: response.razorpay_order_id
+            })
+        })
+        console.log(response);
+        alert("This step of Payment Succeeded"); },
+    "prefill": { 
+        "contact": "9876543210",  
+        "name": "Twinkle Sharma",   
+        "email": "smtwinkle@gmail.com"
+    }, 
+    "notes" : {
+        "description": "description here", 
+    },  
+    "theme": { 
+        "color": "#2300a3"  
+    } 
+}; 
+
+var razorpayObject = new Razorpay(options);  // Creating a new Razorpay instance
+console.log(razorpayObject); 
+
+razorpayObject.on('payment.failed', function (response){ 
+    console.log(response); 
+    alert("This step of Payment Failed"); 
+}); 
+
+razorpayObject.open();
+        }
     })
     .catch(error => {
         console.error('There was a problem with the fetch operation:', error);

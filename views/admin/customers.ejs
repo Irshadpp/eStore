@@ -23,15 +23,10 @@
                                         <td><%= item.email %></td>
                                         <td><%= item.createDate %></td>
                                       
-                                            <%if(item.isBlock === true){%>
-                                                <td class="text-end">
-                                            <a href="" onclick="blockUser('<%=item._id%>')" class="btn btn-sm alert-success rounded font-sm ">Unblock</a>
-                                        </td>
-                                                <%}else{%>
+                                           
                                                     <td class="text-end">
-                                                        <a href="" onclick="blockUser('<%=item._id%>')" class="btn btn-sm alert-danger rounded font-sm ">Block</a>
+                                                        <a href="" onclick="event.preventDefault();blockUser('<%=item._id%>',this)" class="btn btn-sm alert-danger rounded font-sm ">Block</a>
                                                    </td>
-                                                    <%}%>
                                             
                                        
                                     </tr>
@@ -76,21 +71,29 @@
 
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script>
-            async function blockUser(userId){
-                try {
-                    await axios.put(`/admin/${userId}/block`);
-                } catch (error) {
-                    console.log(error.message);
-                }
-            }
+            function blockUser(userId, buttonElement) {
+  fetch(`/admin/${userId}/block`, {
+    method: "PUT",
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json()) // Directly return the parsed JSON response
+  .then(data => {
+    if (data.isBlock === true) {
+      buttonElement.textContent = 'Unblock';
+      buttonElement.classList.remove('alert-danger');
+      buttonElement.classList.add('alert-success');
+    } else {
+      buttonElement.textContent = 'Block';
+      buttonElement.classList.remove('alert-success');
+      buttonElement.classList.add('alert-danger');
+    }
+  })
+  .catch(error => console.error(error.message)); // Handle errors gracefully
+}
 
-            async function unblockUser(userId){
-                try {
-                    await axios.put(`/admin/${userId}/unblock`);
-                } catch (error) {
-                    console.log(error.message);
-                }
-            }
+const button = document.getElementById('blockUserButton');
         </script>
     </body>
 </html>

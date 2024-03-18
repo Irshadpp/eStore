@@ -65,6 +65,7 @@ router.get('/deleteAddress/:addressId',indexAuth.isLogin, indexAuth.isUserBlock,
 //checkout and place order
 router.get('/checkout', indexAuth.isLogin, indexAuth.isUserBlock, indexController.checkoutLoad);
 router.post('/checkout', indexAuth.isLogin, indexAuth.isUserBlock, indexController.placeOrder);
+router.post('/verifyOrder', indexAuth.isLogin, indexAuth.isUserBlock, indexController.verifyOrder)
 router.get('/orderDetails/:orderId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.orderDetailsLoad);
 router.put('/cancelOrder/:productId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.cancelOrder);
 

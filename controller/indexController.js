@@ -850,8 +850,13 @@ const placeOrder = async (req, res) => {
         console.log('----------------------------',paymentMethod)
         if(paymentMethod === 'razorpay'){
             console.log('====================================');
-            const amount = subTotal;
-            const currency = "INR"
+            const amount = subTotal * 100;
+            const currency = "INR";
+            const notes = {
+                "description": "Best Course for SDE placements", 
+                "language": "Available in 4 major Languages JAVA,C/C++, Python, Javascript",
+                "access": "This course have Lifetime Access" 
+            }
     
             razorpayInstance.orders.create({amount, currency, receipt},
             (err,order)=>{
@@ -859,7 +864,9 @@ const placeOrder = async (req, res) => {
                     console.log(order);
                     res.json({
                         success: true,
-                        order
+                        order_id: order.id,
+                        amount: amount,
+                        key_id: 'rzp_test_cIsaimIKhCrW7h',
                     })
                 }else{
                     console.log(err)
@@ -878,6 +885,15 @@ const placeOrder = async (req, res) => {
     } catch (error) {
         res.status(500).json('Internal server error');
         console.log(error)
+    }
+}
+
+const verifyOrder = async (req,res) =>{
+    try {
+        const {paymentId, order_id} = req.body;
+    } catch (error) {
+        console.log(error);
+        res.render('page404');
     }
 }
 
@@ -1067,6 +1083,7 @@ module.exports = {
     updateQuantity,
     checkoutLoad,
     placeOrder,
+    verifyOrder,
     orderDetailsLoad,
     cancelOrder,
     sortPopular,
