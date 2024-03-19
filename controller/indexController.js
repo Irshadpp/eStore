@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const moment = require('moment');
 const razorpay = require('razorpay');
+const crypto = require('crypto');
 
 const razorpayInstance = new razorpay({
     key_id:'rzp_test_cIsaimIKhCrW7h',
@@ -21,6 +22,7 @@ const Wishlist = require('../model/wishlistdb');
 const generateOTP = require('../util/generateOtp')
 const asyncHandler = require('express-async-handler');
 const sendEmail = require('../util/sendEmail');
+const { log } = require('console');
 
 
 const loadIndex = asyncHandler(async (req, res) => {
@@ -98,7 +100,7 @@ const productLoad = asyncHandler(async (req, res) => {
 
 const accountLoad = async (req, res) => {
     try {
-        const orderData = await Order.find({ userId: req.session.user_id }).populate('products.productId');
+        const orderData = await Order.find({ userId: req.session.user_id }).sort({date:-1}).populate('products.productId');
         const userData = await User.findOne({ _id: req.session.user_id });
         await Address.find({ userId: req.session.user_id })
             .populate('userId')
@@ -791,11 +793,12 @@ const addAddress = async (req, res) => {
     }
 
 }
+
+
+let newOrder;
 const placeOrder = async (req, res) => {
 
     try {
-       console.log('====================================');
-      
       
         const { paymentMethod, address, productId, total, subTotal, quantity } = req.body;
        
@@ -814,7 +817,6 @@ const placeOrder = async (req, res) => {
         
         const checkAddress = await Address.findOne({ userId: req.session.user_id }).populate('addresses');
         const addressData = checkAddress.addresses.find(addrs => addrs.address === address);
-
 
         let productDoc = [];
         if (Array.isArray(productId)) {
@@ -843,13 +845,12 @@ const placeOrder = async (req, res) => {
             orderId: receipt,
             products: productDoc,
             subTotal: subTotal,
-            address: addressData
+            address: addressData,
+            paymentMode: paymentMethod
         })
-        const newOrder = await order.save();
+         newOrder = await order.save();
         await Cart.deleteOne({ userId: req.session.user_id });
-        console.log('----------------------------',paymentMethod)
         if(paymentMethod === 'razorpay'){
-            console.log('====================================');
             const amount = subTotal * 100;
             const currency = "INR";
             const notes = {
@@ -861,12 +862,12 @@ const placeOrder = async (req, res) => {
             razorpayInstance.orders.create({amount, currency, receipt},
             (err,order)=>{
                 if(!err){
-                    console.log(order);
                     res.json({
                         success: true,
                         order_id: order.id,
                         amount: amount,
                         key_id: 'rzp_test_cIsaimIKhCrW7h',
+                        paymentMethod: paymentMethod,
                     })
                 }else{
                     console.log(err)
@@ -875,22 +876,34 @@ const placeOrder = async (req, res) => {
                 
             }
                 )
+        }else if(paymentMethod === 'COD'){
+                res.json({
+                    orderId:newOrder._id,
+                    paymentMethod: paymentMethod
+                });
         }
         
-        setTimeout(() => {
-            // res.redirect(`/orderDetails/${newOrder._id}`);
-        }, 1000);
-
 
     } catch (error) {
-        res.status(500).json('Internal server error');
+        res.status(500).render('page404');
         console.log(error)
+
     }
 }
 
 const verifyOrder = async (req,res) =>{
     try {
-        const {paymentId, order_id} = req.body;
+        const {paymentId, order_id, razorpay_signature, } = req.body;
+        const key_secret = 'GIblKk1JR3xwE70qpa1jOo89'
+        let hmac = crypto.createHmac('sha256', key_secret);
+        hmac.update(order_id + "|" + paymentId);
+        const generated_signature = hmac.digest('hex');
+        if(razorpay_signature===generated_signature){ 
+            await Order.findOneAndUpdate({_id:newOrder._id},{paymentStatus:"Payment done"});
+            res.json({success:true, message:"Payment has been verified", orderId:newOrder._id}) 
+        }else{
+            res.json({success:false, message:"Payment verification failed"}) 
+        }
     } catch (error) {
         console.log(error);
         res.render('page404');
@@ -923,6 +936,22 @@ const cancelOrder = async (req, res) => {
         })
     } catch (error) {
         console.log(error);
+    }
+}
+
+const returnProduct = async (req,res)=>{
+    try {
+        const {order_id, productId, reason} = req.body;
+        console.log('====================================');
+        console.log(reason);
+        console.log('====================================');
+        await Order.updateOne(
+            { $and: [{ _id: order_id }, { 'products.productId': productId }] },
+            { $set: { "products.$.reason": reason } }
+        );
+    } catch (error) {
+        console.log(error);
+        res.render('page404');
     }
 }
 
@@ -1086,6 +1115,7 @@ module.exports = {
     verifyOrder,
     orderDetailsLoad,
     cancelOrder,
+    returnProduct,
     sortPopular,
     sortAtoZ,
     sortZtoA,

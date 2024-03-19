@@ -51,12 +51,15 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
                       <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
                         <p class="text-muted mb-0 small"><%=parseFloat(element.total).toFixed(2)%></p>
                       </div>
+                      
                       <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
                         <p class="text-muted mb-0 small"><%=element.status%></p>
                       </div>
-                      <% if (element.status !== 'Cancelled') { %>
+                      <% if (element.status === 'Placed') { %>
                         <button class="btn btn-danger mt-1 mb-0" onclick="cancelOrder('<%= element.productId._id%>', '<%=orderData._id%>')">Cancel</button>
-                        <% } %>
+                        <% }else if(element.status === 'Delivered'){%>
+                          <button class="btn btn-danger mt-1 mb-0" onclick="requestReturn('<%= element.productId._id%>', '<%=orderData._id%>')">Request Return</button>
+                          <%} %>
                   </div>
                   <!-- <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
                   <div class="row d-flex align-items-center">
@@ -79,10 +82,32 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
                
                 <% }) %>
               </div>
-              
-  
               <div class="d-flex justify-content-between pl-5 pr-5  pt-2">
-                <p class="fw-bold mb-0">Order Details</p>
+                <h6 class="fw-bold mb-0">Delivery Address</h6>
+              </div>
+              <div class="d-flex justify-content-between pl-5 pr-5">
+                <p class="fw-bold mb-0">
+                <%= orderData.address.address %><br>
+                <%= orderData.address.landmark %><br>
+                <%= orderData.address.city %><br>
+                <%= orderData.address.pincode %><br>
+                <%= orderData.address.mobile %><br>
+              </p>
+              </div>
+  
+              <!-- <div class="d-flex justify-content-between pl-5 pr-5  pt-2">
+                <h6 class="fw-bold mb-0">Order Details</h6>
+              </div> -->
+
+              <div class="d-flex justify-content-between pl-5 pr-5   pt-2">
+                <p class="text-muted mb-0">Payment Methode : 
+                  <% if (orderData.paymentMode === 'COD') { %>
+                 Cash on delivery
+                 <% } else if (orderData.paymentMode === 'razorpay') { %>
+                  Online
+                  <% } else if (orderData.paymentMode === 'wallet') { %>
+                   Wallet
+                <% } %> </p>
               </div>
   
               <div class="d-flex justify-content-between pl-5 pr-5   pt-2">
@@ -142,7 +167,6 @@ function cancelOrder(productId, order_id) {
         body: JSON.stringify({qty,order_id})
       })
       .then(response=>{
-        console.log('=====================',response.ok)
         if(!response.ok){
           throw new Error('Network resoponse was not ok');
         }
@@ -173,6 +197,56 @@ function cancelOrder(productId, order_id) {
   });
 }
 
+
+function requestReturn(productId, order_id){
+  swal.fire({
+    title: 'Reason for return',
+    input: 'text',
+    inputAttributes: {
+      autocapitalize: 'off'
+    },
+    showCancelButton: true,
+    confirmButtonText: 'Submit',
+    preConfirm: inputValue => {
+      if (inputValue === false) {
+        swal.showValidationMessage("Please give reason!");
+        return false;
+      }
+      if (inputValue.trim() === "") {
+        swal.showValidationMessage("Please give reason!");
+        return false;
+      }
+      return inputValue;
+    },
+    customContainerClass: {
+      padding: '2rem',
+      'font-size': '16px',
+      'max-width': '1000px'
+    }
+  }).then(result => {
+    if (result.dismiss === "cancel") {
+      swal.fire("Cancelled", "Return request cancelled");
+    } else if (result.value) {
+      let reason = result.value
+      swal.fire({
+        title: "Return requested",
+        text: "Reason:" + result.value,
+        preConfirm:function(){
+          fetch('/returnProduct',{
+          method: 'POST',
+          body: JSON.stringify({productId, order_id, reason}),
+          headers:{
+            'Content-Type':'application/json'
+          }
+        })
+        },
+        customClass: {
+          confirmButton: 'btn btn-primary'
+        }
+      });
+    }
+  });
+}
 
 
   </script>

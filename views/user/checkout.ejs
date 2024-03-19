@@ -31,6 +31,7 @@
                         <div class="row">
                             <div class="col-lg-9">
                                 <% if(address.length < 1){ %>
+                                    <input type="text" class="form-select" value="" hidden>
                                     <h2 class="checkout-title">Please add your Address</h2><!-- End .checkout-title -->
                                     <%}else{ %>
                                         <h2 class="checkout-title">Select your Address here</h2>
@@ -147,7 +148,7 @@
                                                 <h2 class="mb-0">
                                                     <input type="radio" role="button" data-toggle="collapse"
                                                         data-target="#collapse-3" aria-expanded="false"
-                                                        aria-controls="collapse-3" name="payment_method" value="cod">
+                                                        aria-controls="collapse-3" name="payment_method" value="COD">
                                                     <label for="collapse-3">
                                                         Cash on delivery
                                                     </label>
@@ -187,96 +188,139 @@
 
     <script>
 
-document.getElementById('place-order').addEventListener('click', function(event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    // Gather data
-    const selectedValue = document.querySelector('input[name="payment_method"]:checked').value;
-    const subTotal = document.querySelector('.subTotal').value;
-    const address = document.querySelector('.form-select').value;
-    const quantity = document.querySelector('.quantity').value;
-    const productId = document.querySelector('.productId').value;
-    const total = document.querySelector('.total').value;
-
-
-    // Prepare the data object to be sent in the request body
-    const data = {
-        paymentMethod: selectedValue,
-        subTotal: subTotal,
-        address: address,
-        quantity: quantity,
-        productId: productId,
-        total: total
-    };
-
-    // Make a fetch request
-    fetch('/checkout', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json(); 
-    })
-    .then(data => {
-        if(paymentMethod === 'razorpay'){
-            console.log('Response from backend:', data.key_id);
-        var options = { 
-    "key": ""+data.key_id+"",  
-    "amount": ""+data.amount+"",  
-    "currency": "INR",  
-    "name": "eStore",  
-    "description": "Pay & Checkout this Course, Upgrade your DSA Skill",  
-    "image": "/user/icon/estoreLogo.png",  // Merchant logo or image
-    "order_id": ""+data.order_id+"",  
-    "handler": function (response){ 
-        fetch('/verifyOrder',{
-            method:'POST',
-            headers:{
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                paymentId: response.razorpay_payment_id,
-                order_id: response.razorpay_order_id
-            })
-        })
-        console.log(response);
-        alert("This step of Payment Succeeded"); },
-    "prefill": { 
-        "contact": "9876543210",  
-        "name": "Twinkle Sharma",   
-        "email": "smtwinkle@gmail.com"
-    }, 
-    "notes" : {
-        "description": "description here", 
-    },  
-    "theme": { 
-        "color": "#2300a3"  
-    } 
-}; 
-
-var razorpayObject = new Razorpay(options);  // Creating a new Razorpay instance
-console.log(razorpayObject); 
-
-razorpayObject.on('payment.failed', function (response){ 
-    console.log(response); 
-    alert("This step of Payment Failed"); 
-}); 
-
-razorpayObject.open();
-        }
-    })
-    .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-    });
-});
+        document.getElementById('place-order').addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent the default form submission
+            // Gather data
+            const selectedValue = document.querySelector('input[name="payment_method"]:checked').value;
+            const subTotal = document.querySelector('.subTotal').value;
+            const address = document.querySelector('.form-select').value;
+            if (!address) {
+                Swal.fire({
+                    title: 'Address not found!',
+                    text: 'Please add an address before placing your order.',
+                    icon: 'warning',
+                    confirmButtonText: 'Add Address'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/addAddress';
+                    }
+                });
+            } else {
+                const quantity = document.querySelector('.quantity').value;
+                const productId = document.querySelector('.productId').value;
+                const total = document.querySelector('.total').value;
 
 
+                // Prepare the data object to be sent in the request body
+                const data = {
+                    paymentMethod: selectedValue,
+                    subTotal: subTotal,
+                    address: address,
+                    quantity: quantity,
+                    productId: productId,
+                    total: total
+                };
+
+                // Make a fetch request
+                fetch('/checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.paymentMethod === 'razorpay') {
+                            console.log('Response from backend:', data.key_id);
+                            var options = {
+                                "key": "" + data.key_id + "",
+                                "amount": "" + data.amount + "",
+                                "currency": "INR",
+                                "name": "eStore",
+                                "description": "Pay & Checkout this Course, Upgrade your DSA Skill",
+                                "image": "/user/icon/estoreLogo.png",
+                                "order_id": "" + data.order_id + "",
+                                "handler": function (response) {
+
+                                    fetch('/verifyOrder', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            paymentId: response.razorpay_payment_id,
+                                            order_id: response.razorpay_order_id,
+                                            razorpay_signature: response.razorpay_signature,
+                                            dbOrder_id: response.dbOrder_id
+                                        })
+                                    })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Order Placed',
+                                                showConfirmButton: false,
+                                              timer: 1000,
+                                                customClass: {
+                                                    confirmButton: 'btn btn-primary'
+                                                },
+                                                buttonsStyling: false
+                                            })
+                                            setTimeout(()=>{
+                                                window.location.href = `/orderDetails/${data.orderId}`
+                                            },1000)
+                                        })
+                                    console.log('response',response);
+                                },
+                                "prefill": {
+                                    "contact": "9876543210",
+                                    "name": "Twinkle Sharma",
+                                    "email": "smtwinkle@gmail.com"
+                                },
+                                "notes": {
+                                    "description": "description here",
+                                },
+                                "theme": {
+                                    "color": "#2300a3"
+                                }
+                            };
+
+                            var razorpayObject = new Razorpay(options); 
+                            console.log(razorpayObject);
+
+                            razorpayObject.on('payment.failed', function (response) {
+                                console.log(response);
+                                alert("This step of Payment Failed");
+                            });
+
+                            razorpayObject.open();
+                        } else if (data.paymentMethod === 'COD') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Order Placed',
+                                    showConfirmButton: false,
+                                    timer: 1000,
+                                    customClass: {
+                                        confirmButton: 'btn btn-primary'
+                                    },
+                                    buttonsStyling: false
+                                })
+                                setTimeout(()=>{
+                                    window.location.href = `/orderDetails/${data.orderId}`
+                                },1500)
+                        }
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
+            }
+        });
 
     </script>
 

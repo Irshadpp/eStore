@@ -22,8 +22,8 @@ const orderSchema = new mongoose.Schema({
     products:[orderItemSchema],
     subTotal:{type:Number, required: true},
     address:{type:Object, required: true},
-    paymentMode:{type:String, required: true, default: 'COD'},
-    
+    paymentMode:{type:String, required: true},
+    paymentStatus:{type:String, required: true, default:'Payment Pending'},
     date:{type:Date, required: true, default: Date.now}
 });
 

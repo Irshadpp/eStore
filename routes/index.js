@@ -68,6 +68,7 @@ router.post('/checkout', indexAuth.isLogin, indexAuth.isUserBlock, indexControll
 router.post('/verifyOrder', indexAuth.isLogin, indexAuth.isUserBlock, indexController.verifyOrder)
 router.get('/orderDetails/:orderId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.orderDetailsLoad);
 router.put('/cancelOrder/:productId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.cancelOrder);
+router.post('/returnProduct', indexAuth.isLogin, indexAuth.isUserBlock, indexController.returnProduct)
 
 router.post('/editProfile/:userId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.editProfile);
 
