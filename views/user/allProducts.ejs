@@ -229,6 +229,40 @@
 function cleanAll(){
     window.location.href = '/allProducts'
 }
+document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('q');
+
+            searchInput.addEventListener('input', function() {
+                searchProducts();
+            });
+
+            function searchProducts() {
+                const searchValue = searchInput.value.trim().toLowerCase();
+                const products = document.querySelectorAll('.product-title');
+
+                let firstMatchedProduct = null;
+
+                products.forEach(product => {
+                    const productName = product.textContent.toLowerCase();
+                    const productContainer = product.closest('.product');
+
+                    if (productName.includes(searchValue)) {
+                        productContainer.style.display = 'block';
+                        if (!firstMatchedProduct) {
+                            firstMatchedProduct = productContainer;
+                        }
+                    } else {
+                        productContainer.style.display = 'none';
+                    }
+                });
+
+                if (firstMatchedProduct) {
+                    firstMatchedProduct.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        });
+
+
 
     </script>
     

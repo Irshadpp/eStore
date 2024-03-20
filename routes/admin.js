@@ -57,5 +57,6 @@ router.post('/returnProduct', adminAuth.isLogin, adminController.returnProduct)
 router.get('/coupons', adminAuth.isLogin, adminController.couponsLaod)
 router.get('/addCoupon', adminAuth.isLogin, adminController.addCouponLoad);
 router.post('/addCoupon', adminAuth.isLogin, adminController.addCoupon);
+router.delete('/deleteCoupon', adminAuth.isLogin, adminController.couponDelete);
 
 module.exports = router;

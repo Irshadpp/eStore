@@ -2,10 +2,12 @@
             <section class="content-main">
                 <div class="content-header">
                     <div>
-                        <h2 class="content-title card-title">Order List</h2>
+                        <h2 class="content-title card-title">Coupons</h2>
                     </div>
                     <div>
-                        <input type="text" placeholder="Search order ID" class="form-control bg-white" />
+                        <!-- <a href="#" class="btn btn-light rounded font-md">Export</a> -->
+                        <!-- <a href="#" class="btn btn-light rounded font-md">Import</a> -->
+                        <a href="/admin/addCoupon" class="btn btn-primary btn-sm rounded">Create new</a>
                     </div>
                 </div>
                 <div class="card mb-4">
@@ -53,10 +55,10 @@
                                         <td><b><%= element.couponName %></b></td>
                                         <td><%= element.discountAmount %></td>
                                         <td>₹<%= parseFloat(element.minAmount).toFixed(2) %></td>
-                                        <td></td>
                                         <td><span class="badge rounded-pill alert-success">Active</span></td>
+                                        <td></td>
                                         <td class="text-end">
-                                            <a href="/admin/orderDetail/<%= element._id %>" class="btn btn-md rounded font-sm">Delete</a>
+                                            <a href="#" onclick="deleteCoupon('<%=element._id%>', this)" class="btn btn-danger rounded font-sm">Delete</a>
                                         </td>
                                     </tr>
                                     <% }) %>
@@ -72,6 +74,60 @@
             </section>
             <!-- content-main end// -->
         </main>
+        <script>
+            const couponData = <%-JSON.stringify(couponData)%>;
+            const couponDateArray =  couponData.map(coupon => coupon.expiryDate);
+            function formatDate(dateString){
+                const date = new Date(dateString);
+                return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
+            }
+                document.querySelectorAll('tbody tr').forEach((row, index) => {
+        const dateCell = row.querySelector('td:nth-child(6)');
+        const formattedDate = formatDate(couponDateArray[index]);
+        dateCell.textContent = formattedDate;
+    });
+
+    function deleteCoupon(couponId, deleteBtn){
+        Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!',
+    customClass: {
+      confirmButton: 'btn btn-danger me-1',
+      cancelButton: 'btn btn-label-secondary'
+    },
+    buttonsStyling: false
+  }).then(function(result) {
+    if (result.value) {
+        fetch('/admin/deleteCoupon',{
+            method: 'DELETE',
+            body: JSON.stringify({couponId}),
+            headers:{
+                "Content-Type":"application/json"
+            }
+        })
+        .then(response =>{
+            return response.json();
+        })
+        .then(data =>  $(deleteBtn).closest('tr').remove())
+        .catch(error => console.log(error));
+      Swal.fire({
+        icon: 'success',
+        title: 'Deleted!',
+        text: 'Your file has been deleted.',
+        customClass: {
+          confirmButton: 'btn btn-success'
+        }
+      });
+    }
+  });
+        
+    }
+        </script>
         
         <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
         <script src="/admin/assets/js/vendors/bootstrap.bundle.min.js"></script>
@@ -80,5 +136,7 @@
         <script src="/admin/assets/js/vendors/jquery.fullscreen.min.js"></script>
         <!-- Main Script -->
         <script src="/admin/assets/js/main.js?v=1.1" type="text/javascript"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
     </body>
 </html>

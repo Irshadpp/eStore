@@ -506,6 +506,22 @@ const addCoupon = async (req,res) =>{
     }
 }
 
+const couponDelete = async (req,res) =>{
+    try {
+        console.log('====================================');
+        console.log();
+        console.log('====================================');
+        const {couponId} = req.body;
+        console.log('====================================');
+        console.log(couponId);
+        console.log('====================================');
+        await Coupon.findByIdAndDelete(couponId);
+        res.json({success:true});
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 module.exports = {
     loginLoad,
     verifyLogin,
@@ -534,5 +550,6 @@ module.exports = {
     returnProduct,
     couponsLaod,
     addCouponLoad,
-    addCoupon
+    addCoupon,
+    couponDelete
 }
