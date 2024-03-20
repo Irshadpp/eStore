@@ -51,6 +51,11 @@ router.delete('/products/delete/:productId', adminController.deleteProduct);
 router.get('/orders', adminAuth.isLogin, adminController.ordresLoad);
 router.get('/orderDetail/:order_id', adminAuth.isLogin, adminController.orderDetailLoad);
 router.post('/changeStatus', adminAuth.isLogin, adminController.changeOrderStatus);
+router.post('/returnProduct', adminAuth.isLogin, adminController.returnProduct)
 
+//coupon
+router.get('/coupons', adminAuth.isLogin, adminController.couponsLaod)
+router.get('/addCoupon', adminAuth.isLogin, adminController.addCouponLoad);
+router.post('/addCoupon', adminAuth.isLogin, adminController.addCoupon);
 
 module.exports = router;

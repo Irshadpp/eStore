@@ -53,12 +53,12 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
                       </div>
                       
                       <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                        <p class="text-muted mb-0 small"><%=element.status%></p>
+                        <p class="text-muted mb-0 small" id="status"><%=element.status%></p>
                       </div>
                       <% if (element.status === 'Placed') { %>
-                        <button class="btn btn-danger mt-1 mb-0" onclick="cancelOrder('<%= element.productId._id%>', '<%=orderData._id%>')">Cancel</button>
+                        <button class="returnBtn btn btn-danger mt-1 mb-0" onclick="cancelOrder('<%= element.productId._id%>', '<%=orderData._id%>')">Cancel</button>
                         <% }else if(element.status === 'Delivered'){%>
-                          <button class="btn btn-danger mt-1 mb-0" onclick="requestReturn('<%= element.productId._id%>', '<%=orderData._id%>')">Request Return</button>
+                          <button class="returnBtn btn btn-danger mt-1 mb-0" onclick="requestReturn('<%= element.productId._id%>', '<%=orderData._id%>')">Request Return</button>
                           <%} %>
                   </div>
                   <!-- <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
@@ -238,6 +238,12 @@ function requestReturn(productId, order_id){
           headers:{
             'Content-Type':'application/json'
           }
+        })
+        .then(response => response.json())
+        .then(data=>{
+          var statusChange = document.getElementById('status');
+          statusChange.innerHTML = data.status;
+          document.querySelector('.returnBtn').remove();
         })
         },
         customClass: {

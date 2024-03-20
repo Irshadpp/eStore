@@ -1,0 +1,79 @@
+<%-include('../layout/adminHeader')-%>
+            <section class="content-main">
+                <div class="row justify-content-center ">
+                    <div class="col-9">
+                        <div class="content-header justify-content-center ">
+                            <h2 class="content-title ">Add New Coupon</h2>
+                        </div>
+                        <% if(typeof successMsg != 'undefined'){ %>
+                            <p class="text-center text-success mb-5" id="text-danger"><%= successMsg %></p>  
+                           <% } %>
+                           <% if(typeof warningMsg != 'undefined'){ %>
+                            <p class="text-center text-danger  mb-5" id="text-danger"><%= warningMsg %></p> 
+                           <% } %>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card mb-4 ">
+                            <div class="card-body">
+                                <form method="post" id="uploadForm">
+                                    <div class="mb-4">
+                                        <label for="product_name" class="form-label">Coupon Name</label>
+                                        <input  required type="text" placeholder="Type here" name="couponName" class="form-control" id="textInput" />
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="product_name" class="form-label">Coupon Code</label>
+                                        <input  required type="text" placeholder="Type here" name="couponCode" class="form-control" id="textInput" />
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">Description</label>
+                                        <textarea placeholder="Type here" name="description" class="form-control" rows="4" required></textarea>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="product_name" class="form-label">Expiry Date</label>
+                                        <input  required type="date" placeholder="Type here" name="expiryDate" class="form-control" id="textInput" />
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="mb-4">
+                                                <label class="form-label">Discount Amount</label>
+                                                <div class="row gx-2">
+                                                    <input required placeholder="₹" name="discountAmount" type="number" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="mb-4">
+                                                <label class="form-label">Minimum Amount</label>
+                                                <div class="row gx-2">
+                                                    <input required placeholder="₹" name="minAmount" type="number" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <button class="btn btn-md rounded font-sm hover-up col-lg-8 justify-content-center ">Add Coupon</button>
+                                    </div>
+                            </div>
+                            
+                        </div>
+                        
+                        <!-- card end// -->
+                        
+                    </div>
+                    
+                   
+                </form>
+                </div>
+            </section>
+        </main>
+        <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
+        <script src="/admin/assets/js/vendors/bootstrap.bundle.min.js"></script>
+        <script src="/admin/assets/js/vendors/select2.min.js"></script>
+        <script src="/admin/assets/js/vendors/perfect-scrollbar.js"></script>
+        <script src="/admin/assets/js/vendors/jquery.fullscreen.min.js"></script>
+        <!-- Main Script -->
+        <script src="/admin/assets/js/main.js?v=1.1" type="text/javascript"></script>
+        
+       
+    </body>
+</html>

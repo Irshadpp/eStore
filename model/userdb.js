@@ -10,7 +10,15 @@ const userSchema = new mongoose.Schema({
     isVerified:{type:Boolean, required: true, default:false},
     isBlock:{type:Boolean, required:true, default:false},
     isAdmin:{type:Boolean, required:true, default:false},
-    token:{type:Number, default:''}
+    wallet:{type:Number, required:true, default:0},
+    walletHistory:[{
+        amount:{type:Number},
+        description:{type:String},
+        date:{type:Date},
+        status:{type:String}
+    }],
+    token:{type:Number, default:''},
+
 })
 
 

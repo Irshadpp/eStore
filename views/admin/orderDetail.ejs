@@ -110,16 +110,22 @@
                                                 </td>
                                                 <td>₹<%=parseFloat(element.productId.price).toFixed(2)%></td>
                                                 <td class="qty"><%= element.quantity %></td>
-                                                <td><%= element.status %></td>
+                                                <td id="status"><%= element.status %></td>
                                                 <td class="text-center">₹<%=parseFloat(element.total).toFixed(2)%></td>
-                                                <td class="text-end">
-                                                    <select id="statusSelect" class="form-select d-inline-block mb-lg-0 mr-5 mw-200">
-                                                        <option>Change status</option>
-                                                        <option>Cancelled</option>
-                                                        <option>Shipped</option>
-                                                        <option>Delivered</option>
-                                                    </select>
+                                                <% if (element.status === 'Return requested') { %>
+                                                 <td class="text-end">
+                                                 <button onclick="approveReturn('<%=element.productId._id%>','<%=orderData._id%>','<%=element.reason%>','<%= element.quantity %>')" class="btn btn-info btn-sm">view</button>
                                                 </td>
+                                                 <% } else if(element.status !== 'Delivered' || element.status !== 'Cancelled'){ %>
+                                                    <td class="text-end">
+                                                        <select id="statusSelect" class="form-select d-inline-block mb-lg-0 mr-5 mw-200">
+                                                            <option>Change status</option>
+                                                            <option>Cancelled</option>
+                                                            <option>Shipped</option>
+                                                            <option>Delivered</option>
+                                                        </select>
+                                                    </td>
+                                                <% } %>
                                             </tr>
 
                                             <% }) %>
@@ -216,6 +222,52 @@
                         console.log("Error:", error);
                     })
                 })
+
+                function approveReturn(productId, order_id, reason, qty){
+                    console.log(productId)
+  swal.fire({
+    title: 'Approve return',
+    input: 'text',
+    inputValue: reason,
+    inputAttributes: {
+      autocapitalize: 'off'
+    },
+    showCancelButton: true,
+    confirmButtonText: 'Approve',
+    customContainerClass: {
+      padding: '2rem',
+      'font-size': '16px',
+      'max-width': '1000px'
+    }
+  }).then(result => {
+    if (result.dismiss === "cancel") {
+      swal.fire("Cancelled", "Return request cancelled");
+    } else if (result.value) {
+      swal.fire({
+        title: "Return requested",
+        text: "Reason:" + result.value,
+        preConfirm:function(){
+          fetch('/admin/returnProduct',{
+          method: 'POST',
+          body: JSON.stringify({productId, order_id, qty}),
+          headers:{
+            'Content-Type':'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data=>{
+            var statusColumn = document.getElementById('status')
+            statusColumn.innerHTML = data.status;
+        })
+        },
+        customClass: {
+          confirmButton: 'btn btn-primary'
+        }
+      });
+    }
+  });
+}
+
             </script>
     
         </main>
@@ -227,5 +279,6 @@
         <script src="/admin/assets/js/vendors/jquery.fullscreen.min.js"></script>
         <!-- Main Script -->
         <script src="/admin/assets/js/main.js?v=1.1" type="text/javascript"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     </body>
 </html>

@@ -7,8 +7,7 @@ const User = require('../model/userdb');
 const Product = require('../model/productdb');
 const Category = require('../model/categorydb');
 const Order = require('../model/orderdb');
-const { trusted } = require('mongoose');
-
+const Coupon = require('../model/coupondb')
 
 //login load
 const loginLoad = asyncHandler( async (req,res) => {
@@ -433,7 +432,79 @@ const changeOrderStatus = async (req,res) =>{
     
 }
 
+const returnProduct = async (req,res) =>{
+    try {
+        const {productId, order_id, qty} = req.body;
+        await Order.updateOne(
+            {$and:[{_id:order_id},{'products.productId':productId}]},
+            {$set:{'products.$.status':'Returned'}}
+        )
+        await Product.findByIdAndUpdate({_id:productId},{$inc:{quantity:qty}});
+        
+        res.json({status:'Returned'})
+    } catch (error) {
+        
+    }
+}
 
+const couponsLaod = async (req,res) =>{
+    try {
+        const couponData = await Coupon.find();
+        res.render('coupons',{couponData});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const addCouponLoad = async (req,res) =>{
+    try {
+        res.render('addCoupon');
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const addCoupon = async (req,res) =>{
+    try {
+        const {couponName, couponCode, description, expiryDate, discountAmount, minAmount} = req.body;
+    
+        if(couponName.trim() === ''){
+            return res.status(400).render('addCoupon',{warningMsg:"Please give coupon name!"});
+        };
+    
+        if(couponCode.trim() === ''){
+            return res.status(400).render('addCoupon',{warningMsg:"Please give coupon code!"});
+        };
+
+        if(description.trim() === ''){
+            return res.status(400).render('addCoupon',{warningMsg:"Please give coupon description!"});
+        };
+    
+    
+        if(discountAmount < 1){
+            return res.status(400).render('addCoupon',{warningMsg:"Discount amount price must be valid!"})
+        };
+    
+        if(minAmount < 1){
+            return res.status(400).render('addCoupon',{warningMsg:"Minimum amount price must be valid!!"});
+        };
+    
+        
+        const coupon = new Coupon({
+            couponName,
+            couponCode,
+            description,
+            expiryDate, 
+            discountAmount, 
+            minAmount
+        });
+    
+        await coupon.save();
+        res.render('addCoupon',{successMsg:"Coupon added successfully"});
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 module.exports = {
     loginLoad,
@@ -459,5 +530,9 @@ module.exports = {
     deleteProduct,
     ordresLoad,
     orderDetailLoad,
-    changeOrderStatus
+    changeOrderStatus,
+    returnProduct,
+    couponsLaod,
+    addCouponLoad,
+    addCoupon
 }

@@ -800,8 +800,10 @@ const placeOrder = async (req, res) => {
 
     try {
       
-        const { paymentMethod, address, productId, total, subTotal, quantity } = req.body;
-       
+        const { paymentMethod, address, allProductsData, total, subTotal, quantity } = req.body;
+        console.log('====================================');
+        console.log(allProductsData);
+        console.log('====================================');
         function generateOrderId(length) {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWZYZ0123456789';
             let id = '';
@@ -818,32 +820,21 @@ const placeOrder = async (req, res) => {
         const checkAddress = await Address.findOne({ userId: req.session.user_id }).populate('addresses');
         const addressData = checkAddress.addresses.find(addrs => addrs.address === address);
 
-        let productDoc = [];
-        if (Array.isArray(productId)) {
-            productId.forEach((item, index) => {
-                let productDocItem = {
-                    productId: item,
-                    quantity: parseInt(quantity[index]),
-                    total: total[index],
+        let productArray = [];
+            allProductsData.forEach((item) => {
+              let productDocItem = {
+                    productId: item.productId,
+                    quantity: item.quantity,
+                    total: item.total,
                 }
 
-                productDoc.push(productDocItem);
+                productArray.push(productDocItem);
             })
-        } else {
-            let productDocItem = {
-                productId: productId,
-                quantity: parseInt(quantity),
-                total: total,
-            }
-            productDoc.push(productDocItem);
-        }
-
-
 
         const order = new Order({
             userId: req.session.user_id,
             orderId: receipt,
-            products: productDoc,
+            products: productArray,
             subTotal: subTotal,
             address: addressData,
             paymentMode: paymentMethod
@@ -942,14 +933,12 @@ const cancelOrder = async (req, res) => {
 const returnProduct = async (req,res)=>{
     try {
         const {order_id, productId, reason} = req.body;
-        console.log('====================================');
-        console.log(reason);
-        console.log('====================================');
         await Order.updateOne(
             { $and: [{ _id: order_id }, { 'products.productId': productId }] },
-            { $set: { "products.$.reason": reason } }
+            { $set: { "products.$.reason": reason ,'products.$.status': 'Return requested'}}
         );
-    } catch (error) {
+        res.json({success:true,status:'Return requested'});
+    } catch (error) {   
         console.log(error);
         res.render('page404');
     }

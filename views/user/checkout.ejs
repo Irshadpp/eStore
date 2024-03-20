@@ -189,8 +189,7 @@
     <script>
 
         document.getElementById('place-order').addEventListener('click', function (event) {
-            event.preventDefault(); // Prevent the default form submission
-            // Gather data
+            event.preventDefault(); 
             const selectedValue = document.querySelector('input[name="payment_method"]:checked').value;
             const subTotal = document.querySelector('.subTotal').value;
             const address = document.querySelector('.form-select').value;
@@ -206,19 +205,31 @@
                     }
                 });
             } else {
-                const quantity = document.querySelector('.quantity').value;
-                const productId = document.querySelector('.productId').value;
-                const total = document.querySelector('.total').value;
+                const quantities = document.querySelectorAll('.quantity');
+const productIds = document.querySelectorAll('.productId');
+const totals = document.querySelectorAll('.total');
+
+const allProductsData = [];
+
+productIds.forEach((productId, index) => {
+    const quantity = quantities[index].value;
+    const productIdValue = productId.value;
+    const total = totals[index].value;
+
+    allProductsData.push({
+        quantity: quantity,
+        productId: productIdValue,
+        total: total
+    });
+});
 
 
-                // Prepare the data object to be sent in the request body
+
                 const data = {
                     paymentMethod: selectedValue,
                     subTotal: subTotal,
                     address: address,
-                    quantity: quantity,
-                    productId: productId,
-                    total: total
+                    allProductsData: allProductsData
                 };
 
                 // Make a fetch request
