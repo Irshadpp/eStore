@@ -7,7 +7,8 @@ const User = require('../model/userdb');
 const Product = require('../model/productdb');
 const Category = require('../model/categorydb');
 const Order = require('../model/orderdb');
-const Coupon = require('../model/coupondb')
+const Coupon = require('../model/coupondb');
+const Offer = require('../model/coupondb');
 
 //login load
 const loginLoad = asyncHandler( async (req,res) => {
@@ -476,6 +477,13 @@ const addCoupon = async (req,res) =>{
             return res.status(400).render('addCoupon',{warningMsg:"Please give coupon code!"});
         };
 
+        const regexPattern = new RegExp(couponCode, "i");
+        const checkCoupon = await Coupon.findOne({couponCode:{$regex:regexPattern}});
+
+    if(checkCoupon && checkCoupon.couponName.toLocaleLowerCase() === couponName.toLocaleLowerCase()){
+        return res.status(400).render('addCoupon',{warningMsg:"Coupon already exist! Give unique coupon code"});
+        }
+
         if(description.trim() === ''){
             return res.status(400).render('addCoupon',{warningMsg:"Please give coupon description!"});
         };
@@ -486,7 +494,7 @@ const addCoupon = async (req,res) =>{
         };
     
         if(minAmount < 1){
-            return res.status(400).render('addCoupon',{warningMsg:"Minimum amount price must be valid!!"});
+            return res.status(400).render('addCoupon',{warningMsg:"Minimum amount price must be valid!"});
         };
     
         
@@ -508,15 +516,40 @@ const addCoupon = async (req,res) =>{
 
 const couponDelete = async (req,res) =>{
     try {
-        console.log('====================================');
-        console.log();
-        console.log('====================================');
         const {couponId} = req.body;
-        console.log('====================================');
-        console.log(couponId);
-        console.log('====================================');
         await Coupon.findByIdAndDelete(couponId);
         res.json({success:true});
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const addOfferLoad = async (req,res) =>{
+    try {
+        const categoryData = await Category.find();
+        const productData = await Product.find();
+        const categories = categoryData.map(cat => cat.categoryName);
+        const products = productData.map(pro => pro.productName);
+        res.render('addOffer',{categoryData:categories,productData:products});
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+const addOffer = async (req,res) =>{
+    try {
+        console.log('=========================',req.body);
+        const {offerName, description, percentage, expiryDate, status, offerType, selectedOption} = req.body;
+        const offer = new Offer({
+            offerName,
+            description,
+            percentage,
+            expiryDate,
+            status,
+            offerType
+        })
+        res.json()
     } catch (error) {
         console.log(error)
     }
@@ -551,5 +584,7 @@ module.exports = {
     couponsLaod,
     addCouponLoad,
     addCoupon,
-    couponDelete
+    couponDelete,
+    addOfferLoad,
+    addOffer
 }

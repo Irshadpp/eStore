@@ -106,6 +106,48 @@
             display: inline-block;
             margin: 100px auto;
         }
+        
+.p-xl {
+  padding: 40px;
+}
+
+.lazur-bg {
+  background-color: #23c6c8;
+  color: #ffffff;
+}
+
+.red-bg {
+  background-color: #ed5565;
+  color: #ffffff;
+}
+
+.navy-bg {
+  background-color: #1ab394;
+  color: #ffffff;
+}
+
+.yellow-bg {
+  background-color: #f8ac59;
+  color: #ffffff;
+}
+
+.widget {
+  border-radius: 5px;
+  padding: 15px 20px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16), 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+
+.widget h2, .widget h3 {
+  margin-top: 5px;
+  margin-bottom: 0;
+  border-bottom:1px dotted white;
+}
+
+.m-t-md {
+  margin-top: 20px;
+}
     </style>
 
 
@@ -201,10 +243,10 @@
                                     <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address"
                                         role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
                                 </li>
-                                <!-- <li class="nav-item">
+                                <li class="nav-item">
                                     <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account"
-                                        role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
-                                </li> -->
+                                        role="tab" aria-controls="tab-account" aria-selected="false">Coupons</a>
+                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="tab-account-link" data-toggle="modal" href="#myModal"
                                         role="tab" aria-controls="tab-account" aria-selected="false">Logout</a>
@@ -392,42 +434,42 @@
                                     aria-labelledby="tab-account-link">
                                     <form action="#">
                                         <div class="row">
-                                            <div class="col-sm-6">
-                                                <label>First Name *</label>
-                                                <input type="text" class="form-control" required>
-                                            </div><!-- End .col-sm-6 -->
+                                            <div class="container bootstrap snippets bootdey">
+    
+    <div class="row">
+        <%if (couponData.length>0) {
+            couponData.forEach(element=>{%>
 
-                                            <div class="col-sm-6">
-                                                <label>Last Name *</label>
-                                                <input type="text" class="form-control" required>
-                                            </div><!-- End .col-sm-6 -->
-                                        </div><!-- End .row -->
-
-                                        <label>Display Name *</label>
-                                        <input type="text" class="form-control" required>
-                                        <small class="form-text">This will be how your name will be displayed in the
-                                            account section and in reviews</small>
-
-                                        <label>Email address *</label>
-                                        <input type="email" class="form-control" required>
-
-                                        <label>Current password (leave blank to leave unchanged)</label>
-                                        <input type="password" class="form-control">
-
-                                        <label>New password (leave blank to leave unchanged)</label>
-                                        <input type="password" class="form-control">
-
-                                        <label>Confirm new password</label>
-                                        <input type="password" class="form-control mb-2">
-
-                                        <button type="submit" class="btn btn-outline-primary-2">
-                                            <span>SAVE CHANGES</span>
-                                            <i class="icon-long-arrow-right"></i>
-                                        </button>
-                                    </form>
-                                </div><!-- .End .tab-pane -->
-                            </div>
-                        </div><!-- End .col-lg-9 -->
+    	<div class="col-md-4">
+            <div class="widget bg-primary-1 p-xl">
+                <h2><%=element.couponName%></h2>
+                <ul class="list-unstyled m-t-md">
+                    <li>
+                        <p><%=element.description%></p>
+                    </li>
+                    <li>
+                        <label>Coupon Code:</label>
+                        <%=element.couponCode%>
+                    </li>
+                    <li>
+                        <label>Discount:</label>
+                        ₹<%=element.discountAmount%>
+                    </li>
+                    <li>
+                        <label>Minimum Purchase:</label>
+                        ₹<%=element.minAmount%>
+                    </li>
+                    <li>
+                        <label>Expiry:</label>
+                        <span class="expiry-date"><%=element.expiryDate%></span>
+                    </li>
+                </ul>
+            </div>   
+		</div>
+        <%})
+        }%>
+	</div>
+</div>
                     </div><!-- End .row -->
                 </div><!-- End .container -->
             </div><!-- End .dashboard -->
@@ -751,14 +793,13 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <script>
-        // async function editAddress(addressId){
-        //     try {
-        //         await axios.get(`/aditAddress/${addressId}`);
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        // }
-    </script>
+    var expiryDates = document.querySelectorAll('.expiry-date');
+    expiryDates.forEach(function(element) {
+        var dateString = element.textContent;
+        var truncatedDateString = dateString.split(' ').slice(0, 4).join(' ');
+        element.textContent = truncatedDateString;
+    });
+</script>
 
 
 

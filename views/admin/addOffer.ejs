@@ -1,0 +1,178 @@
+<%-include('../layout/adminHeader')-%>
+    <section class="content-main">
+        <div class="row">
+            <div class="col-9">
+                <div class="content-header">
+                    <h2 class="content-title">Add New Offer</h2>
+                </div>
+                <% if(typeof successMsg !='undefined' ){ %>
+                    <p class="text-center text-success mb-5" id="text-danger">
+                        <%= successMsg %>
+                    </p>
+                    <% } %>
+                        <% if(typeof warningMsg !='undefined' ){ %>
+                            <p class="text-center text-danger  mb-5" id="text-danger">
+                                <%= warningMsg %>
+                            </p>
+                            <% } %>
+            </div>
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data" id="uploadForm">
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Offer title</label>
+                                <input required type="text" placeholder="Type here" name="offerName"
+                                    class="form-control" id="textInput" />
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Offer description</label>
+                                <textarea placeholder="Type here" name="description" class="form-control" rows="4"
+                                    required></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Percentage</label>
+                                        <div class="row gx-2">
+                                            <input required placeholder="%" name="percentage" type="number"
+                                                class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Expiry date</label>
+                                        <div class="row gx-2">
+                                            <input required placeholder="" name="expiryDate" type="date"
+                                                class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Status</label>
+                                        <select name="status" class="form-select">
+                                            <option value="">Active</option>
+                                            <option value="">Inactive</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="mb-4">
+                                    <label class="form-label">Offer type</label>
+                                    <select name="offerType" class="form-select" id="offer-type">
+                                        <option value="">Select an option</option>
+                                        <option value="category">Category</option>
+                                        <option value="product">Product</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="options-container" style="display: none;">
+                                <div class="col-lg-12">
+                                    <div class="mb-4">
+                                        <label class="form-label" id="options-label"></label>
+                                        <select name="options" class="form-select" id="options-select"></select>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+                <!-- card end// -->
+
+            </div>
+            
+            <div class=" ">
+                <button class="btn btn-md rounded font-sm hover-up">Add Offer</button>
+            </div>
+            </form>
+        </div>
+    </section>
+    </main>
+    <script>
+        const offerTypeSelect = document.getElementById('offer-type');
+        const optionsContainer = document.getElementById('options-container');
+        const optionsLabel = document.getElementById('options-label');
+        const optionsSelect = document.getElementById('options-select');
+        const categoryData = <%- JSON.stringify(categoryData) %>;
+        const productData = <%- JSON.stringify(productData) %>;
+        
+
+        offerTypeSelect.addEventListener('change', function () {
+            const selectedOption = this.value;
+            if (selectedOption === 'category') {
+                optionsLabel.textContent = 'Select a Category';
+                populateOptions(categoryData);
+            } else if (selectedOption === 'product') {
+                optionsLabel.textContent = 'Select a Product';
+                populateOptions(productData);
+            } else {
+                optionsContainer.style.display = 'none';
+            }
+        });
+
+        function populateOptions(options) {
+            optionsSelect.innerHTML = ''; // Clear previous options
+            options.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.textContent = option;
+                optionElement.value = option;
+                optionsSelect.appendChild(optionElement);
+            });
+            optionsContainer.style.display = 'block';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            function submitForm() {
+        const formData = {
+            offerName: document.querySelector('input[name="offerName"]').value,
+            description: document.querySelector('textarea[name="description"]').value,
+            percentage: document.querySelector('input[name="percentage"]').value,
+            expiryDate: document.querySelector('input[name="expiryDate"]').value,
+            status: document.querySelector('select[name="status"]').value,
+            offerType: document.querySelector('select[name="offerType"]').value,
+            selectedOption: document.querySelector('select[name="options"]').value
+        };
+        console.log('================',formData)
+
+        fetch('/admin/addOffer', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Form submitted successfully');
+            } else {
+                console.error('Form submission failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    document.getElementById('uploadForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        submitForm();
+    });
+});
+
+       
+    </script>
+    <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/admin/assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/admin/assets/js/vendors/select2.min.js"></script>
+    <script src="/admin/assets/js/vendors/perfect-scrollbar.js"></script>
+    <script src="/admin/assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <!-- Main Script -->
+    <script src="/admin/assets/js/main.js?v=1.1" type="text/javascript"></script>
+
+
+    </body>
+
+    </html>

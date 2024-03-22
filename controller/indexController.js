@@ -6,7 +6,7 @@ const razorpay = require('razorpay');
 const crypto = require('crypto');
 
 const razorpayInstance = new razorpay({
-    key_id:'rzp_test_cIsaimIKhCrW7h',
+    key_id: 'rzp_test_cIsaimIKhCrW7h',
     key_secret: 'GIblKk1JR3xwE70qpa1jOo89'
 })
 
@@ -18,6 +18,7 @@ const Cart = require('../model/cartdb');
 const Address = require('../model/addressdb');
 const Order = require('../model/orderdb');
 const Wishlist = require('../model/wishlistdb');
+const Coupon = require('../model/coupondb');
 
 const generateOTP = require('../util/generateOtp')
 const asyncHandler = require('express-async-handler');
@@ -100,17 +101,12 @@ const productLoad = asyncHandler(async (req, res) => {
 
 const accountLoad = async (req, res) => {
     try {
-        const orderData = await Order.find({ userId: req.session.user_id }).sort({date:-1}).populate('products.productId');
+        const orderData = await Order.find({ userId: req.session.user_id }).sort({ date: -1 }).populate('products.productId');
         const userData = await User.findOne({ _id: req.session.user_id });
-        await Address.find({ userId: req.session.user_id })
-            .populate('userId')
-            .then(addresses => {
-                const addressData = addresses.flatMap(address => address.addresses);
-                res.render('account', { userData, addressData, orderData });
-            }).catch(error => {
-                console.log(error)
-            })
-
+        const addresses= await Address.find({ userId: req.session.user_id }).populate('userId')
+        const addressData = addresses.flatMap(address => address.addresses);
+        const couponData = await Coupon.find();
+        res.render('account', { userData, addressData, orderData, couponData });
     } catch (error) {
         console.log(error)
     }
@@ -796,14 +792,12 @@ const addAddress = async (req, res) => {
 
 
 let newOrder;
+let order;
 const placeOrder = async (req, res) => {
 
     try {
-      
-        const { paymentMethod, address, allProductsData, total, subTotal, quantity } = req.body;
-        console.log('====================================');
-        console.log(allProductsData);
-        console.log('====================================');
+
+        const { paymentMethod, address, allProductsData, subTotal, couponCode } = req.body;
         function generateOrderId(length) {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWZYZ0123456789';
             let id = '';
@@ -814,24 +808,24 @@ const placeOrder = async (req, res) => {
             return id;
         }
 
-        const receipt = 'estore'+ generateOrderId(6)
+        const receipt = 'estore' + generateOrderId(6)
 
-        
+
         const checkAddress = await Address.findOne({ userId: req.session.user_id }).populate('addresses');
         const addressData = checkAddress.addresses.find(addrs => addrs.address === address);
 
         let productArray = [];
-            allProductsData.forEach((item) => {
-              let productDocItem = {
-                    productId: item.productId,
-                    quantity: item.quantity,
-                    total: item.total,
-                }
+        allProductsData.forEach((item) => {
+            let productDocItem = {
+                productId: item.productId,
+                quantity: item.quantity,
+                total: item.total,
+            }
 
-                productArray.push(productDocItem);
-            })
+            productArray.push(productDocItem);
+        })
 
-        const order = new Order({
+        order = new Order({
             userId: req.session.user_id,
             orderId: receipt,
             products: productArray,
@@ -839,41 +833,47 @@ const placeOrder = async (req, res) => {
             address: addressData,
             paymentMode: paymentMethod
         })
-         newOrder = await order.save();
-        await Cart.deleteOne({ userId: req.session.user_id });
-        if(paymentMethod === 'razorpay'){
+       
+       
+        if (paymentMethod === 'razorpay') {
             const amount = subTotal * 100;
             const currency = "INR";
-            const notes = {
-                "description": "Best Course for SDE placements", 
-                "language": "Available in 4 major Languages JAVA,C/C++, Python, Javascript",
-                "access": "This course have Lifetime Access" 
-            }
-    
-            razorpayInstance.orders.create({amount, currency, receipt},
-            (err,order)=>{
-                if(!err){
-                    res.json({
-                        success: true,
-                        order_id: order.id,
-                        amount: amount,
-                        key_id: 'rzp_test_cIsaimIKhCrW7h',
-                        paymentMethod: paymentMethod,
-                    })
-                }else{
-                    console.log(err)
-                    res.status(500).json({ error: "Razorpay order creation failed" });
+            const notes = {}
+
+            razorpayInstance.orders.create({ amount, currency, receipt },
+                (err, order) => {
+                    if (!err) {
+                        res.json({
+                            success: true,
+                            order_id: order.id,
+                            amount: amount,
+                            key_id: 'rzp_test_cIsaimIKhCrW7h',
+                            paymentMethod: paymentMethod,
+                        })
+                    } else {
+                        console.log(err)
+                        res.status(500).json({ error: "Razorpay order creation failed" });
+                    }
+
                 }
-                
-            }
+            )
+             
+        } else if (paymentMethod === 'COD') {
+            newOrder = await order.save();
+            if(couponCode){
+                await Coupon.findOneAndUpdate(
+                    { couponCode: couponCode, "usedUser.userId": req.session.user_id },
+                    { $set: { "usedUser.$.used": true } },
+                    { new: true }
                 )
-        }else if(paymentMethod === 'COD'){
-                res.json({
-                    orderId:newOrder._id,
-                    paymentMethod: paymentMethod
-                });
+            }
+            await Cart.deleteOne({ userId: req.session.user_id });
+            res.json({
+                orderId: newOrder._id,
+                paymentMethod: paymentMethod
+            });
         }
-        
+
 
     } catch (error) {
         res.status(500).render('page404');
@@ -882,18 +882,28 @@ const placeOrder = async (req, res) => {
     }
 }
 
-const verifyOrder = async (req,res) =>{
+const verifyOrder = async (req, res) => {
     try {
-        const {paymentId, order_id, razorpay_signature, } = req.body;
+        const { paymentId, order_id, razorpay_signature, couponCode } = req.body;
         const key_secret = 'GIblKk1JR3xwE70qpa1jOo89'
         let hmac = crypto.createHmac('sha256', key_secret);
         hmac.update(order_id + "|" + paymentId);
         const generated_signature = hmac.digest('hex');
-        if(razorpay_signature===generated_signature){ 
-            await Order.findOneAndUpdate({_id:newOrder._id},{paymentStatus:"Payment done"});
-            res.json({success:true, message:"Payment has been verified", orderId:newOrder._id}) 
-        }else{
-            res.json({success:false, message:"Payment verification failed"}) 
+        if (razorpay_signature === generated_signature) {
+            newOrder = await order.save();
+            await Order.findOneAndUpdate({ _id: newOrder._id }, { paymentStatus: "Payment done" });
+            await Cart.deleteOne({ userId: req.session.user_id });
+            if(couponCode){
+                console.log('--------------------------',couponCode)
+                await Coupon.findOneAndUpdate(
+                    { couponCode: couponCode, "usedUser.userId": req.session.user_id },
+                    { $set: { "usedUser.$.used": true } },
+                    { new: true }
+                )
+            }
+            res.json({ success: true, message: "Payment has been verified", orderId: newOrder._id })
+        } else {
+            res.json({ success: false, message: "Payment verification failed" })
         }
     } catch (error) {
         console.log(error);
@@ -930,15 +940,15 @@ const cancelOrder = async (req, res) => {
     }
 }
 
-const returnProduct = async (req,res)=>{
+const returnProduct = async (req, res) => {
     try {
-        const {order_id, productId, reason} = req.body;
+        const { order_id, productId, reason } = req.body;
         await Order.updateOne(
             { $and: [{ _id: order_id }, { 'products.productId': productId }] },
-            { $set: { "products.$.reason": reason ,'products.$.status': 'Return requested'}}
+            { $set: { "products.$.reason": reason, 'products.$.status': 'Return requested' } }
         );
-        res.json({success:true,status:'Return requested'});
-    } catch (error) {   
+        res.json({ success: true, status: 'Return requested' });
+    } catch (error) {
         console.log(error);
         res.render('page404');
     }
@@ -1068,6 +1078,47 @@ const removeProduct = async (req, res) => {
     }
 }
 
+const couponCheck = async (req,res) =>{
+    try {
+        const {couponCode, subTotal} = req.body;
+        const userId = req.session.user_id;
+        const checkCoupon = await Coupon.findOne({couponCode:couponCode});
+        if(!checkCoupon){
+            return res.json({success:true,warningMsg:'Coupon not found in your account!'});
+        }
+        if(checkCoupon.expiryDate<Date.now()){
+            return res.json({warningMsg:'Coupon expired!'});
+        }
+        if(checkCoupon.expiryDate<Date.now()){
+            return res.json({warningMsg:'Coupon expired!'});
+        }
+        const usedUser = checkCoupon.usedUser.find(user => user.userId.toString() === userId);
+        if(usedUser && usedUser.used){
+            return res.json({warningMsg:'Coupon already used!'});
+        }
+        if(checkCoupon.minAmount>subTotal){
+            return res.json({warningMsg:`Total purchase amount should be minimum ${checkCoupon.minAmount}!`});
+        }
+        await Coupon.findOneAndUpdate(
+            { _id: checkCoupon._id, "usedUser.userId": { $ne: userId } }, 
+            { $push: { usedUser: { userId: userId } } },
+            { new: true } 
+        );
+        await Cart.findOneAndUpdate({userId:userId},{$set:{discount:checkCoupon.discountAmount}});
+        const discount = checkCoupon.discountAmount;
+       const updatedsubTotal = subTotal - discount;
+       res.json({
+        success:true,
+        discount,
+        updatedsubTotal
+       })
+        
+    } catch (error) {
+        console.log(error);
+        res.render('page404');
+    }
+}
+
 module.exports = {
     loadIndex,
     loadLogin,
@@ -1114,5 +1165,6 @@ module.exports = {
     filterCategory,
     wishlistLoad,
     addtoWishlist,
-    removeProduct
+    removeProduct,
+    couponCheck
 }

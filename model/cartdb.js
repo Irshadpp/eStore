@@ -25,6 +25,7 @@ const cartSchema = new mongoose.Schema({
         required: true
     },
     items:[cartItemSchema],
+    discount:{type:Number, required:true, default:0},
     subTotal:{type:Number, required:true}
 });
 

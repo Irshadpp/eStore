@@ -86,7 +86,10 @@ router.post('/filterCategory', indexAuth.isLogin, indexAuth.isUserBlock, indexCo
 //wishlist
 router.get('/wishlist',indexAuth.isLogin, indexAuth.isUserBlock, indexController.wishlistLoad);
 router.get('/addToWishlist/:productId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.addtoWishlist);
-router.put('/removeProduct', indexAuth.isLogin, indexAuth.isUserBlock, indexController.removeProduct)
+router.put('/removeProduct', indexAuth.isLogin, indexAuth.isUserBlock, indexController.removeProduct);
+
+//coupon
+router.post('/couponCheck', indexAuth.isLogin, indexAuth.isUserBlock, indexController.couponCheck);
 
 router.get('/test',(req,res)=>{
     res.render('test');

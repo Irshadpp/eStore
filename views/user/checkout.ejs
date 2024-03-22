@@ -10,7 +10,7 @@
         <nav aria-label="breadcrumb" class="breadcrumb-nav">
             <div class="container">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/home">Home</a></li>
                     <li class="breadcrumb-item"><a href="#">Shop</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Checkout</li>
                 </ol>
@@ -21,10 +21,13 @@
             <div class="checkout">
                 <div class="container">
                     <div class="checkout-discount">
-                        <form action="#" method="post">
-                            <input type="text" class="form-control" required id="checkout-discount-input">
+                        <form action="" method="post">
+                            <p class="text-danger" id="warningMsg"></p>
+                            <p class="text-success" id="successMsg"></p>
+                            <input type="text" class="form-control" name="couponCode" required id="checkout-discount-input">
                             <label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here
                                     to enter your code</span></label>
+                                    <button type="button" class="btn btn-primary d-none" id="applyCouponButton">Apply</button>
                         </form>
                     </div><!-- End .checkout-discount -->
                     <form action="" method="">
@@ -95,16 +98,20 @@
                                                         <td>Subtotal:</td>
                                                         <input type="text" class="subTotal" name="subTotal"
                                                             value="<%= subTotal %>" hidden>
-                                                        <td>₹<%= parseFloat(subTotal).toFixed(2) %>
+                                                        <td >₹<%= parseFloat(subTotal).toFixed(2) %>
                                                         </td>
                                                     </tr><!-- End .summary-subtotal -->
+                                                    <tr>
+                                                        <td>Discount:</td>
+                                                        <td class="discount">0.00</td>
+                                                    </tr>
                                                     <tr>
                                                         <td>Shipping:</td>
                                                         <td>Free shipping</td>
                                                     </tr>
                                                     <tr class="summary-total">
                                                         <td>Total:</td>
-                                                        <td class="subTotal">₹<%= parseFloat(subTotal).toFixed(2) %>
+                                                        <td class="updatedSubTotal">₹<%= parseFloat(subTotal).toFixed(2) %>
                                                         </td>
                                                     </tr><!-- End .summary-total -->
                                         </tbody>
@@ -188,11 +195,55 @@
 
     <script>
 
+document.getElementById('checkout-discount-input').addEventListener('click', function () {
+        document.getElementById('applyCouponButton').classList.remove('d-none');
+    });
+
+    document.getElementById('applyCouponButton').addEventListener('click', function () {
+        applyCoupon();
+    });
+
+    function applyCoupon() {
+        const couponCode = document.getElementById('checkout-discount-input').value;
+        const subTotal = document.querySelector('.subTotal').value;
+        fetch('/couponCheck', {
+            method: 'POST',
+            body: JSON.stringify({ couponCode, subTotal }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data=>{
+            const warningMsg = document.getElementById('warningMsg');
+            if(data.warningMsg){
+                warningMsg.innerHTML = data.warningMsg;
+            }else if(data.discount){
+                const subTotal = document.querySelector('.updatedSubTotal');
+                const discount = document.querySelector('.discount');
+                const successMsg = document.getElementById('successMsg');
+                const applyButton = document.getElementById('applyCouponButton')
+                subTotal.innerHTML = `₹${parseFloat(data.updatedsubTotal).toFixed(2)}`;
+                discount.innerHTML = `${parseFloat(data.discount).toFixed(2)}`;
+                successMsg.innerHTML = 'Coupon applied successfully';
+                warningMsg.innerHTML = '';
+                applyButton.remove()
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+    
+
         document.getElementById('place-order').addEventListener('click', function (event) {
             event.preventDefault(); 
             const selectedValue = document.querySelector('input[name="payment_method"]:checked').value;
             const subTotal = document.querySelector('.subTotal').value;
+            const discount = document.querySelector('.discount').textContent;
+            const grandTotal = subTotal - discount;
             const address = document.querySelector('.form-select').value;
+            const couponCode = document.getElementById('checkout-discount-input').value;
             if (!address) {
                 Swal.fire({
                     title: 'Address not found!',
@@ -227,9 +278,10 @@ productIds.forEach((productId, index) => {
 
                 const data = {
                     paymentMethod: selectedValue,
-                    subTotal: subTotal,
+                    subTotal: grandTotal,
                     address: address,
-                    allProductsData: allProductsData
+                    allProductsData: allProductsData,
+                    couponCode: couponCode
                 };
 
                 // Make a fetch request
@@ -268,7 +320,8 @@ productIds.forEach((productId, index) => {
                                             paymentId: response.razorpay_payment_id,
                                             order_id: response.razorpay_order_id,
                                             razorpay_signature: response.razorpay_signature,
-                                            dbOrder_id: response.dbOrder_id
+                                            dbOrder_id: response.dbOrder_id,
+                                            couponCode: couponCode
                                         })
                                     })
                                         .then(response => response.json())

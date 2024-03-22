@@ -59,4 +59,8 @@ router.get('/addCoupon', adminAuth.isLogin, adminController.addCouponLoad);
 router.post('/addCoupon', adminAuth.isLogin, adminController.addCoupon);
 router.delete('/deleteCoupon', adminAuth.isLogin, adminController.couponDelete);
 
+//offer
+router.get('/addOffer', adminAuth.isLogin, adminController.addOfferLoad);
+router.post('/addOffer', adminAuth.isLogin, adminController.addOffer);
+
 module.exports = router;
