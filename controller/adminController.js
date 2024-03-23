@@ -8,7 +8,7 @@ const Product = require('../model/productdb');
 const Category = require('../model/categorydb');
 const Order = require('../model/orderdb');
 const Coupon = require('../model/coupondb');
-const Offer = require('../model/coupondb');
+const Offer = require('../model/offerdb');
 
 //login load
 const loginLoad = asyncHandler( async (req,res) => {
@@ -466,6 +466,9 @@ const addCouponLoad = async (req,res) =>{
 }
 
 const addCoupon = async (req,res) =>{
+    console.log('====================================');
+    console.log();
+    console.log('====================================');
     try {
         const {couponName, couponCode, description, expiryDate, discountAmount, minAmount} = req.body;
     
@@ -524,6 +527,15 @@ const couponDelete = async (req,res) =>{
     }
 }
 
+const offerLoad = async (req,res) =>{
+    try {
+        const offerData = await Offer.find();
+        res.render('offers',{offerData});
+    } catch (error) {
+        console.log(error);
+}
+}
+
 const addOfferLoad = async (req,res) =>{
     try {
         const categoryData = await Category.find();
@@ -539,17 +551,45 @@ const addOfferLoad = async (req,res) =>{
 
 const addOffer = async (req,res) =>{
     try {
-        console.log('=========================',req.body);
-        const {offerName, description, percentage, expiryDate, status, offerType, selectedOption} = req.body;
+        const {offerName, description, percentage, expiryDate, status, offerType, selectedOptionvalue} = req.body;
+        let per = parseInt(percentage)
+        console.log('fghjkhfdsfjaksdjfkadjsklfjakljflk', selectedOptionvalue)
+        
+        if(offerName.trim() === ''){
+            return res.json({warningMsg:"Please give offer name!"});
+        }
+        if(description.trim() === ''){
+            return res.json({warningMsg:"Please give offer description!"});
+        }
+        if(parseFloat(percentage) < 1){
+             return res.json({warningMsg:"Please give valid percentage!"});
+        }
+        if(new Date(expiryDate) < Date.now()){
+            return res.json({warningMsg:"Please give valid expiry date!"});
+        }
+        if(offerType.trim() === ''){
+            return res.json({warningMsg:"Please selcet offer type!"});
+        }
+        console.log('====================================');
+        console.log(typeof status);
+        console.log('====================================');
         const offer = new Offer({
-            offerName,
+            offerName,  
             description,
-            percentage,
+            percentage: parseFloat(percentage),
             expiryDate,
             status,
             offerType
         })
-        res.json()
+        const newOffer = await offer.save();
+        if(offerType == 'category'){
+            const category = await Category.findOne({categoryName:selectedOptionvalue},{_id:1});
+            await Category.findByIdAndUpdate(category._id,{offerId:newOffer._id});
+        }else if(offerType == 'product'){
+            const product = await Product.findOne({productName:selectedOptionvalue},{_id:1});
+            await Product.findByIdAndUpdate(product._id,{offerId:newOffer._id});
+        }
+        res.json({successMsg:"Please give valid expiry date!"});
     } catch (error) {
         console.log(error)
     }
@@ -585,6 +625,7 @@ module.exports = {
     addCouponLoad,
     addCoupon,
     couponDelete,
+    offerLoad,
     addOfferLoad,
     addOffer
 }

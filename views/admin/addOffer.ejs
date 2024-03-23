@@ -5,16 +5,7 @@
                 <div class="content-header">
                     <h2 class="content-title">Add New Offer</h2>
                 </div>
-                <% if(typeof successMsg !='undefined' ){ %>
-                    <p class="text-center text-success mb-5" id="text-danger">
-                        <%= successMsg %>
-                    </p>
-                    <% } %>
-                        <% if(typeof warningMsg !='undefined' ){ %>
-                            <p class="text-center text-danger  mb-5" id="text-danger">
-                                <%= warningMsg %>
-                            </p>
-                            <% } %>
+               
             </div>
             <div class="col-lg-6">
                 <div class="card mb-4">
@@ -53,8 +44,8 @@
                                     <div class="mb-4">
                                         <label class="form-label">Status</label>
                                         <select name="status" class="form-select">
-                                            <option value="">Active</option>
-                                            <option value="">Inactive</option>
+                                            <option value="active">Active</option>
+                                            <option value="inactive">Inactive</option>
                                         </select>
                                     </div>
                                 </div>
@@ -81,8 +72,9 @@
                     </div>
                 </div>
                 <!-- card end// -->
-
+                <p class="text-center text-danger  mb-5"  id="warningMsg"></p>
             </div>
+           
             
             <div class=" ">
                 <button class="btn btn-md rounded font-sm hover-up">Add Offer</button>
@@ -114,7 +106,7 @@
         });
 
         function populateOptions(options) {
-            optionsSelect.innerHTML = ''; // Clear previous options
+            optionsSelect.innerHTML = ''; 
             options.forEach(option => {
                 const optionElement = document.createElement('option');
                 optionElement.textContent = option;
@@ -126,14 +118,16 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             function submitForm() {
+            
         const formData = {
-            offerName: document.querySelector('input[name="offerName"]').value,
+            offerName:document.querySelector('input[name="offerName"]').value,
             description: document.querySelector('textarea[name="description"]').value,
-            percentage: document.querySelector('input[name="percentage"]').value,
-            expiryDate: document.querySelector('input[name="expiryDate"]').value,
-            status: document.querySelector('select[name="status"]').value,
-            offerType: document.querySelector('select[name="offerType"]').value,
-            selectedOption: document.querySelector('select[name="options"]').value
+            percentage:document.querySelector('input[name="percentage"]').value,
+            expiryDate:document.querySelector('input[name="expiryDate"]').value,
+            status:document.querySelector('select[name="status"]').value,
+            offerType:document.querySelector('select[name="offerType"]').value,
+            selectedOptionvalue:document.querySelector('select[name="options"]').value
+            
         };
         console.log('================',formData)
 
@@ -145,10 +139,13 @@
             body: JSON.stringify(formData)
         })
         .then(response => {
-            if (response.ok) {
-                console.log('Form submitted successfully');
-            } else {
-                console.error('Form submission failed');
+           return response.json();
+        }).then(data=>{
+            if(data.warningMsg){
+                const msgShow = document.getElementById('warningMsg');
+                msgShow.textContent = data.warningMsg;
+            }else{
+                window.location.href = '/admin/addOffer'
             }
         })
         .catch(error => {

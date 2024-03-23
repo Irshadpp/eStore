@@ -60,6 +60,7 @@ router.post('/addCoupon', adminAuth.isLogin, adminController.addCoupon);
 router.delete('/deleteCoupon', adminAuth.isLogin, adminController.couponDelete);
 
 //offer
+router.get('/offer', adminAuth.isLogin, adminController.offerLoad);
 router.get('/addOffer', adminAuth.isLogin, adminController.addOfferLoad);
 router.post('/addOffer', adminAuth.isLogin, adminController.addOffer);
 

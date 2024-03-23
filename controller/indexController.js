@@ -73,15 +73,28 @@ const otpLoad = async (req, res) => {
 const homeLoad = asyncHandler(async (req, res) => {
 
     const userData = await User.findById(req.session.user_id);
-    const productData = await Product.find({ list: true }).populate('categoryId');
-    const products = productData.filter(product => product.categoryId.list === true)
+    const productData = await Product.find({ list: true })
+    .populate({
+        path:'categoryId',
+        populate:'offerId'
+    })
+    .populate('offerId');
+    console.log('====================================');
+    console.log(productData[4].categoryId.offerId);
+    console.log('====================================');
+    const products = productData.filter(product => product.categoryId.list === true);
     const imagePathsArray = products.map((item) => item.imagePaths);
     res.render('home', { userData, products, imagePathsArray });
 
 });
 
 const allProductsLoad = async (req, res) => {
-    const productData = await Product.find().populate('categoryId');
+    const productData = await Product.find()
+    .populate({
+        path:'categoryId',
+        populate:'offerId'
+    })
+    .populate('offerId')
     const products = productData.filter(product => product.list === true && product.categoryId.list === true);
     const categoryData = await Category.find();
     res.render('allProducts', { products, categoryData });

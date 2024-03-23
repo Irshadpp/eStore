@@ -1,4 +1,5 @@
 <%-include('../layout/header')-%>
+
 <main class="main">
     <div class="page-header text-center" style="background-image: url('/user/assets/images/page-header-bg.jpg')">
         <div class="container-fluid">
@@ -73,9 +74,22 @@
                                 </div><!-- End .product-cat -->
                                 <h3 class="product-title"><a href="product.html"><%= element.productName %></a></h3><!-- End .product-title -->
                                 <div class="product-price">
-                                    ₹<%= element.price %>
-                                </div><!-- End .product-price -->
-                                
+                                <% if (element.offerId && element.offerId.status === 'active') { %>
+                                    <div class="col m-0">
+                                    <% const offerPrice = element.price - (element.price * element.offerId.percentage/100) %>
+                                    Rs <%=offerPrice%>
+                                    <s class="text-decoration-line-through small text-muted" >Rs <%=element.price%></s>
+                                </div>
+                                 <%}else if (element.categoryId.offerId && element.categoryId.offerId.status === 'active') {  %>
+                                    <div class="col m-0">
+                                        <% const offerPrice = element.price - (element.price * element.categoryId.offerId.percentage/100) %>
+                                        Rs <%=offerPrice%>
+                                        <s class="text-decoration-line-through small text-muted" >Rs <%=element.price%></s>
+                                    </div>
+                                 <% } else{%>
+                                     Rs <%=element.price%>
+                                     <% } %> 
+                                    </div>
                             </div><!-- End .product-body -->
                         </div><!-- End .product -->
                     </div><!-- End .col-sm-6 col-lg-4 col-xl-3 -->
@@ -237,29 +251,35 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             function searchProducts() {
-                const searchValue = searchInput.value.trim().toLowerCase();
-                const products = document.querySelectorAll('.product-title');
+    const searchValue = searchInput.value.trim().toLowerCase();
+    const productsContainer = document.querySelector('.products');
+    const products = Array.from(document.querySelectorAll('.product'));
 
-                let firstMatchedProduct = null;
+    let firstMatchedProduct = null;
 
-                products.forEach(product => {
-                    const productName = product.textContent.toLowerCase();
-                    const productContainer = product.closest('.product');
+    products.forEach(productContainer => {
+        const productName = productContainer.querySelector('.product-title').textContent.toLowerCase();
 
-                    if (productName.includes(searchValue)) {
-                        productContainer.style.display = 'block';
-                        if (!firstMatchedProduct) {
-                            firstMatchedProduct = productContainer;
-                        }
-                    } else {
-                        productContainer.style.display = 'none';
-                    }
-                });
-
-                if (firstMatchedProduct) {
-                    firstMatchedProduct.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+        if (productName.includes(searchValue)) {
+            productContainer.style.display = 'block';
+            if (!firstMatchedProduct) {
+                firstMatchedProduct = productContainer;
             }
+        } else {
+            productContainer.style.display = 'none';
+        }
+    });
+
+    if (firstMatchedProduct) {
+        // Move the first matched product to the top of the products container
+        const firstMatchedProductIndex = products.indexOf(firstMatchedProduct);
+        if (firstMatchedProductIndex > 0) {
+            productsContainer.insertBefore(firstMatchedProduct, productsContainer.firstChild);
+            firstMatchedProduct.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+}
+
         });
 
 
