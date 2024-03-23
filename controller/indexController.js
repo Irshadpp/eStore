@@ -134,37 +134,64 @@ const addAddressLoad = asyncHandler(async (req, res) => {
 const cartLoad = async (req, res) => {
     try {
         const userId = new mongoose.Types.ObjectId(req.session.user_id);
-        const cartProducts = await Cart.aggregate([
-            { $match: { userId: userId } },
-            { $unwind: "$items" },
-            {
-                $lookup: {
-                    from: "products",
-                    localField: "items.productId",
-                    foreignField: "_id",
-                    as: "productDetails"
-                }
-            },
-            { $unwind: "$productDetails" },
-            {
-                $project: {
-                    // "_id":0,
-                    "itemsId": "$items._id",
-                    "total": "$items.total",
-                    "productId": "$productDetails._id",
-                    "productName": "$productDetails.productName",
-                    "price": "$productDetails.price",
-                    "image": { $arrayElemAt: ["$productDetails.imagePaths", 0] },
-                    "quantity": "$items.quantity"
-                }
+        // const cartProducts = await Cart.aggregate([
+        //     { $match: { userId: userId } },
+        //     { $unwind: "$items" },
+        //     {
+        //         $lookup: {
+        //             from: "products",
+        //             localField: "items.productId",
+        //             foreignField: "_id",
+        //             as: "productDetails"
+        //         }
+        //     },
+        //     { $unwind: "$productDetails" },
+        //     {
+        //         $project: {
+        //             // "_id":0,
+        //             "itemsId": "$items._id",
+        //             "total": "$items.total",
+        //             "productId": "$productDetails._id",
+        //             "productName": "$productDetails.productName",
+        //             "price": "$productDetails.price",
+        //             "image": { $arrayElemAt: ["$productDetails.imagePaths", 0] },
+        //             "quantity": "$items.quantity"
+        //         }
+        //     }
+        // ]);
+        const cartProducts = await Cart.findOne({userId: userId})
+    .populate({
+        path: 'items.productId',
+        populate: {
+            path: 'categoryId',
+            populate: {
+                path: 'offerId',
+                model: 'Offer'
             }
-        ]);
+        }
+    })
+    .populate({
+        path: 'items.productId',
+        populate: {
+            path:'offerId',
+            model:'Offer'
+        }
+    })  
+    
 
-        const subTotal = cartProducts.reduce((acc, crr) => {
-            return acc = acc + crr.price * crr.quantity;
+        const subTotal = cartProducts.items.reduce((acc, crr, index) => {
+            let price;
+            if(cartProducts.items[index].productId.offerId && cartProducts.items[index].productId.offerId.status === 'active'){
+                price = crr.productId.price - (crr.productId.price * cartProducts.items[index].productId.offerId.percentage / 100);
+            }else if(cartProducts.items[index].productId.categoryId.offerId && cartProducts.items[index].productId.categoryId.offerId.status === 'active'){
+                price = crr.productId.price - (crr.productId.price * cartProducts.items[index].productId.categoryId.offerId.percentage / 100);
+            }else{
+                price = crr.productId.price
+            }
+            return acc = acc + price * crr.quantity;
         }, 0)
 
-        res.render('cart', { cartProducts, subTotal });
+        res.render('cart', { cartProducts:cartProducts.items, subTotal });
     } catch (error) {
         console.log(error);
         res.status(404).send("Page note Found");
@@ -559,9 +586,22 @@ const addToCart = async (req, res) => {
     try {
 
         const productId = req.params.productId;
-        const productData = await Product.findById(productId);
-        const productPrice = productData.price;
         const user_id = req.session.user_id;
+        const productData = await Product.findById(productId)
+        .populate({
+            path:'categoryId',
+            populate:'offerId'
+        })
+        .populate('offerId');
+
+        let productPrice;
+        if(productData.offerId && productData.offerId.status === 'active'){
+            productPrice = productData.price - productData.price * (productData.offerId.percentage / 100)
+        }else if(productData.categoryId.offerId && productData.categoryId.offerId.status === 'active'){
+            productPrice = productData.price - productData.price * (productData.categoryId.offerId.percentage / 100)
+        }else{
+            productPrice = productData.price;
+        }
 
         const checkCart = await Cart.findOne({ userId: user_id });
 
@@ -575,6 +615,9 @@ const addToCart = async (req, res) => {
                     return acc + crr.total;
                 }, productPrice);
 
+                console.log('====================================');
+                console.log(productPrice);
+                console.log('====================================');
 
                 await Cart.updateOne(
                     { userId: user_id },
