@@ -24,10 +24,11 @@
                         <form action="" method="post">
                             <p class="text-danger" id="warningMsg"></p>
                             <p class="text-success" id="successMsg"></p>
-                            <input type="text" class="form-control" name="couponCode" required id="checkout-discount-input">
+                            <input type="text" class="form-control" name="couponCode" required
+                                id="checkout-discount-input">
                             <label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here
                                     to enter your code</span></label>
-                                    <button type="button" class="btn btn-primary d-none" id="applyCouponButton">Apply</button>
+                            <button type="button" class="btn btn-primary d-none" id="applyCouponButton">Apply</button>
                         </form>
                     </div><!-- End .checkout-discount -->
                     <form action="" method="">
@@ -98,7 +99,7 @@
                                                         <td>Subtotal:</td>
                                                         <input type="text" class="subTotal" name="subTotal"
                                                             value="<%= subTotal %>" hidden>
-                                                        <td >₹<%= parseFloat(subTotal).toFixed(2) %>
+                                                        <td>₹<%= parseFloat(subTotal).toFixed(2) %>
                                                         </td>
                                                     </tr><!-- End .summary-subtotal -->
                                                     <tr>
@@ -111,7 +112,8 @@
                                                     </tr>
                                                     <tr class="summary-total">
                                                         <td>Total:</td>
-                                                        <td class="updatedSubTotal">₹<%= parseFloat(subTotal).toFixed(2) %>
+                                                        <td class="updatedSubTotal">₹<%= parseFloat(subTotal).toFixed(2)
+                                                                %>
                                                         </td>
                                                     </tr><!-- End .summary-total -->
                                         </tbody>
@@ -195,49 +197,49 @@
 
     <script>
 
-document.getElementById('checkout-discount-input').addEventListener('click', function () {
-        document.getElementById('applyCouponButton').classList.remove('d-none');
-    });
-
-    document.getElementById('applyCouponButton').addEventListener('click', function () {
-        applyCoupon();
-    });
-
-    function applyCoupon() {
-        const couponCode = document.getElementById('checkout-discount-input').value;
-        const subTotal = document.querySelector('.subTotal').value;
-        fetch('/couponCheck', {
-            method: 'POST',
-            body: JSON.stringify({ couponCode, subTotal }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data=>{
-            const warningMsg = document.getElementById('warningMsg');
-            if(data.warningMsg){
-                warningMsg.innerHTML = data.warningMsg;
-            }else if(data.discount){
-                const subTotal = document.querySelector('.updatedSubTotal');
-                const discount = document.querySelector('.discount');
-                const successMsg = document.getElementById('successMsg');
-                const applyButton = document.getElementById('applyCouponButton')
-                subTotal.innerHTML = `₹${parseFloat(data.updatedsubTotal).toFixed(2)}`;
-                discount.innerHTML = `${parseFloat(data.discount).toFixed(2)}`;
-                successMsg.innerHTML = 'Coupon applied successfully';
-                warningMsg.innerHTML = '';
-                applyButton.remove()
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
+        document.getElementById('checkout-discount-input').addEventListener('click', function () {
+            document.getElementById('applyCouponButton').classList.remove('d-none');
         });
-    }
-    
+
+        document.getElementById('applyCouponButton').addEventListener('click', function () {
+            applyCoupon();
+        });
+
+        function applyCoupon() {
+            const couponCode = document.getElementById('checkout-discount-input').value;
+            const subTotal = document.querySelector('.subTotal').value;
+            fetch('/couponCheck', {
+                method: 'POST',
+                body: JSON.stringify({ couponCode, subTotal }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const warningMsg = document.getElementById('warningMsg');
+                    if (data.warningMsg) {
+                        warningMsg.innerHTML = data.warningMsg;
+                    } else if (data.discount) {
+                        const subTotal = document.querySelector('.updatedSubTotal');
+                        const discount = document.querySelector('.discount');
+                        const successMsg = document.getElementById('successMsg');
+                        const applyButton = document.getElementById('applyCouponButton')
+                        subTotal.innerHTML = `₹${parseFloat(data.updatedsubTotal).toFixed(2)}`;
+                        discount.innerHTML = `${parseFloat(data.discount).toFixed(2)}`;
+                        successMsg.innerHTML = 'Coupon applied successfully';
+                        warningMsg.innerHTML = '';
+                        applyButton.remove()
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
 
         document.getElementById('place-order').addEventListener('click', function (event) {
-            event.preventDefault(); 
+            event.preventDefault();
             const selectedValue = document.querySelector('input[name="payment_method"]:checked').value;
             const subTotal = document.querySelector('.subTotal').value;
             const discount = document.querySelector('.discount').textContent;
@@ -257,22 +259,22 @@ document.getElementById('checkout-discount-input').addEventListener('click', fun
                 });
             } else {
                 const quantities = document.querySelectorAll('.quantity');
-const productIds = document.querySelectorAll('.productId');
-const totals = document.querySelectorAll('.total');
+                const productIds = document.querySelectorAll('.productId');
+                const totals = document.querySelectorAll('.total');
 
-const allProductsData = [];
+                const allProductsData = [];
 
-productIds.forEach((productId, index) => {
-    const quantity = quantities[index].value;
-    const productIdValue = productId.value;
-    const total = totals[index].value;
+                productIds.forEach((productId, index) => {
+                    const quantity = quantities[index].value;
+                    const productIdValue = productId.value;
+                    const total = totals[index].value;
 
-    allProductsData.push({
-        quantity: quantity,
-        productId: productIdValue,
-        total: total
-    });
-});
+                    allProductsData.push({
+                        quantity: quantity,
+                        productId: productIdValue,
+                        total: total
+                    });
+                });
 
 
 
@@ -330,17 +332,17 @@ productIds.forEach((productId, index) => {
                                                 icon: 'success',
                                                 title: 'Order Placed',
                                                 showConfirmButton: false,
-                                              timer: 1000,
+                                                timer: 1000,
                                                 customClass: {
                                                     confirmButton: 'btn btn-primary'
                                                 },
                                                 buttonsStyling: false
                                             })
-                                            setTimeout(()=>{
+                                            setTimeout(() => {
                                                 window.location.href = `/orderDetails/${data.orderId}`
-                                            },1000)
+                                            }, 1000)
                                         })
-                                    console.log('response',response);
+                                    console.log('response', response);
                                 },
                                 "prefill": {
                                     "contact": "9876543210",
@@ -355,7 +357,7 @@ productIds.forEach((productId, index) => {
                                 }
                             };
 
-                            var razorpayObject = new Razorpay(options); 
+                            var razorpayObject = new Razorpay(options);
                             console.log(razorpayObject);
 
                             razorpayObject.on('payment.failed', function (response) {
@@ -365,19 +367,45 @@ productIds.forEach((productId, index) => {
 
                             razorpayObject.open();
                         } else if (data.paymentMethod === 'COD') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Order Placed',
+                                showConfirmButton: false,
+                                timer: 1000,
+                                customClass: {
+                                    confirmButton: 'btn btn-primary'
+                                },
+                                buttonsStyling: false
+                            })
+                            setTimeout(() => {
+                                window.location.href = `/orderDetails/${data.orderId}`
+                            }, 1500)
+                        } else if (data.paymentMethod === 'wallet') {
+                            if (data.warningMsg) {
                                 Swal.fire({
-                                    icon: 'success',
-                                    title: 'Order Placed',
-                                    showConfirmButton: false,
-                                    timer: 1000,
+                                    title: 'Sorry!',
+                                    text: data.warningMsg,
+                                    type: 'warning',
                                     customClass: {
                                         confirmButton: 'btn btn-primary'
                                     },
                                     buttonsStyling: false
                                 })
-                                setTimeout(()=>{
-                                    window.location.href = `/orderDetails/${data.orderId}`
-                                },1500)
+                            }else{
+                                Swal.fire({
+                                icon: 'success',
+                                title: 'Order Placed',
+                                showConfirmButton: false,
+                                timer: 1000,
+                                customClass: {
+                                    confirmButton: 'btn btn-primary'
+                                },
+                                buttonsStyling: false
+                            })
+                            setTimeout(() => {
+                                window.location.href = `/orderDetails/${data.orderId}`
+                            }, 1500)
+                            }
                         }
                     })
                     .catch(error => {

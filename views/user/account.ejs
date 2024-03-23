@@ -148,6 +148,9 @@
 .m-t-md {
   margin-top: 20px;
 }
+.arrow-icon {
+    color: #087f06; /* Or any other color you prefer */
+}
     </style>
 
 
@@ -173,39 +176,52 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <form action="/editProfile/<%= userData._id %>" method="post">
-                    <div class="modal-header text-center">
-                        <h4 class="modal-title w-100 font-weight-bold">Edit info</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body mx-3">
-
-                        <div class="md-form mb-2">
-                            <label data-error="wrong" data-success="right" for="defaultForm-email">Full Name</label>
-                            <input type="text" name="name" value="<%= userData.username %>"
-                                class="form-control validate">
-                        </div>
-
-                        <div class="md-form mb-4">
-                            <label data-error="wrong" data-success="right" for="defaultForm-pass">Your Mobile</label>
-                            <input type="tel" name="mobile" value="<%= userData.mobile %>"
-                                class="form-control validate">
-                        </div>
-
-                    </div>
-                    <div class="modal-footer d-flex justify-content-center">
-                        <button type="submit" class="btn btn-default">Update</button>
-                    </div>
-                </form>
-            </div>
+  <!-- Transaction Table Modal -->
+<div class="modal fade" id="transactionTableModal" tabindex="-1" role="dialog" aria-labelledby="transactionTableModalLabel"
+aria-hidden="true">
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="transactionTableModalLabel">Transaction Details</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Activity</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% userData.walletHistory.forEach(element => { %>
+                        <tr>
+                            <td><%= element.description %></td>
+                            <td>12 Jul 2020</td>
+                            <td>₹<%= parseFloat(element.amount).toFixed(2) %></td>
+                            <td><% if (element.status === "in") { %>
+                                In<i class="fa-solid fa-arrow-left" style="color: #087f06;"></i>
+                              <% } else if (element.status === "out") { %>
+                                Out<i class="fa-solid fa-arrow-left fa-rotate-180" style="color: #a21606;"></i>
+                              <% } %></td>
+                        </tr>
+                    <% }) %>
+                    
+                    <!-- Add more rows as needed -->
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
+</div>
+
+
+    
+
 
 
     <main class="main">
@@ -284,11 +300,11 @@
                                                     <h2 class="card-title">Wallet</h2>
                                                     <!-- End .card-title -->
                                                     <p class="text-primary h6">
-                                                        ₹0.00
+                                                        ₹<%= parseFloat(userData.wallet).toFixed(2) %>
                                                     </p>
                                                    
                                                     <a class="btn btn-outline-primary-2 " data-toggle="modal"
-                                                            href="#modalLoginForm">Transaction History</a>
+                                                            href="#transactionTableModal">Transaction History</a>
                                                 </div><!-- End .card-body -->
                                             </div><!-- End .card-dashboard -->
                                         </div><!-- End .col-lg-6 -->

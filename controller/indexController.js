@@ -119,7 +119,8 @@ const accountLoad = async (req, res) => {
         const addresses= await Address.find({ userId: req.session.user_id }).populate('userId')
         const addressData = addresses.flatMap(address => address.addresses);
         const couponData = await Coupon.find();
-        res.render('account', { userData, addressData, orderData, couponData });
+        const transactionDate = userData.walletHistory.map(item => moment(item.date).format('DD-MM-YYYY'));
+        res.render('account', { userData, addressData, orderData, couponData, transactionDate });
     } catch (error) {
         console.log(error)
     }
@@ -177,8 +178,8 @@ const cartLoad = async (req, res) => {
             model:'Offer'
         }
     })  
-    
 
+    if(cartProducts !== null){
         const subTotal = cartProducts.items.reduce((acc, crr, index) => {
             let price;
             if(cartProducts.items[index].productId.offerId && cartProducts.items[index].productId.offerId.status === 'active'){
@@ -189,9 +190,11 @@ const cartLoad = async (req, res) => {
                 price = crr.productId.price
             }
             return acc = acc + price * crr.quantity;
-        }, 0)
-
+        }, 0);
         res.render('cart', { cartProducts:cartProducts.items, subTotal });
+    }
+    res.render('cart', {cartProducts:[], subTotal:0})
+        
     } catch (error) {
         console.log(error);
         res.status(404).send("Page note Found");
@@ -914,7 +917,47 @@ const placeOrder = async (req, res) => {
                 }
             )
              
-        } else if (paymentMethod === 'COD') {
+        } else if (paymentMethod === 'wallet') {
+            const userWallet = await User.findOne({_id:req.session.user_id});
+            if(userWallet.wallet < subTotal){
+                return res.json({
+                    paymentMethod: paymentMethod,
+                    warningMsg:"You don't have enough money in your wallet!"
+                })
+            }
+            newOrder = await order.save();
+           
+            if(couponCode){
+                await Coupon.findOneAndUpdate(
+                    { couponCode: couponCode, "usedUser.userId": req.session.user_id },
+                    { $set: { "usedUser.$.used": true } },
+                    { new: true }
+                )
+            }
+            const walletHistory = {
+                amount:subTotal,
+                description:'Purchase',
+                date:Date.now(),
+                status:'Out'
+            }
+            await User.findOneAndUpdate(
+                {_id:req.session.user_id},
+                {
+                    $set:{walletHistory:[walletHistory]},
+                    $inc:{wallet:-subTotal}
+            }
+            )
+            await Order.findOneAndUpdate({ _id: newOrder._id }, { paymentStatus: "Payment done" });
+            await Cart.deleteOne({ userId: req.session.user_id });
+            res.json({
+                orderId: newOrder._id,
+                paymentMethod: paymentMethod
+            });
+            return res.json({
+                success:true,
+                paymentMethod: paymentMethod,
+            });
+        }else if(paymentMethod === 'COD') {
             newOrder = await order.save();
             if(couponCode){
                 await Coupon.findOneAndUpdate(
@@ -987,6 +1030,32 @@ const cancelOrder = async (req, res) => {
             { $set: { "products.$.status": "Cancelled" } }
         );
         await Product.updateOne({ _id: productId }, { $inc: { quantity: qty } });
+        const orderData = await Order.findOne({ $and: [{ _id: order_id }, { 'products.productId': productId }]});
+        if(orderData.paymentMode !== 'COD'){
+            let total = 0;
+        orderData.products.forEach(product=>{
+            console.log(product.productId._id);
+            if(product.productId._id == productId){
+                total = product.total;
+            }
+        })
+        const walletHistory = {
+            amount:total,
+            description:'Purchase',
+            date:Date.now(),
+            status:'in'
+        }
+        await User.findOneAndUpdate(
+            {_id:req.session.user_id},
+            {
+                $set:{walletHistory:[walletHistory]},
+                $inc:{wallet:total}
+            }
+            )
+        }
+        
+        
+
         res.json({
             success: true,
             message: 'order cancel successfull'
