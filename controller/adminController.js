@@ -407,7 +407,6 @@ const changeOrderStatus = async (req,res) =>{
             { $set: { 'products.$.status': element.status } },
             { new: true }
         );
-        console.log(element.status)
         if(element.status === 'Cancelled'){
             const orderProducts = await Order.findOne(
                 { _id: order_id, 'products.productId': element.productId },
@@ -419,10 +418,15 @@ const changeOrderStatus = async (req,res) =>{
                     await Product.findOneAndUpdate({_id:element.productId},{$inc:{quantity:qty}});
                 }
             }
-
-           
         }
     }
+
+    const orderProducts = await Order.findOne({_id:order_id},{_id:0,products:1});
+    const checkStatuses = orderProducts.products.find(product => product.status !== 'Delivered');
+    console.log(checkStatuses)
+    if(!checkStatuses){
+       await Order.updateOne({_id:order_id},{$set:{status:'Delivered'}});
+    } 
     res.json({
         sucess:true,
         message:"updated sucessfully"
@@ -441,6 +445,29 @@ const returnProduct = async (req,res) =>{
             {$set:{'products.$.status':'Returned'}}
         )
         await Product.findByIdAndUpdate({_id:productId},{$inc:{quantity:qty}});
+        const orderData = await Order.findById(order_id);
+        if(orderData.paymentMode != 'COD'){
+                let total = 0;
+            orderData.products.forEach(product=>{
+                console.log(product.productId._id);
+                if(product.productId._id == productId){
+                    total = product.total;
+                }
+            })
+            const walletHistory = {
+                amount:total,
+                description:'Return product',
+                date:Date.now(),
+                status:'in'
+            }
+            await User.findOneAndUpdate(
+                {_id:req.session.user_id},
+                {
+                    $push:{walletHistory:[walletHistory]},
+                    $inc:{wallet:total}
+                }
+                )
+            }
         
         res.json({status:'Returned'})
     } catch (error) {
@@ -570,9 +597,6 @@ const addOffer = async (req,res) =>{
         if(offerType.trim() === ''){
             return res.json({warningMsg:"Please selcet offer type!"});
         }
-        console.log('====================================');
-        console.log(typeof status);
-        console.log('====================================');
         const offer = new Offer({
             offerName,  
             description,
@@ -594,6 +618,43 @@ const addOffer = async (req,res) =>{
         console.log(error)
     }
 }
+
+const reportLoad = async (req,res) =>{
+    try {
+        const orderData = await Order.find({status:'Delivered'}).sort({date:-1}).populate('userId');
+        res.render('report',{orderData});
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const generateReport = async (req, res) => {
+    try {
+        const startDate = req.body.startDate; 
+        const endDate = req.body.endDate;  
+        const orders = await Order.find({
+            date: {
+                $gte: startDate, 
+                $lte: endDate 
+            },
+            status: 'Delivered' 
+        })
+        .populate('userId');
+        const formattedOrders = orders.map(order => {
+            const formattedDate = new Date(order.date).toLocaleDateString('en-GB').split('/').join('-'); 
+            return {
+                ...order.toObject(), 
+                date: formattedDate
+            };
+        });
+
+        console.log(formattedOrders);
+        res.json(formattedOrders);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
 
 module.exports = {
     loginLoad,
@@ -627,5 +688,7 @@ module.exports = {
     couponDelete,
     offerLoad,
     addOfferLoad,
-    addOffer
+    addOffer,
+    reportLoad,
+    generateReport
 }

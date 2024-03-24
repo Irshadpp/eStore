@@ -20,10 +20,13 @@ const orderSchema = new mongoose.Schema({
     },
     orderId:{type:String, required: true},
     products:[orderItemSchema],
+    offerDeduction:{type:Number, required:true, default:0},
+    couponDeduction:{type:Number, required:true, default:0},
     subTotal:{type:Number, required: true},
     address:{type:Object, required: true},
     paymentMode:{type:String, required: true},
     paymentStatus:{type:String, required: true, default:'Payment Pending'},
+    status:{type:String, requried:true, default:'Placed'},
     date:{type:Date, required: true, default: Date.now}
 });
 

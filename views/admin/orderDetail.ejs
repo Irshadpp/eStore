@@ -147,9 +147,16 @@
                                                         </dl>
                                                         <dl class="dlist">
                                                             <dt class="text-muted">Status:</dt>
-                                                            <dd>
-                                                                <span class="badge rounded-pill alert-danger text-danger">Payment Pending</span>
-                                                            </dd>
+                                                            <% if (orderData.paymentStatus === 'Payment done') { %>
+                                                                <dd>
+                                                                    <span class="badge rounded-pill alert-success text-success"><%= orderData.paymentStatus %></span>
+                                                                </dd>
+                                                            <% }else{ %>
+                                                                <dd>
+                                                                    <span class="badge rounded-pill alert-danger text-danger"><%= orderData.paymentStatus %></span>
+                                                                </dd>
+                                                                <% } %>
+                                                            
                                                         </dl>
                                                     </article>
                                                 </td>
@@ -224,7 +231,6 @@
                 })
 
                 function approveReturn(productId, order_id, reason, qty){
-                    console.log(productId)
   swal.fire({
     title: 'Approve return',
     input: 'text',

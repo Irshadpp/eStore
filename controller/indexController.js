@@ -221,8 +221,14 @@ const checkoutLoad = asyncHandler(async (req, res) => {
         const subTotal = cart.subTotal;
 
         const addressData = await Address.findOne({ userId: req.session.user_id }, { addresses: 1, _id: 0 });
+        let address;
+        if(!addressData){
+            address = [];
+        }else{
+            address = addressData.addresses
+        }
 
-        res.render('checkout', { products, subTotal, address: addressData.addresses });
+        res.render('checkout', { products, subTotal, address });
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
@@ -606,6 +612,16 @@ const addToCart = async (req, res) => {
             productPrice = productData.price;
         }
 
+        // const checkWishlist = await Wishlist.findOne({'products.productId':productId})
+        // if(checkWishlist){
+        //     const productId =new objectId(productId)
+        //     await Wishlist.findByIdAndUpdate(
+        //         {'products.proudctId':productId},
+        //         {$pull:{products:{productId:productId}}}
+        //     )
+        // }
+
+
         const checkCart = await Cart.findOne({ userId: user_id });
 
         if (checkCart) {
@@ -617,10 +633,6 @@ const addToCart = async (req, res) => {
                 const subTotal = checkCart.items.reduce((acc, crr) => {
                     return acc + crr.total;
                 }, productPrice);
-
-                console.log('====================================');
-                console.log(productPrice);
-                console.log('====================================');
 
                 await Cart.updateOne(
                     { userId: user_id },
@@ -635,6 +647,7 @@ const addToCart = async (req, res) => {
                 );
                 res.status(201).redirect('/cart');
             }
+            
         } else {
 
             const cartProduct = new Cart({
@@ -650,7 +663,7 @@ const addToCart = async (req, res) => {
             );
             res.status(201).redirect('/cart');
         }
-
+       
     } catch (error) {
         res.status(500).send("Something went wrong with add to cart");
         console.log(error);
@@ -943,7 +956,7 @@ const placeOrder = async (req, res) => {
             await User.findOneAndUpdate(
                 {_id:req.session.user_id},
                 {
-                    $set:{walletHistory:[walletHistory]},
+                    $push:{walletHistory:[walletHistory]},
                     $inc:{wallet:-subTotal}
             }
             )
@@ -1041,14 +1054,14 @@ const cancelOrder = async (req, res) => {
         })
         const walletHistory = {
             amount:total,
-            description:'Purchase',
+            description:'Cances product',
             date:Date.now(),
             status:'in'
         }
         await User.findOneAndUpdate(
             {_id:req.session.user_id},
             {
-                $set:{walletHistory:[walletHistory]},
+                $push:{walletHistory:[walletHistory]},
                 $inc:{wallet:total}
             }
             )

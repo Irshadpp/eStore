@@ -90,7 +90,7 @@
 <script>
     async function addToCart(productId){
         try {
-            await axios.post(`addToCart/${productId}`);
+            window.location.href = `/addToCart/${productId}`;
         } catch (error) {
             console.log(error.message);
         }

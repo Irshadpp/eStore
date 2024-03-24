@@ -64,4 +64,8 @@ router.get('/offer', adminAuth.isLogin, adminController.offerLoad);
 router.get('/addOffer', adminAuth.isLogin, adminController.addOfferLoad);
 router.post('/addOffer', adminAuth.isLogin, adminController.addOffer);
 
+//report
+router.get('/report', adminAuth.isLogin, adminController.reportLoad);
+router.post('/report', adminAuth.isLogin, adminController.generateReport);
+
 module.exports = router;
