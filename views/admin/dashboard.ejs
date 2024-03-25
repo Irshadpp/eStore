@@ -16,7 +16,7 @@
                                 <span class="icon icon-sm rounded-circle bg-primary-light"><i class="text-primary material-icons md-monetization_on"></i></span>
                                 <div class="text">
                                     <h6 class="mb-1 card-title">Revenue</h6>
-                                    <span>$13,456.5</span>
+                                    <span>₹<%= parseFloat(revenue).toFixed(2)%></span>
                                     <span class="text-sm"> Shipping fees are not included </span>
                                 </div>
                             </article>
@@ -28,7 +28,7 @@
                                 <span class="icon icon-sm rounded-circle bg-success-light"><i class="text-success material-icons md-local_shipping"></i></span>
                                 <div class="text">
                                     <h6 class="mb-1 card-title">Orders</h6>
-                                    <span>53.668</span>
+                                    <span><%= orderCount %></span>
                                     <span class="text-sm"> Excluding orders in transit </span>
                                 </div>
                             </article>
@@ -40,13 +40,13 @@
                                 <span class="icon icon-sm rounded-circle bg-warning-light"><i class="text-warning material-icons md-qr_code"></i></span>
                                 <div class="text">
                                     <h6 class="mb-1 card-title">Products</h6>
-                                    <span>9.856</span>
-                                    <span class="text-sm"> In 19 Categories </span>
+                                    <span><%= productCount %></span>
+                                    <span class="text-sm"></span>
                                 </div>
                             </article>
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <!-- <div class="col-lg-3">
                         <div class="card card-body mb-4">
                             <article class="icontext">
                                 <span class="icon icon-sm rounded-circle bg-info-light"><i class="text-info material-icons md-shopping_basket"></i></span>
@@ -56,7 +56,7 @@
                                     <span class="text-sm"> Based in your local time. </span>
                                 </div>
                             </article>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="row">

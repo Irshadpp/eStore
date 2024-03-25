@@ -53,7 +53,17 @@
                                     </div><!-- End .rating-container -->
 
                                     <div class="product-price">
-                                        Rs&nbsp;<%=product.price%>
+                                        <% if (product.offerId && product.offerId.status === 'active' && product.offerId.expiryDate > Date.now()) { %>
+                                            <% const offerPrice = product.price - (product.price * product.offerId.percentage/100) %>
+                                            Rs&nbsp;<%=offerPrice%>&nbsp;
+                                            <s class="text-decoration-line-through small text-muted" >Rs <%=product.price%></s>
+                                         <%}else if (product.categoryId.offerId && product.categoryId.offerId.status === 'active' && product.categoryId.offerId.expiryDate > Date.now()) {  %>
+                                                <% const offerPrice = product.price - (product.price * product.categoryId.offerId.percentage/100) %>
+                                                Rs&nbsp;<%=offerPrice%>&nbsp;
+                                                <s class="text-decoration-line-through small text-muted" >Rs <%=product.price%></s>
+                                         <% } else{%>
+                                             Rs&nbsp;<%=product.price%>
+                                             <% } %> 
                                     </div><!-- End .product-price -->
 
                                     <div class="product-content">

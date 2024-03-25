@@ -43,8 +43,9 @@
                                         <th scope="col">Name</th>
                                         <th scope="col">Percentage</th>
                                         <th scope="col">Offer</th>
+                                        <th scope="col">Offer</th>
+                                        <th scope="col">Expiry Date</th>
                                         <th scope="col">Status</th>
-                                        <th scope="col">Date</th>
                                         <th scope="col" class="text-end">Action</th>
                                     </tr>
                                 </thead>
@@ -55,15 +56,21 @@
                                         <td><b><%= element.offerName %></b></td>
                                         <td class=""><%= element.percentage %>%</td>
                                         <td><%= element.offerType%></td>
-                                        <td><span class="badge rounded-pill alert-success">Active</span></td>
+                                        <td><%= element.offerType%></td>
                                         <td></td>
+                                        <% if (element.expiryData < Date.now()) { %>
+                                            <td><span class="badge rounded-pill alert-danger">Expired</span></td>
+                                        <% }else if(element.status === 'active'){ %>
+                                            <td><span class="badge rounded-pill alert-success">Active</span></td>
+                                       <% }else{ %>
+                                        <td><span class="badge rounded-pill alert-danger">Inactive</span></td>
+                                      <% } %>
                                         <td class="text-end">
                                             <div class="dropdown">
                                                 <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
                                                 <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="/admin/editOffer/<%=element._id%>">Edit info</a>
-                                                    
-                                                    <a class="dropdown-item text-danger" href="" onclick="deleteOffer('<%=element._id%>')">Delete</a>
+                                                    <a class="dropdown-item" href="#" onclick="activateOffer('<%=element._id%>')">Activate</a>
+                                                    <a class="dropdown-item text-danger" href="#" onclick="inactivateOffer('<%=element._id%>')">Inactivate</a>
                                                 </div>
                                             </div>
                                             <!-- dropdown //end -->
@@ -95,15 +102,15 @@
         dateCell.textContent = formattedDate;
     });
 
-    function deleteOffer(offerId, deleteBtn){
+    function inactivateOffer(offerId){
         Swal.fire({
     title: 'Are you sure?',
-    text: "You won't be able to revert this!",
+    text: "Do you want to inactivate this offer",
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#3085d6',
     cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!',
+    confirmButtonText: 'Yes, inactivate it!',
     customClass: {
       confirmButton: 'btn btn-danger me-1',
       cancelButton: 'btn btn-label-secondary'
@@ -111,8 +118,8 @@
     buttonsStyling: false
   }).then(function(result) {
     if (result.value) {
-        fetch('/admin/deleteOffer',{
-            method: 'DELETE',
+        fetch('/admin/inactivateOffer',{
+            method: 'PUT',
             body: JSON.stringify({couponId}),
             headers:{
                 "Content-Type":"application/json"
@@ -121,7 +128,7 @@
         .then(response =>{
             return response.json();
         })
-        .then(data =>  $(deleteBtn).closest('tr').remove())
+        .then(data =>  )
         .catch(error => console.log(error));
       Swal.fire({
         icon: 'success',
@@ -135,6 +142,7 @@
   });
         
     }
+
         </script>
         
         <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>

@@ -1,4 +1,7 @@
 <%-include('../layout/adminHeader')-%>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/shim.min.js" integrity="sha512-nPnkC29R0sikt0ieZaAkk28Ib7Y1Dz7IqePgELH30NnSi1DzG4x+envJAOHz8ZSAveLXAHTR3ai2E9DZUsT8pQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
 <style>
     /* .date-inputs {
         display: none;
@@ -122,7 +125,7 @@
             fetch('/admin/report', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json'  
                 },
                 body: JSON.stringify(body)
             })
@@ -158,37 +161,66 @@ data.forEach(element => {
     const element = document.getElementById('order-table-body');
     const wrapperDiv = document.createElement('div');
     wrapperDiv.style.width = '100%';
-    wrapperDiv.style.overflowX = 'auto'; // Ensure horizontal scrolling if the table is wider than the page
+    wrapperDiv.style.overflowX = 'auto';
 
-    // Clone the table element and append it to the wrapper div
     const clonedTable = element.cloneNode(true);
     wrapperDiv.appendChild(clonedTable);
 
-    // Ensure that cloned table's styles are preserved
+    
     clonedTable.style.width = '100%';
-    clonedTable.style.borderCollapse = 'collapse'; // Ensure table borders are preserved
+    clonedTable.style.borderCollapse = 'collapse'; 
+    clonedTable.style.border = '1px solid #ddd'; 
+    
+
+    const cells = clonedTable.querySelectorAll('td, th');
+    cells.forEach(cell => {
+        cell.style.border = '1px solid #ddd';
+        cell.style.padding = '8px'; 
+    });
 
     html2pdf(wrapperDiv, {
-        margin: 10, // Optional, set the margin (in mm) on each page
-        filename: 'sales_report.pdf', // Optional, set the name of the PDF file
-        image: { type: 'jpeg', quality: 0.98 }, // Optional, quality and type for images
-        html2canvas: { dpi: 192, letterRendering: true }, // Optional, dpi and letterRendering for html2canvas
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } // Optional, unit, format, and orientation for jsPDF
+        margin: 10, 
+        filename: 'sales_report.pdf', 
+        image: { type: 'jpeg', quality: 0.98 }, 
+        html2canvas: { dpi: 192, letterRendering: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
     })
     .save();
 }
 
 function downloadExcel() {
     const table = document.getElementById('order-table-body');
-    const ws = XLSX.utils.table_to_sheet(table);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Sales_Report');
-    XLSX.writeFile(wb, 'sales_report.xlsx');
+    let csv = [];
+
+    table.querySelectorAll('tr').forEach(row => {
+        let rowData = [];
+        row.querySelectorAll('td').forEach(cell => {
+            rowData.push(cell.innerText);
+        });
+        csv.push(rowData.join(','));
+    });
+    
+    // Convert array of CSV rows into a single CSV string
+    const csvString = csv.join('\n');
+    
+    // Create a Blob object containing the CSV data
+    const blob = new Blob([csvString], { type: 'text/csv' });
+    
+    // Create a temporary link element to trigger the download
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = 'sales_report.csv';
+    
+    // Trigger the download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
+
   
 
          </script>
-         <script>src="/admin/assets/js/xlsx.full.min.js"</script>
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/shim.min.js" integrity="sha512-nPnkC29R0sikt0ieZaAkk28Ib7Y1Dz7IqePgELH30NnSi1DzG4x+envJAOHz8ZSAveLXAHTR3ai2E9DZUsT8pQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="/admin/assets/js/html2pdf.bundle.min.js"></script>
         <script src="html2pdf.bundle.min.js"></script>
         <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>

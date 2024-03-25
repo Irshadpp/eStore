@@ -53,6 +53,9 @@ router.get('/orderDetail/:order_id', adminAuth.isLogin, adminController.orderDet
 router.post('/changeStatus', adminAuth.isLogin, adminController.changeOrderStatus);
 router.post('/returnProduct', adminAuth.isLogin, adminController.returnProduct)
 
+// offer pagenation
+router.get('/orders/:page', adminAuth.isLogin, adminController.orderPageLoad)
+
 //coupon
 router.get('/coupons', adminAuth.isLogin, adminController.couponsLaod)
 router.get('/addCoupon', adminAuth.isLogin, adminController.addCouponLoad);
@@ -63,6 +66,7 @@ router.delete('/deleteCoupon', adminAuth.isLogin, adminController.couponDelete);
 router.get('/offer', adminAuth.isLogin, adminController.offerLoad);
 router.get('/addOffer', adminAuth.isLogin, adminController.addOfferLoad);
 router.post('/addOffer', adminAuth.isLogin, adminController.addOffer);
+
 
 //report
 router.get('/report', adminAuth.isLogin, adminController.reportLoad);

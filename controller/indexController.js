@@ -39,6 +39,7 @@ const loadLogin = async (req, res) => {
         res.render('login')
     } catch (error) {
         console.log(error.message);
+        res.render('page404');
     }
 }
 
@@ -59,6 +60,7 @@ const loadSignup = async (req, res) => {
         res.render('signup')
     } catch (error) {
         console.log(error.message);
+        res.render('page404');
     }
 }
 
@@ -67,6 +69,7 @@ const otpLoad = async (req, res) => {
         res.render('otp')
     } catch (error) {
         console.log(error.message);
+        res.render('page404');
     }
 }
 
@@ -79,9 +82,7 @@ const homeLoad = asyncHandler(async (req, res) => {
         populate:'offerId'
     })
     .populate('offerId');
-    console.log('====================================');
-    console.log(productData[4].categoryId.offerId);
-    console.log('====================================');
+    
     const products = productData.filter(product => product.categoryId.list === true);
     const imagePathsArray = products.map((item) => item.imagePaths);
     res.render('home', { userData, products, imagePathsArray });
@@ -89,24 +90,33 @@ const homeLoad = asyncHandler(async (req, res) => {
 });
 
 const allProductsLoad = async (req, res) => {
-    const productData = await Product.find()
-    .populate({
-        path:'categoryId',
-        populate:'offerId'
-    })
-    .populate('offerId')
-    const products = productData.filter(product => product.list === true && product.categoryId.list === true);
-    const categoryData = await Category.find();
-    res.render('allProducts', { products, categoryData });
+    try {
+        const productData = await Product.find()
+        .populate({
+            path:'categoryId',
+            populate:'offerId'
+        })
+        .populate('offerId')
+        const products = productData.filter(product => product.list === true && product.categoryId.list === true);
+        const categoryData = await Category.find();
+        res.render('allProducts', { products, categoryData });
+    } catch (error) {
+        res.render('page404');
+    }
+   
 }
 
 const productLoad = asyncHandler(async (req, res) => {
 
     const product_id = req.params.product_id;
-    const product = await Product.findOne({ _id: product_id }).populate('categoryId');
+    const product = await Product.findOne({ _id: product_id }).populate({
+        path:'categoryId',
+        populate:'offerId'
+    })
+    .populate('offerId')
     const images = product.imagePaths
     if (!product) {
-        return res.status(404).send("Product Not Found");
+        return  res.render('page404');
     }
     res.render('product', { product, images });
 
@@ -119,10 +129,16 @@ const accountLoad = async (req, res) => {
         const addresses= await Address.find({ userId: req.session.user_id }).populate('userId')
         const addressData = addresses.flatMap(address => address.addresses);
         const couponData = await Coupon.find();
-        const transactionDate = userData.walletHistory.map(item => moment(item.date).format('DD-MM-YYYY'));
-        res.render('account', { userData, addressData, orderData, couponData, transactionDate });
+        const sortedHistory = userData.walletHistory.sort((a, b) => {
+            return new Date(b._id.getTimestamp()) - new Date(a._id.getTimestamp());
+        });
+        
+        const transactionData = sortedHistory;
+        console.log(transactionData);
+        res.render('account', { userData, addressData, orderData, couponData, transactionData });
     } catch (error) {
         console.log(error)
+        res.render('page404');
     }
 }
 
@@ -197,7 +213,7 @@ const cartLoad = async (req, res) => {
         
     } catch (error) {
         console.log(error);
-        res.status(404).send("Page note Found");
+        res.render('page404');
     }
 }
 
@@ -231,7 +247,7 @@ const checkoutLoad = asyncHandler(async (req, res) => {
         res.render('checkout', { products, subTotal, address });
     } catch (error) {
         console.error(error);
-        res.status(500).send('Internal Server Error');
+        res.render('page404');
     }
 })
 
@@ -243,8 +259,8 @@ const editAddressLoad = async (req, res) => {
         const addressData = addressCheck.addresses.find(addrs => addrs._id.equals(addressId));
         res.render('editAddress', { addressData });
     } catch (error) {
-        res.status(404).send("Page note Found");
         console.log(error)
+        res.render('page404');
     }
 }
 
@@ -301,8 +317,8 @@ const editAddress = async (req, res) => {
 
 
     } catch (error) {
-        res.status(500).json('error with editing address')
         console.log(error)
+        res.render('page404');
     }
 }
 
@@ -316,6 +332,7 @@ const deleteAddress = async (req, res) => {
         res.redirect('/account')
     } catch (error) {
         console.log(error);
+        res.render('page404');
     }
 }
 
@@ -331,6 +348,7 @@ const securePassword = async (password) => {
         return hashPassword
     } catch (error) {
         console.log(error.message);
+        res.render('page404');
     }
 }
 
@@ -384,7 +402,9 @@ const signup = async (req, res) => {
             res.render('signup', { msg: "Give proper name!" });
         }
     } catch (error) {
+
         console.log(error.message);
+        res.render('page404');
 
     }
 };
@@ -415,7 +435,7 @@ const googleLogin = async (req, res) => {
             }
         }
     } catch (error) {
-        res.status(500).send(error.message);
+        res.render('page404');
     }
 }
 
@@ -542,7 +562,7 @@ const handleForgotPassword = async (req, res) => {
         res.redirect('/fPasswordOtp');
 
     } catch (error) {
-
+        res.render('page404');
     }
 }
 
@@ -563,32 +583,36 @@ const fPasswordVerifyOtp = async (req, res) => {
             res.render('fPasswordOtp', { msg: 'Something went wrong!' });
         }
     } catch (error) {
-        res.status(500).json("error with verify otp in forgot password");
-
+        res.render('page404');
     }
 }
 
 const changePassword = async (req, res) => {
-    const { password1, password2 } = req.body;
-    if (password1 !== password2) {
-        return res.render('changePassword', { msg: "Two password are not same!" });
-    }
-    const userData = await User.findOne({ email: req.session.fPasswordEmail });
-    if (userData) {
-        const sPassword = await securePassword(password1);
-        const newUserData = await User.findOneAndUpdate(
-            { email: req.session.fPasswordEmail },
-            { $set: { password: sPassword } }
-        );
-        if (newUserData) {
-            req.session.fPasswordEmail = null;
-            res.redirect('login');
-        } else {
-            res.render('changePassword', { msg: "Password change faild!" });
+    try {
+        const { password1, password2 } = req.body;
+        if (password1 !== password2) {
+            return res.render('changePassword', { msg: "Two password are not same!" });
         }
-    } else {
-        res.render('changePassword', { msg: "Something went wrong!" });
+        const userData = await User.findOne({ email: req.session.fPasswordEmail });
+        if (userData) {
+            const sPassword = await securePassword(password1);
+            const newUserData = await User.findOneAndUpdate(
+                { email: req.session.fPasswordEmail },
+                { $set: { password: sPassword } }
+            );
+            if (newUserData) {
+                req.session.fPasswordEmail = null;
+                res.redirect('login');
+            } else {
+                res.render('changePassword', { msg: "Password change faild!" });
+            }
+        } else {
+            res.render('changePassword', { msg: "Something went wrong!" });
+        }
+    } catch (error) {
+        res.render('page404');
     }
+   
 }
 
 const addToCart = async (req, res) => {
@@ -604,10 +628,13 @@ const addToCart = async (req, res) => {
         .populate('offerId');
 
         let productPrice;
-        if(productData.offerId && productData.offerId.status === 'active'){
-            productPrice = productData.price - productData.price * (productData.offerId.percentage / 100)
-        }else if(productData.categoryId.offerId && productData.categoryId.offerId.status === 'active'){
-            productPrice = productData.price - productData.price * (productData.categoryId.offerId.percentage / 100)
+        var offerDeduction;
+        if(productData.offerId && productData.offerId.status === 'active' && productData.offerId.expiryDate > Date.now()){
+            offerDeduction = productData.price * (productData.offerId.percentage / 100);
+            productPrice = productData.price - offerDeduction;
+        }else if(productData.categoryId.offerId && productData.categoryId.offerId.status === 'active' && productData.categoryId.offerId.expiryDate > Date.now()){
+            offerDeduction = productData.price * (productData.categoryId.offerId.percentage / 100);
+            productPrice = productData.price - offerDeduction;
         }else{
             productPrice = productData.price;
         }
@@ -665,7 +692,7 @@ const addToCart = async (req, res) => {
         }
        
     } catch (error) {
-        res.status(500).send("Something went wrong with add to cart");
+        res.render('page404');
         console.log(error);
     }
 }
@@ -700,7 +727,7 @@ const deleteProduct = async (req, res) => {
 
         res.render('cart', { cartProducts: updatedCart });
     } catch (error) {
-        res.status(500).json('Error occured with deleteProduct');
+        res.render('page404');
         console.log(error);
     }
 }
@@ -765,8 +792,8 @@ const updateQuantity = async (req, res) => {
         )
         res.status(200).json({ success: true, message: "Quantity updated successfully", updatedProductPrice, subTotal })
     } catch (error) {
-        res.status(500).json({ message: "Something went wrong with update quantity" });
         console.log(error);
+        res.render('page404');
     }
 }
 
@@ -793,6 +820,7 @@ const editProfile = async (req, res) => {
         res.redirect('/account');
     } catch (error) {
         console.log(error.message);
+        res.render('page404');
     }
 }
 
@@ -856,8 +884,8 @@ const addAddress = async (req, res) => {
 
         res.redirect('/account');
     } catch (error) {
-        res.status(500).json(error.message);
         console.log(error);
+        res.render('page404');  
     }
 
 }
@@ -941,11 +969,15 @@ const placeOrder = async (req, res) => {
             newOrder = await order.save();
            
             if(couponCode){
-                await Coupon.findOneAndUpdate(
+                const couponData = await Coupon.findOneAndUpdate(
                     { couponCode: couponCode, "usedUser.userId": req.session.user_id },
                     { $set: { "usedUser.$.used": true } },
                     { new: true }
-                )
+                );
+                await Order.findOneAndUpdate(
+                    {_id:newOrder._id},
+                    {$set:{couponDeduction:couponData.discountAmount}}
+                    );
             }
             const walletHistory = {
                 amount:subTotal,
@@ -973,11 +1005,15 @@ const placeOrder = async (req, res) => {
         }else if(paymentMethod === 'COD') {
             newOrder = await order.save();
             if(couponCode){
-                await Coupon.findOneAndUpdate(
+                const couponData = await Coupon.findOneAndUpdate(
                     { couponCode: couponCode, "usedUser.userId": req.session.user_id },
                     { $set: { "usedUser.$.used": true } },
                     { new: true }
                 )
+                await Order.findOneAndUpdate(
+                    {_id:newOrder._id},
+                    {$set:{couponDeduction:couponData.discountAmount}}
+                    )
             }
             await Cart.deleteOne({ userId: req.session.user_id });
             res.json({
@@ -1006,12 +1042,15 @@ const verifyOrder = async (req, res) => {
             await Order.findOneAndUpdate({ _id: newOrder._id }, { paymentStatus: "Payment done" });
             await Cart.deleteOne({ userId: req.session.user_id });
             if(couponCode){
-                console.log('--------------------------',couponCode)
-                await Coupon.findOneAndUpdate(
+                const couponData = await Coupon.findOneAndUpdate(
                     { couponCode: couponCode, "usedUser.userId": req.session.user_id },
                     { $set: { "usedUser.$.used": true } },
                     { new: true }
-                )
+                );
+                await Order.findOneAndUpdate(
+                    {_id:newOrder._id},
+                    {$set:{couponDeduction:couponData.discountAmount}}
+                    )
             }
             res.json({ success: true, message: "Payment has been verified", orderId: newOrder._id })
         } else {
@@ -1025,12 +1064,16 @@ const verifyOrder = async (req, res) => {
 
 
 const orderDetailsLoad = async (req, res) => {
-    const orderId = req.params.orderId;
+    try {
+        const orderId = req.params.orderId;
     const orderData = await Order.findById(orderId).populate('products.productId userId');
     orderData.products.forEach(element => console.log(element.productId.productName))
     const orderDate = moment(orderData.date);
     const date = orderDate.format('DD-MM-YYYY');
     res.render('orderDetails', { orderData, date });
+    } catch (error) {
+        res.render('page404');
+    }
 }
 
 const cancelOrder = async (req, res) => {
@@ -1047,14 +1090,13 @@ const cancelOrder = async (req, res) => {
         if(orderData.paymentMode !== 'COD'){
             let total = 0;
         orderData.products.forEach(product=>{
-            console.log(product.productId._id);
             if(product.productId._id == productId){
-                total = product.total;
+                total = product.total - orderData.couponDeduction;
             }
         })
         const walletHistory = {
             amount:total,
-            description:'Cances product',
+            description:'Cancel product',
             date:Date.now(),
             status:'in'
         }
@@ -1075,6 +1117,7 @@ const cancelOrder = async (req, res) => {
         })
     } catch (error) {
         console.log(error);
+        res.render('page404');
     }
 }
 
@@ -1099,6 +1142,7 @@ const sortPopular = async (req, res) => {
         res.render('allProducts', { products, categoryData })
     } catch (error) {
         console.log(error)
+        res.render('page404');
     }
 }
 
@@ -1109,6 +1153,7 @@ const sortNewArrivals = async (req, res) => {
         res.render('allProducts', { products, categoryData })
     } catch (error) {
         console.log(error)
+        res.render('page404');
     }
 }
 
@@ -1119,6 +1164,7 @@ const sortAtoZ = async (req, res) => {
         res.render('allProducts', { products, categoryData });
     } catch (error) {
         console.log(error);
+        res.render('page404');
     }
 }
 
@@ -1129,6 +1175,7 @@ const sortZtoA = async (req, res) => {
         res.render('allProducts', { products, categoryData });
     } catch (error) {
         console.log(error);
+        res.render('page404');
     }
 }
 
@@ -1139,6 +1186,7 @@ const sortLowToHigh = async (req, res) => {
         res.render('allProducts', { products, categoryData });
     } catch (error) {
         console.log(error);
+        res.render('page404');
     }
 }
 
@@ -1149,6 +1197,7 @@ const sortHighToLow = async (req, res) => {
         res.render('allProducts', { products, categoryData });
     } catch (error) {
         console.log(error);
+        res.render('page404');
     }
 }
 
@@ -1159,7 +1208,8 @@ const filterCategory = async (req, res) => {
         const categoryData = await Category.find()
         res.json({ products });
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        res.render('page404');
     }
 }
 
@@ -1169,7 +1219,8 @@ const wishlistLoad = async (req, res) => {
         res.render('wishlist', { wishlistData });
     } catch (error) {
         console.log(error);
-        res.render('page404')
+        res.render('page404');
+        res.render('page404');
     }
 }
 

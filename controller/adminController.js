@@ -23,7 +23,17 @@ const logout = asyncHandler( async (req,res) =>{
 
 //dashboard load
 const dashboardLoad = asyncHandler( async (req,res) => {
-    res.render('dashboard');
+    const orderData = await Order.find({status:'Delivered'});
+    const revenue = orderData.reduce((acc,crr) =>{
+        console.log(crr.subTotal)
+        return acc = acc + crr.subTotal;
+    },0)
+    const orderCount = orderData.length;
+    const productCount = orderData.reduce((acc,crr) =>{
+        console.log(crr.products.length)
+        return acc = acc + crr.products.length;
+    },0)
+    res.render('dashboard',{revenue, orderCount, productCount});
 });
 
 //customers load
@@ -375,11 +385,34 @@ const listProduct = async (req,res) =>{
 
 const ordresLoad = async (req,res) =>{
     try {
-        const orderData = await Order.find({}).sort({date:-1}).populate('products.productId').populate('userId');
-        res.render('orders',{orderData})
+        const orderData = await Order.find({})
+            .sort({ date: -1 })
+            .populate('products.productId')
+            .populate('userId')
+            .limit(10);
+        const orderCount = await Order.countDocuments();
+        const pageCount = Math.ceil(orderCount/10);
+             res.render('orders',{orderData,pageCount})
     } catch (error) {
         res.status(404).json('Page not found');
         console.log(error);
+    }
+}
+
+const orderPageLoad = async (req,res) =>{
+    try {
+        const pageNum = parseInt(req.params.page);
+        const limit = 10;
+        const skip = (pageNum-1) * limit;
+        const orderData = await Order.find({})
+            .sort({ date: -1 })
+            .populate('products.productId')
+            .populate('userId')
+            .skip(skip)
+            .limit(limit);
+        res.json({orderData})
+    } catch (error) {
+        
     }
 }
 
@@ -451,7 +484,7 @@ const returnProduct = async (req,res) =>{
             orderData.products.forEach(product=>{
                 console.log(product.productId._id);
                 if(product.productId._id == productId){
-                    total = product.total;
+                    total = product.total - orderData.couponDeduction;
                 }
             })
             const walletHistory = {
@@ -690,5 +723,6 @@ module.exports = {
     addOfferLoad,
     addOffer,
     reportLoad,
-    generateReport
+    generateReport,
+    orderPageLoad
 }

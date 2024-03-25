@@ -55,7 +55,11 @@
                                         <td><b><%= element.couponName %></b></td>
                                         <td><%= element.discountAmount %></td>
                                         <td>₹<%= parseFloat(element.minAmount).toFixed(2) %></td>
-                                        <td><span class="badge rounded-pill alert-success">Active</span></td>
+                                        <% if (element.expiryDate < Date.now()) { %>
+                                            <td><span class="badge rounded-pill alert-danger">Expired</span></td>
+                                        <% }else{%>
+                                            <td><span class="badge rounded-pill alert-success">Active</span></td>
+                                        <% } %>
                                         <td></td>
                                         <td class="text-end">
                                             <a href="#" onclick="deleteCoupon('<%=element._id%>', this)" class="btn btn-danger rounded font-sm">Delete</a>

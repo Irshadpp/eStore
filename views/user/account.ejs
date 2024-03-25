@@ -198,16 +198,16 @@ aria-hidden="true">
                     </tr>
                 </thead>
                 <tbody>
-                    <% userData.walletHistory.forEach(element => { %>
+                    <% transactionData.forEach(element => { %>
                         <tr>
                             <td><%= element.description %></td>
-                            <td>12 Jul 2020</td>
+                            <td id="transactionDate">25-03-2024</td>
                             <td>₹<%= parseFloat(element.amount).toFixed(2) %></td>
-                            <td><% if (element.status === "in") { %>
-                                In<i class="fa-solid fa-arrow-left" style="color: #087f06;"></i>
-                              <% } else if (element.status === "out") { %>
-                                Out<i class="fa-solid fa-arrow-left fa-rotate-180" style="color: #a21606;"></i>
-                              <% } %></td>
+                            <% if (element.status === "in") { %>
+                                <td class="text-success"> In<i class="fa-solid fa-arrow-left" style="color: #087f06;"></i>
+                              <% } else if (element.status === "Out") { %>
+                                <td class="text-danger"> Out<i class="fa-solid fa-arrow-left fa-rotate-180" style="color: #a21606;"></i></td>
+                              <% } %>
                         </tr>
                     <% }) %>
                     
@@ -811,6 +811,13 @@ aria-hidden="true">
     <script>
     var expiryDates = document.querySelectorAll('.expiry-date');
     expiryDates.forEach(function(element) {
+        var dateString = element.textContent;
+        var truncatedDateString = dateString.split(' ').slice(0, 4).join(' ');
+        element.textContent = truncatedDateString;
+    });
+    const formattedDate = <%-JSON.stringify(userData)%>;
+    var transactionDates = document.getElementById('transactionDate');
+    formattedDate.forEach(function(element) {
         var dateString = element.textContent;
         var truncatedDateString = dateString.split(' ').slice(0, 4).join(' ');
         element.textContent = truncatedDateString;

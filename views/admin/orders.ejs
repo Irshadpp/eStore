@@ -57,11 +57,8 @@
                 <div class="pagination-area mt-15 mb-50">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-start">
-                            <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                            <li class="page-item"><a class="page-link" href="#">02</a></li>
-                            <li class="page-item"><a class="page-link" href="#">03</a></li>
-                            <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                            <li class="page-item"><a class="page-link" href="#">16</a></li>
+                            <li class="page-item active"><a class="page-link" onclick="nextPage(this)" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" onclick="nextPage(this)" href="#">2</a></li>
                             <li class="page-item">
                                 <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
                             </li>
@@ -83,7 +80,70 @@
         const formattedDate = formatDate(orderDateArray[index]);
         dateCell.textContent = formattedDate;
     });
-            
+    function generatePaginationLinks(totalPages) {
+    const paginationContainer = document.querySelector('.pagination');
+    paginationContainer.innerHTML = ''; // Clear existing pagination links
+
+    for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement('li');
+        li.classList.add('page-item');
+        if (i === 1) {
+            li.classList.add('active');
+        }
+        const a = document.createElement('a');
+        a.classList.add('page-link');
+        a.textContent = i;
+        a.onclick = function() {
+            nextPage(this);
+        };
+        li.appendChild(a);
+        paginationContainer.appendChild(li);
+    }
+}
+            function nextPage(element){
+                const page = parseInt(element.innerHTML)
+                console.log(page, typeof page)
+                fetch(`/admin/orders/${page}`)
+                .then(response => response.json())
+                .then(data =>{
+                    console.log(data)
+                    const tbody = document.querySelector('tbody');
+    tbody.innerHTML = ''; 
+
+    data.orderData.forEach(element => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${element.orderId}</td>
+            <td><b>${element.userId.username}</b></td>
+            <td>${element.userId.email}</td>
+            <td>₹${parseFloat(element.subTotal).toFixed(2)}</td>
+            <td>${getStatusBadge(element.products[0].status)}</td>
+            <td>${formatDate(element.date)}</td>
+            <td class="text-end">
+                <a href="/admin/orderDetail/${element._id}" class="btn btn-md rounded font-sm">Detail</a>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    const totalPages = <%-JSON.stringify(pageCount) %>;
+generatePaginationLinks(totalPages);
+    function getStatusBadge(status) {
+    switch (status) {
+        case 'Placed':
+            return '<span class="badge rounded-pill alert-warning">Pending</span>';
+        case 'Shipped':
+            return '<span class="badge rounded-pill alert-info">Shipped</span>';
+        case 'Delivered':
+            return '<span class="badge rounded-pill alert-success">Received</span>';
+        default:
+            return '<span class="badge rounded-pill alert-danger">Cancelled</span>';
+    }
+}
+                }).catch(error=>{
+                    console.log(error)
+                })
+            }
 
 
         </script>

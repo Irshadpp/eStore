@@ -133,13 +133,13 @@
                         <h3 class="product-title"><a href="product.html"><%=item.productName%></a></h3><!-- End .product-title -->
                         <div class="product-price">
                             
-                            <% if (item.offerId && item.offerId.status === 'active') { %>
+                            <% if (item.offerId && item.offerId.status === 'active' && item.offerId.expiryDate > Date.now()) { %>
                                 <div class="col m-0">
                                 <% const offerPrice = item.price - (item.price * item.offerId.percentage/100) %>
                                 Rs <%=offerPrice%>
                                 <s class="text-decoration-line-through small text-muted"style="color: #999;" >Rs <%=item.price%></s>
                             </div>
-                             <%}else if (item.categoryId.offerId && item.categoryId.offerId.status === 'active') {  %>
+                             <%}else if (item.categoryId.offerId && item.categoryId.offerId.status === 'active' && item.categoryId.offerId.expiryDate > Date.now()) {  %>
                                 <div class="col m-0">
                                     <% const offerPrice = item.price - (item.price * item.categoryId.offerId.percentage/100) %>
                                     Rs <%=offerPrice%>

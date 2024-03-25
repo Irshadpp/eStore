@@ -12,7 +12,6 @@ router.set('views','./views/user');
 // indexpage loading
 router.get('/', indexAuth.isLogout, indexController.loadIndex);
 
-
 //login and signup loading
 router.get('/login',indexAuth.isLogout, indexController.loadLogin);
 router.get('/signup', indexAuth.isLogout, indexController.loadSignup);
@@ -25,7 +24,7 @@ router.get('/changePassword', indexAuth.isLogout, indexController.changePassword
 router.post('/changePassword', indexAuth.isLogout, indexController.changePassword);
 
 
-router.get('/product/:product_id', indexAuth.isLogin, indexAuth.isUserBlock, indexController.productLoad);
+router.get('/product/:product_id', indexController.productLoad);
 
 //user signup
 router.post('/signup',indexController.signup);
@@ -52,7 +51,7 @@ router.post('/login', indexController.verifyLogin);
 
 //cart
 router.get('/cart', indexAuth.isLogin, indexController.cartLoad);
-router.get('/addToCart/:productId', indexController.addToCart);
+router.get('/addToCart/:productId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.addToCart);
 router.post('/updateQuantity', indexAuth.isLogin, indexController.updateQuantity);
 router.delete('/cart/deleteProduct/:productId', indexAuth.isLogin, indexController.deleteProduct);
 

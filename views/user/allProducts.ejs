@@ -1,5 +1,6 @@
 <%-include('../layout/header')-%>
 
+
 <main class="main">
     <div class="page-header text-center" style="background-image: url('/user/assets/images/page-header-bg.jpg')">
         <div class="container-fluid">
@@ -74,13 +75,13 @@
                                 </div><!-- End .product-cat -->
                                 <h3 class="product-title"><a href="product.html"><%= element.productName %></a></h3><!-- End .product-title -->
                                 <div class="product-price">
-                                <% if (element.offerId && element.offerId.status === 'active') { %>
+                                <% if (element.offerId && element.offerId.status === 'active' && element.offerId.expiryDate > Date.now()) { %>
                                     <div class="col m-0">
                                     <% const offerPrice = element.price - (element.price * element.offerId.percentage/100) %>
                                     Rs <%=offerPrice%>
                                     <s class="text-decoration-line-through small text-muted" >Rs <%=element.price%></s>
                                 </div>
-                                 <%}else if (element.categoryId.offerId && element.categoryId.offerId.status === 'active') {  %>
+                                 <%}else if (element.categoryId.offerId && element.categoryId.offerId.status === 'active' && element.categoryId.offerId.expiryDate > Date.now()) {  %>
                                     <div class="col m-0">
                                         <% const offerPrice = element.price - (element.price * element.categoryId.offerId.percentage/100) %>
                                         Rs <%=offerPrice%>
@@ -196,7 +197,7 @@
     }
 
     function renderProducts(products) {
-    const container = document.querySelector('.row'); // Assuming the container has class 'row'
+    const container = document.querySelector('.row'); 
     container.innerHTML = ''; // Clear existing products
 
     products.forEach(element => {
@@ -254,13 +255,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchValue = searchInput.value.trim().toLowerCase();
     const productsContainer = document.querySelector('.products');
     const products = Array.from(document.querySelectorAll('.product'));
-
     let firstMatchedProduct = null;
 
     products.forEach(productContainer => {
         const productName = productContainer.querySelector('.product-title').textContent.toLowerCase();
 
         if (productName.includes(searchValue)) {
+            productContainer.style.width = '300px';
             productContainer.style.display = 'block';
             if (!firstMatchedProduct) {
                 firstMatchedProduct = productContainer;
@@ -279,8 +280,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 }
+})
 
-        });
+       
+
+        
 
 
 
