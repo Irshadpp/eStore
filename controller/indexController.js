@@ -106,21 +106,24 @@ const allProductsLoad = async (req, res) => {
    
 }
 
-const productLoad = asyncHandler(async (req, res) => {
-
-    const product_id = req.params.product_id;
-    const product = await Product.findOne({ _id: product_id }).populate({
-        path:'categoryId',
-        populate:'offerId'
-    })
-    .populate('offerId')
-    const images = product.imagePaths
-    if (!product) {
-        return  res.render('page404');
+const productLoad = async (req, res) => {
+    try {
+        const product_id = req.params.product_id;
+        const product = await Product.findOne({ _id: product_id }).populate({
+            path:'categoryId',
+            populate:'offerId'
+        })
+        .populate('offerId')
+        const images = product.imagePaths
+        if (!product) {
+            return  res.render('page404');
+        }
+        res.render('product', { product, images });
+    } catch (error) {
+        console.log(error)
+        res.render('page404');
     }
-    res.render('product', { product, images });
-
-});
+}
 
 const accountLoad = async (req, res) => {
     try {
