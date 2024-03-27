@@ -42,12 +42,12 @@
                             </div>
                             <div class="col-lg-2 col-sm-2 col-4 col-status">
                                 <%if (item.quantity===0) {%>
-                                    <span class="badge rounded-pill ">Out of stock</span>
+                                    <span class="badge rounded-pill alert-danger">Out of stock</span>
                                     <%} else if(item.quantity < 5){%>
                                         <span class="badge rounded-pill alert-danger "><%= item.quantity %> nos left</span>
                                         <%}else if(item.quantity < 10){%>
                                         <span class="badge rounded-pill alert-warning "><%= item.quantity %> nos left</span>
-                                        <%}else{%>
+                                        <%}else {%>
                                         <span class="badge rounded-pill alert-success "><%= item.quantity %> nos left</span>
                                         <%}%>
 

@@ -88,7 +88,7 @@
     <script src="/user/assets/js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    async function addToCart(productId){
+    async function addToCart(productId){ 
         try {
             window.location.href = `/addToCart/${productId}`;
         } catch (error) {
@@ -98,25 +98,69 @@
 
     $(document).on('click','.btn-remove', async function(event){
         var productId = $(this).data('product-id');
-        try {
-            const response = await fetch('/removeProduct',{
+        Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you really want to remove the product from wishlist!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, remove it!',
+                    cancelButtonText: 'No, keep it',
+                    customClass: {
+                        confirmButton: 'btn btn-danger me-1',
+                        cancelButton: 'btn btn-label-primary'
+                    },
+                    buttonsStyling: false
+                }).then(function (result) {
+                    if (result.value) {
+                        fetch('/removeProduct',{
                 method: 'PUT',
                 body: JSON.stringify({productId}),
                 headers:{
                     'Content-Type':'application/json'
                 }
-            })
-            if(!response.ok){
-                throw new Error('remove wishlist product error');
-            }
-            $(this).closest('tr').remove()
-        } catch (error) {
-            console.log('Error:',error)
-        }
+            }).then(response => {
+                $(this).closest('tr').remove()
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Removed!',
+                                text: 'Your product has been removed.',
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                    popup: 'swal2-modal'
+                                }
+                            });
+                           setTimeout(()=>{
+                            window.location.reload();
+                           },1000)
+                        })
+                            .catch(error => {
+                                console.log(error)
+                            })
+                    }
+                })
+
+        // try {
+        //     const response = await fetch('/removeProduct',{
+        //         method: 'PUT',
+        //         body: JSON.stringify({productId}),
+        //         headers:{
+        //             'Content-Type':'application/json'
+        //         }
+        //     })
+        //     if(!response.ok){
+        //         throw new Error('remove wishlist product error');
+        //     }
+        //     $(this).closest('tr').remove()
+        // } catch (error) {
+        //     console.log('Error:',error)
+        // }
     })
     </script>
 </body>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 <!-- molla/wishlist.html  22 Nov 2019 09:55:06 GMT -->
 </html>

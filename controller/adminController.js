@@ -39,7 +39,28 @@ const dashboardLoad = asyncHandler( async (req,res) => {
 //customers load
 const customersLoad = asyncHandler( async (req,res) => {
     const userData = await User.find({$and:[{isAdmin:false},{isVerified:true}]});
-    res.render('customers',{users: userData});
+    const formatedUserData = userData.map(item =>{
+        const { _id, googleId, wallet, username, email, mobile, password, address, isVerified, isBlock, isAdmin, token, createDate, __v, walletHistory } = item;
+
+       const formatedDate = moment(createDate).format('DD-MM-YYYY');
+       return {
+        _id,
+        googleId,
+        wallet,
+        username,
+        email,
+        mobile,
+        password,
+        address,
+        isVerified,
+        isBlock,
+        isAdmin,
+        token,
+        createDate: formatedDate,
+        __v,
+        walletHistory       } 
+    }) 
+    res.render('customers',{users: formatedUserData});
 });
 
 const productsLoad = asyncHandler( async (req,res) => {
@@ -526,10 +547,7 @@ const addCouponLoad = async (req,res) =>{
 }
 
 const addCoupon = async (req,res) =>{
-    console.log('====================================');
-    console.log();
-    console.log('====================================');
-    try {
+        try {
         const {couponName, couponCode, description, expiryDate, discountAmount, minAmount} = req.body;
     
         if(couponName.trim() === ''){

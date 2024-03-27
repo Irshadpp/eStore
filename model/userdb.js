@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     isVerified:{type:Boolean, required: true, default:false},
     isBlock:{type:Boolean, required:true, default:false},
     isAdmin:{type:Boolean, required:true, default:false},
+    referalId:{type:String, required:true},
     wallet:{type:Number, required:true, default:0},
     walletHistory:[{
         amount:{type:Number},

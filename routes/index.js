@@ -72,12 +72,12 @@ router.post('/returnProduct', indexAuth.isLogin, indexAuth.isUserBlock, indexCon
 router.post('/editProfile/:userId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.editProfile);
 
 // sort
-router.get('/popular', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortPopular);
-router.get('/products/newArrivals', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortNewArrivals);
-router.get('/products/aToZ', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortAtoZ);
-router.get('/products/zToA', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortZtoA);
-router.get('/products/lowToHigh', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortLowToHigh);
-router.get('/products/highToLow', indexAuth.isLogin, indexAuth.isUserBlock, indexController.sortHighToLow);
+router.get('/popular', indexController.sortPopular);
+router.get('/products/newArrivals', indexController.sortNewArrivals);
+router.get('/products/aToZ', indexController.sortAtoZ);
+router.get('/products/zToA', indexController.sortZtoA);
+router.get('/products/lowToHigh', indexController.sortLowToHigh);
+router.get('/products/highToLow', indexController.sortHighToLow);
 
 //filter
 router.post('/filterCategory', indexAuth.isLogin, indexAuth.isUserBlock, indexController.filterCategory);

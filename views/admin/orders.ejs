@@ -80,9 +80,10 @@
         const formattedDate = formatDate(orderDateArray[index]);
         dateCell.textContent = formattedDate;
     });
+    
     function generatePaginationLinks(totalPages) {
     const paginationContainer = document.querySelector('.pagination');
-    paginationContainer.innerHTML = ''; // Clear existing pagination links
+    paginationContainer.innerHTML = ''; 
 
     for (let i = 1; i <= totalPages; i++) {
         const li = document.createElement('li');

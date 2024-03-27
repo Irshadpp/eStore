@@ -1,207 +1,242 @@
 <%-include('../layout/header')-%>
 
 
-<main class="main">
-    <div class="page-header text-center" style="background-image: url('/user/assets/images/page-header-bg.jpg')">
-        <div class="container-fluid">
-            <h1 class="page-title">All Products<span>Shop</span></h1>
-        </div><!-- End .container-fluid -->
-    </div><!-- End .page-header -->
-    <nav aria-label="breadcrumb" class="breadcrumb-nav mb-2">
-        <div class="container-fluid">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/home">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Shop</a></li>
-                <li class="breadcrumb-item"><a href="#">All Products</a></li>
-                <!-- <li class="breadcrumb-item active" aria-current="page">Fullwidth</li> -->
-            </ol>
-        </div><!-- End .container-fluid -->
-    </nav><!-- End .breadcrumb-nav -->
+    <main class="main">
+        <div class="page-header text-center" style="background-image: url('/user/assets/images/page-header-bg.jpg')">
+            <div class="container-fluid">
+                <h1 class="page-title">All Products<span>Shop</span></h1>
+            </div><!-- End .container-fluid -->
+        </div><!-- End .page-header -->
+        <nav aria-label="breadcrumb" class="breadcrumb-nav mb-2">
+            <div class="container-fluid">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/home">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                    <li class="breadcrumb-item"><a href="#">All Products</a></li>
+                    <!-- <li class="breadcrumb-item active" aria-current="page">Fullwidth</li> -->
+                </ol>
+            </div><!-- End .container-fluid -->
+        </nav><!-- End .breadcrumb-nav -->
 
-    <div class="page-content">
-        <div class="container-fluid">
-            <div class="toolbox">
-                <div class="toolbox-left">
-                    <a href="#" class="sidebar-toggler"><i class="icon-bars"></i>Filters</a>
-                </div><!-- End .toolbox-left -->
+        <div class="page-content">
+            <div class="container-fluid">
+                <div class="toolbox">
+                    <div class="toolbox-left">
+                        <a href="#" class="sidebar-toggler"><i class="icon-bars"></i>Filters</a>
+                    </div><!-- End .toolbox-left -->
 
-                <div class="toolbox-center">
-                    <div class="toolbox-info">
-                        Showing <span><%= products.length %> of <%= products.length %></span> Products
-                    </div><!-- End .toolbox-info -->
-                </div><!-- End .toolbox-center -->
+                    <div class="toolbox-center">
+                        <div class="toolbox-info">
+                            Showing <span>
+                                <%= products.length %> of <%= products.length %>
+                            </span> Products
+                        </div><!-- End .toolbox-info -->
+                    </div><!-- End .toolbox-center -->
 
-                <div class="toolbox-right">
-                    <div class="toolbox-sort">
-                        <label for="sortby">Sort by:</label>
-                        <div class="select-custom">
-                            <select name="sortby" id="sortby" class="form-control">
-                                <option value="allProducts">All Products</option>
-                                <option value="newArrivals">New Arrivals</option>
-                                <option value="lowToHigh">Low to High</option>
-                                <option value="highToLow">High to Low</option>
-                                <option value="aToZ">A to Z</option>
-                                <option value="zToA">Z to A</option>
-                            </select>
-                        </div>
-                    </div><!-- End .toolbox-sort -->
-                </div><!-- End .toolbox-right -->
-            </div><!-- End .toolbox -->
+                    <div class="toolbox-right">
+                        <div class="toolbox-sort">
+                            <label for="sortby">Sort by:</label>
+                            <div class="select-custom">
+                                <select name="sortby" id="sortby" class="form-control">
+                                    <option value="allProducts">All Products</option>
+                                    <option value="newArrivals">New Arrivals</option>
+                                    <option value="lowToHigh">Low to High</option>
+                                    <option value="highToLow">High to Low</option>
+                                    <option value="aToZ">A to Z</option>
+                                    <option value="zToA">Z to A</option>
+                                </select>
+                            </div>
+                        </div><!-- End .toolbox-sort -->
+                    </div><!-- End .toolbox-right -->
+                </div><!-- End .toolbox -->
 
-            <div class="products">
-                <div class="row">
-                    <% products.forEach(element => { %>
-                     
-                    <div class="col-6 col-md-4 col-lg-4 col-xl-3 col-xxl-2">
-                        <div class="product">
-                            <figure class="product-media">
-                                <!-- <span class="product-label label-new">New</span> -->
-                                <a href="/product/<%= element._id %>">
-                                    <img src="/<%=element.imagePaths[0] %>" alt="Product image" class="product-image">
+                <div class="products">
+                    <div class="row">
+                        <% products.forEach(element=> { %>
+
+                            <div class="col-6 col-md-4 col-lg-4 col-xl-3 col-xxl-2">
+                                <div class="product">
+                                    <figure class="product-media">
+                                        <!-- <span class="product-label label-new">New</span> -->
+                                        <a href="/product/<%= element._id %>">
+                                            <img src="/<%=element.imagePaths[0] %>" alt="Product image"
+                                                class="product-image">
+                                        </a>
+
+                                        <div class="product-action-vertical">
+                                            <a href="/addTowishlist/<%=element._id%>"
+                                                class="btn-product-icon btn-wishlist btn-expandable"><span>add to
+                                                    wishlist</span></a>
+                                        </div><!-- End .product-action -->
+
+                                        <div class="product-action action-icon">
+                                            <a href="/addToCart/<%= element._id %>"
+                                                class="btn-product btn-cart"><span>add to cart</span></a>
+                                        </div><!-- End .product-action -->
+                                    </figure><!-- End .product-media -->
+
+                                    <div class="product-body">
+                                        <div class="product-cat">
+                                            <a href="#">
+                                                <%= element.categoryId.categoryName %>
+                                            </a>
+                                        </div><!-- End .product-cat -->
+                                        <h3 class="product-title"><a href="product.html">
+                                                <%= element.productName %>
+                                            </a></h3><!-- End .product-title -->
+                                        <div class="product-price">
+                                            <% if (element.offerId && element.offerId.status==='active' &&
+                                                element.offerId.expiryDate> Date.now()) { %>
+                                                <div class="col m-0">
+                                                    <% const offerPrice=element.price - (element.price *
+                                                        element.offerId.percentage/100) %>
+                                                        Rs <%=offerPrice%>
+                                                            <s class="text-decoration-line-through small text-muted">Rs
+                                                                <%=element.price%></s>
+                                                </div>
+                                                <%}else if (element.categoryId.offerId &&
+                                                    element.categoryId.offerId.status==='active' &&
+                                                    element.categoryId.offerId.expiryDate> Date.now()) { %>
+                                                    <div class="col m-0">
+                                                        <% const offerPrice=element.price - (element.price *
+                                                            element.categoryId.offerId.percentage/100) %>
+                                                            Rs <%=offerPrice%>
+                                                                <s
+                                                                    class="text-decoration-line-through small text-muted">Rs
+                                                                    <%=element.price%></s>
+                                                    </div>
+                                                    <% } else{%>
+                                                        Rs <%=element.price%>
+                                                            <% } %>
+                                        </div>
+                                    </div><!-- End .product-body -->
+                                </div><!-- End .product -->
+                            </div><!-- End .col-sm-6 col-lg-4 col-xl-3 -->
+
+                            <% }) %>
+
+
+                    </div><!-- End .row -->
+
+
+
+                    <!-- <div class="load-more-container text-center"> -->
+                    <div class="pagination-area mt-5 mb-50">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item active"><a class="page-link" onclick="nextPage(this)"
+                                        href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" onclick="nextPage(this)" href="#">2</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <!-- </div>End .load-more-container -->
+                </div><!-- End .products -->
+
+                <div class="sidebar-filter-overlay"></div><!-- End .sidebar-filter-overlay -->
+                <aside class="sidebar-shop sidebar-filter">
+                    <div class="sidebar-filter-wrapper">
+                        <div class="widget widget-clean">
+                            <label><i class="icon-close"></i>Filters</label>
+                            <a href="" onclick="cleanAll()" class="sidebar-filter-clear">Clean All</a>
+                        </div><!-- End .widget -->
+                        <div class="widget widget-collapsible">
+                            <h3 class="widget-title">
+                                <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true"
+                                    aria-controls="widget-1">
+                                    Category
                                 </a>
+                            </h3><!-- End .widget-title -->
 
-                                <div class="product-action-vertical">
-                                    <a href="/addTowishlist/<%=element._id%>"  class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                </div><!-- End .product-action -->
+                            <div class="collapse show" id="widget-1">
+                                <div class="widget-body">
+                                    <div class="filter-items filter-items-count">
+                                        <% categoryData.forEach(element=> { %>
+                                            <div class="filter-item">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input"
+                                                        value="<%= element._id %>" id="<%= element._id %>">
+                                                    <label class="custom-control-label" for="<%= element._id %>">
+                                                        <%= element.categoryName %>
+                                                    </label>
+                                                </div><!-- End .custom-checkbox -->
+                                                <!-- <span class="item-count">3</span> -->
+                                            </div><!-- End .filter-item -->
+                                            <% }) %>
+                                    </div><!-- End .widget-body -->
+                                </div><!-- End .collapse -->
+                            </div><!-- End .widget -->
 
-                                <div class="product-action action-icon">
-                                    <a href="/addToCart/<%= element._id %>"  class="btn-product btn-cart"><span>add to cart</span></a>
-                                </div><!-- End .product-action -->
-                            </figure><!-- End .product-media -->
 
-                            <div class="product-body">
-                                <div class="product-cat">
-                                    <a href="#"><%= element.categoryId.categoryName %></a>
-                                </div><!-- End .product-cat -->
-                                <h3 class="product-title"><a href="product.html"><%= element.productName %></a></h3><!-- End .product-title -->
-                                <div class="product-price">
-                                <% if (element.offerId && element.offerId.status === 'active' && element.offerId.expiryDate > Date.now()) { %>
-                                    <div class="col m-0">
-                                    <% const offerPrice = element.price - (element.price * element.offerId.percentage/100) %>
-                                    Rs <%=offerPrice%>
-                                    <s class="text-decoration-line-through small text-muted" >Rs <%=element.price%></s>
-                                </div>
-                                 <%}else if (element.categoryId.offerId && element.categoryId.offerId.status === 'active' && element.categoryId.offerId.expiryDate > Date.now()) {  %>
-                                    <div class="col m-0">
-                                        <% const offerPrice = element.price - (element.price * element.categoryId.offerId.percentage/100) %>
-                                        Rs <%=offerPrice%>
-                                        <s class="text-decoration-line-through small text-muted" >Rs <%=element.price%></s>
-                                    </div>
-                                 <% } else{%>
-                                     Rs <%=element.price%>
-                                     <% } %> 
-                                    </div>
-                            </div><!-- End .product-body -->
-                        </div><!-- End .product -->
-                    </div><!-- End .col-sm-6 col-lg-4 col-xl-3 -->
+                        </div><!-- End .sidebar-filter-wrapper -->
+                </aside><!-- End .sidebar-filter -->
+            </div><!-- End .container-fluid -->
+        </div><!-- End .page-content -->
+    </main><!-- End .main -->
 
-                    <% }) %>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // window.location.href = '/allProducts';
 
-                    
-                </div><!-- End .row -->
+            document.getElementById('sortby').addEventListener('change', function () {
+                var option = this.value;
 
-                <div class="load-more-container text-center">
-                    <a href="#" class="btn btn-outline-darker btn-load-more">More Products <i class="icon-refresh"></i></a>
-                </div><!-- End .load-more-container -->
-            </div><!-- End .products -->
+                if (option === 'allProducts') {
+                    window.location.href = '/products';
+                } else if (option === 'newArrivals') {
+                    window.location.href = '/products/newArrivals';
+                } else if (option === 'lowToHigh') {
+                    window.location.href = '/products/lowToHigh';
+                } else if (option === 'highToLow') {
+                    window.location.href = '/products/highToLow';
+                } else if (option === 'aToZ') {
+                    window.location.href = '/products/aToZ';
+                } else if (option === 'zToA') {
+                    window.location.href = '/products/zToA';
+                }
+            });
+        });
 
-            <div class="sidebar-filter-overlay"></div><!-- End .sidebar-filter-overlay -->
-            <aside class="sidebar-shop sidebar-filter">
-                <div class="sidebar-filter-wrapper">
-                    <div class="widget widget-clean">
-                        <label><i class="icon-close"></i>Filters</label>
-                        <a href="" onclick="cleanAll()" class="sidebar-filter-clear">Clean All</a>
-                    </div><!-- End .widget -->
-                    <div class="widget widget-collapsible">
-                        <h3 class="widget-title">
-                            <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1">
-                                Category
-                            </a>
-                        </h3><!-- End .widget-title -->
-                         
-                        <div class="collapse show" id="widget-1">
-                            <div class="widget-body">
-                                <div class="filter-items filter-items-count">
-                                    <% categoryData.forEach(element => { %>
-                                    <div class="filter-item">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" value="<%= element._id %>" id="<%= element._id %>">
-                                            <label class="custom-control-label" for="<%= element._id %>"><%= element.categoryName %></label>
-                                        </div><!-- End .custom-checkbox -->
-                                        <!-- <span class="item-count">3</span> -->
-                                    </div><!-- End .filter-item -->
-                                    <% }) %>
-                            </div><!-- End .widget-body -->
-                        </div><!-- End .collapse -->
-                    </div><!-- End .widget -->
-                    
-                    
-                </div><!-- End .sidebar-filter-wrapper -->
-            </aside><!-- End .sidebar-filter -->
-        </div><!-- End .container-fluid -->
-    </div><!-- End .page-content -->
-</main><!-- End .main -->
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-    // window.location.href = '/allProducts';
-
-    document.getElementById('sortby').addEventListener('change', function() {
-        var option = this.value;
-
-        if (option === 'allProducts') {
-            window.location.href = '/products';
-        } else if (option === 'newArrivals') {
-            window.location.href = '/products/newArrivals';
-        } else if (option === 'lowToHigh') {
-            window.location.href = '/products/lowToHigh';
-        } else if (option === 'highToLow') {
-            window.location.href = '/products/highToLow';
-        } else if (option === 'aToZ') {
-            window.location.href = '/products/aToZ';
-        } else if (option === 'zToA') {
-            window.location.href = '/products/zToA';
-        }
-    });
-});
-   
         const checkboxes = document.querySelectorAll('.custom-control-input');
-    checkboxes.forEach(element =>{
-        element.addEventListener('click', function(){
-            const selectedCategories = [];
-            checkboxes.forEach(element =>{
-                if(element.checked){
-                    selectedCategories.push(element.value)
+        checkboxes.forEach(element => {
+            element.addEventListener('click', function () {
+                const selectedCategories = [];
+                checkboxes.forEach(element => {
+                    if (element.checked) {
+                        selectedCategories.push(element.value)
+                    }
+                })
+                handleSelectedCategories(selectedCategories)
+            })
+        })
+
+        function handleSelectedCategories(categories) {
+
+            fetch('/filterCategory', {
+                method: 'POST',
+                body: JSON.stringify({ categories: categories }),
+                headers: {
+                    'Content-Type': 'application/json'
                 }
             })
-            handleSelectedCategories(selectedCategories)
-        })
-    })
+                .then(response => response.json())
+                .then(data => {
+                    renderProducts(data.products)
+                })
+                .catch(error => {
+                    console.log('Error:', error);
+                })
+        }
 
-    function handleSelectedCategories(categories){
+        function renderProducts(products) {
+            const container = document.querySelector('.row');
+            container.innerHTML = ''; // Clear existing products
 
-        fetch('/filterCategory',{
-            method: 'POST',
-            body: JSON.stringify({categories:categories}),
-            headers:{
-                'Content-Type':'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data=>{
-            renderProducts(data.products)
-        })
-        .catch(error=>{
-            console.log('Error:',error);
-        })
-    }
-
-    function renderProducts(products) {
-    const container = document.querySelector('.row'); 
-    container.innerHTML = ''; // Clear existing products
-
-    products.forEach(element => {
-        const productHTML = `
+            products.forEach(element => {
+                const productHTML = `
         <div class="col-6 col-md-4 col-lg-4 col-xl-3 col-xxl-2">
             <div class="product">
                 <figure class="product-media">
@@ -237,77 +272,113 @@
             </div><!-- End .product -->
         </div><!-- End .col-sm-6 col-lg-4 col-xl-3 -->
         `;
-        container.insertAdjacentHTML('beforeend', productHTML); // Append product HTML to container
-    });
-}
+                container.insertAdjacentHTML('beforeend', productHTML); // Append product HTML to container
+            });
+        }
 
-function cleanAll(){
-    window.location.href = '/allProducts'
-}
-document.addEventListener('DOMContentLoaded', function() {
+        function cleanAll() {
+            window.location.href = '/products'
+        }
+        document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('q');
 
-            searchInput.addEventListener('input', function() {
+            searchInput.addEventListener('input', function () {
                 searchProducts();
             });
 
             function searchProducts() {
-    const searchValue = searchInput.value.trim().toLowerCase();
-    const productsContainer = document.querySelector('.products');
-    const products = Array.from(document.querySelectorAll('.product'));
-    let firstMatchedProduct = null;
+                const searchValue = searchInput.value.trim().toLowerCase();
+                const productsContainer = document.querySelector('.products');
+                const products = Array.from(document.querySelectorAll('.product'));
+                let firstMatchedProduct = null;
 
-    products.forEach(productContainer => {
-        const productName = productContainer.querySelector('.product-title').textContent.toLowerCase();
+                products.forEach(productContainer => {
+                    const productName = productContainer.querySelector('.product-title').textContent.toLowerCase();
 
-        if (productName.includes(searchValue)) {
-            productContainer.style.width = '300px';
-            productContainer.style.display = 'block';
-            if (!firstMatchedProduct) {
-                firstMatchedProduct = productContainer;
+                    if (productName.includes(searchValue)) {
+                        productContainer.style.width = '300px';
+                        productContainer.style.display = 'block';
+                        if (!firstMatchedProduct) {
+                            firstMatchedProduct = productContainer;
+                        }
+                    } else {
+                        productContainer.style.display = 'none';
+                    }
+                });
+
+                if (firstMatchedProduct) {
+                    // Move the first matched product to the top of the products container
+                    const firstMatchedProductIndex = products.indexOf(firstMatchedProduct);
+                    if (firstMatchedProductIndex > 0) {
+                        productsContainer.insertBefore(firstMatchedProduct, productsContainer.firstChild);
+                        firstMatchedProduct.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
             }
-        } else {
-            productContainer.style.display = 'none';
+        })
+
+        function generatePaginationLinks(totalPages) {
+            const paginationContainer = document.querySelector('.pagination');
+            paginationContainer.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement('li');
+                li.classList.add('page-item');
+                if (i === 1) {
+                    li.classList.add('active');
+                }
+                const a = document.createElement('a');
+                a.classList.add('page-link');
+                a.textContent = i;
+                a.onclick = function () {
+                    nextPage(this);
+                };
+                li.appendChild(a);
+                paginationContainer.appendChild(li);
+            }
         }
-    });
 
-    if (firstMatchedProduct) {
-        // Move the first matched product to the top of the products container
-        const firstMatchedProductIndex = products.indexOf(firstMatchedProduct);
-        if (firstMatchedProductIndex > 0) {
-            productsContainer.insertBefore(firstMatchedProduct, productsContainer.firstChild);
-            firstMatchedProduct.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        function nextPage(element) {
+            const page = parseInt(element.innerHTML)
+            console.log(page, typeof page)
+            fetch(`/products?id=${page}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    const totalPages = <%-JSON.stringify(pageCount) %>;
+                    renderProducts(data.products)
+                    generatePaginationLinks(totalPages);
+
+                }).catch(error => {
+                    console.log(error)
+                })
         }
-    }
-}
-})
 
-       
 
-        
 
 
 
     </script>
-    
 
 
-<!-- Plugins JS File -->
-<script src="/user/assets/js/jquery.min.js"></script>
-<script src="/user/assets/js/bootstrap.bundle.min.js"></script>
-<script src="/user/assets/js/jquery.hoverIntent.min.js"></script>
-<script src="/user/assets/js/jquery.waypoints.min.js"></script>
-<script src="/user/assets/js/superfish.min.js"></script>
-<script src="/user/assets/js/owl.carousel.min.js"></script>
-<script src="/user/assets/js/wNumb.js"></script>
-<script src="/user/assets/js/bootstrap-input-spinner.js"></script>
-<script src="/user/assets/js/jquery.magnific-popup.min.js"></script>
-<script src="/user/assets/js/nouislider.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<!-- Main JS File -->
-<script src="/user/assets/js/main.js"></script>
-</body>
+
+    <!-- Plugins JS File -->
+    <script src="/user/assets/js/jquery.min.js"></script>
+    <script src="/user/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/user/assets/js/jquery.hoverIntent.min.js"></script>
+    <script src="/user/assets/js/jquery.waypoints.min.js"></script>
+    <script src="/user/assets/js/superfish.min.js"></script>
+    <script src="/user/assets/js/owl.carousel.min.js"></script>
+    <script src="/user/assets/js/wNumb.js"></script>
+    <script src="/user/assets/js/bootstrap-input-spinner.js"></script>
+    <script src="/user/assets/js/jquery.magnific-popup.min.js"></script>
+    <script src="/user/assets/js/nouislider.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Main JS File -->
+    <script src="/user/assets/js/main.js"></script>
+    </body>
 
 
-<!-- molla/category-fullwidth.html  22 Nov 2019 10:03:02 GMT -->
-</html>
+    <!-- molla/category-fullwidth.html  22 Nov 2019 10:03:02 GMT -->
+
+    </html>

@@ -91,15 +91,23 @@ const homeLoad = asyncHandler(async (req, res) => {
 
 const allProductsLoad = async (req, res) => {
     try {
+        const pageNum = req.query.id || 1;
+        const limit = 8;
+        const skip = (parseInt(pageNum) - 1) * limit;
         const productData = await Product.find()
         .populate({
             path:'categoryId',
             populate:'offerId'
         })
-        .populate('offerId')
+        .populate('offerId');
         const products = productData.filter(product => product.list === true && product.categoryId.list === true);
+        const paginatedProducts = products.slice(skip, skip + limit);
         const categoryData = await Category.find();
-        res.render('allProducts', { products, categoryData });
+        const pageCount = Math.ceil(products.length / limit);
+        if(!req.query.id){
+            return res.render('allProducts', { products:paginatedProducts, categoryData, pageCount});
+        }
+        res.json({products:paginatedProducts, categoryData, pageCount})
     } catch (error) {
         res.render('page404');
     }
@@ -361,9 +369,23 @@ const signup = async (req, res) => {
             if (/[A-Za-z0-9._%+-]+@gmail.com/.test(req.body.email)) {
 
                 const { username, email, mobile, password } = req.body;
+                const id = req.query.id;
                 const checkEmail = await User.findOne({ email: email });
 
                 if (!checkEmail) {
+
+                    function generateOrderId(length) {
+                        const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+                        let id = '';
+                        for (let i = 0; i < length; i++) {
+                            const randomIndex = Math.floor(Math.random() * chars.length);
+                            id += chars.charAt(randomIndex);
+                        }
+                        return id;
+                    }
+            
+                    const referalId = generateOrderId(12)
+            
 
                     const sPassword = await securePassword(password);
                     const users = new User({
@@ -372,12 +394,35 @@ const signup = async (req, res) => {
                         mobile: mobile,
                         password: sPassword,
                         address: [],
+                        referalId: referalId
                     })
                     var newUser = await users.save();
 
                     if (newUser) {
                         req.session.userSignup_id = newUser._id;
                         req.session.userSignup_email = newUser.email;
+
+                        if(id){
+                            const checkRefId = await User.findOne({referalId:id});
+                            if(checkRefId){
+                                let walletHistory;
+                                walletHistory = {
+                                    amount:100,
+                                    description:'Referal',
+                                    date: new Date(),
+                                    status: 'In'
+                                }
+                                await User.updateOne({_id:req.session.userSignup_id},{$set:{wallet:100, walletHistory:walletHistory}});
+                                walletHistory = {
+                                    amount:200,
+                                    description:'Referal',
+                                    date: new Date(),
+                                    status: 'In'
+                                }
+                                await User.updateOne({referalId:id},{$inc:{wallet:200},$push:{walletHistory:walletHistory}});
+                            }
+                        }
+
                         saveOTP(newUser, res);
                         res.redirect('/otp');
                     } else {
@@ -1140,9 +1185,10 @@ const returnProduct = async (req, res) => {
 
 const sortPopular = async (req, res) => {
     try {
-        const products = await Product.find().sort({ createdAt: -1 }).limist(8);
+        const limit = 8;
+        const products = await Product.find().sort({ createdAt: -1 }).limist(limit);
         const categoryData = await Category.find();
-        res.render('allProducts', { products, categoryData })
+        res.render('allProducts', { products, categoryData, pageCount:1 })
     } catch (error) {
         console.log(error)
         res.render('page404');
@@ -1153,7 +1199,7 @@ const sortNewArrivals = async (req, res) => {
     try {
         const products = await Product.find().sort({ createdAt: -1 }).limit(8);
         const categoryData = await Category.find();
-        res.render('allProducts', { products, categoryData })
+        res.render('allProducts', { products, categoryData, pageCount:1 })
     } catch (error) {
         console.log(error)
         res.render('page404');
@@ -1164,7 +1210,7 @@ const sortAtoZ = async (req, res) => {
     try {
         const products = await Product.find().sort({ productName: 1 });
         const categoryData = await Category.find()
-        res.render('allProducts', { products, categoryData });
+        res.render('allProducts', { products, categoryData, pageCount:1 });
     } catch (error) {
         console.log(error);
         res.render('page404');
@@ -1175,7 +1221,7 @@ const sortZtoA = async (req, res) => {
     try {
         const products = await Product.find().sort({ productName: -1 });
         const categoryData = await Category.find()
-        res.render('allProducts', { products, categoryData });
+        res.render('allProducts', { products, categoryData, pageCount:1 });
     } catch (error) {
         console.log(error);
         res.render('page404');
@@ -1186,7 +1232,7 @@ const sortLowToHigh = async (req, res) => {
     try {
         const products = await Product.find().sort({ price: 1 });
         const categoryData = await Category.find()
-        res.render('allProducts', { products, categoryData });
+        res.render('allProducts', { products, categoryData, pageCount:1 });
     } catch (error) {
         console.log(error);
         res.render('page404');
@@ -1197,7 +1243,7 @@ const sortHighToLow = async (req, res) => {
     try {
         const products = await Product.find().sort({ price: -1 });
         const categoryData = await Category.find()
-        res.render('allProducts', { products, categoryData });
+        res.render('allProducts', { products, categoryData, pageCount:1 });
     } catch (error) {
         console.log(error);
         res.render('page404');
@@ -1209,7 +1255,7 @@ const filterCategory = async (req, res) => {
         const categories = req.body.categories;
         const products = await Product.find({ categoryId: { $in: categories.map(id => new mongoose.Types.ObjectId(id)) } }).lean()
         const categoryData = await Category.find()
-        res.json({ products });
+        res.json({ products, pageCount:1 });
     } catch (error) {
         console.log(error);
         res.render('page404');
