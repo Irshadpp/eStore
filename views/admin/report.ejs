@@ -3,9 +3,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/shim.min.js" integrity="sha512-nPnkC29R0sikt0ieZaAkk28Ib7Y1Dz7IqePgELH30NnSi1DzG4x+envJAOHz8ZSAveLXAHTR3ai2E9DZUsT8pQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <style>
-    /* .date-inputs {
+     .date-inputs {
         display: none;
-    } */
+    } 
 </style>
             <section class="content-main">
                 <div class="card mb-4">
@@ -13,9 +13,10 @@
                         <h4 class="card-title">Sales Report</h4>
                         <p class="text-center text-danger  mb-5"  id="warningMsg"></p>
                         <div class="row align-items-center">
-                            <!-- <div class="col-md-3 col-12 me-auto mb-md-0 mb-3 custom-select-container">
+                            <div class="col-md-3 col-12 me-auto mb-md-0 mb-3 custom-select-container">
                                 <div class="custom_select">
                                     <select id="frequency-select" class="form-select select-nice">
+                                        <option value="all">All</option>
                                         <option value="daily">Daily</option>
                                         <option value="Weekly">Weekly</option>
                                         <option value="monthly">Monthly</option>
@@ -23,7 +24,7 @@
                                         <option value="custom">Custom</option>
                                     </select>
                                 </div>
-                            </div> -->
+                            </div>
                             <div class="col-md-2 col-6 date-inputs mb-3">
                                 <label for=""> Start Date:</label>
                                <input type="date" value="" class="form-control" id="start-date">
@@ -54,7 +55,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="order-table-body">
-                                        <% orderData.forEach(element => { %>
+                                        <% allOrderData.forEach(element => { %>
                                             <tr>
                                                 <td><a href="#" class="fw-bold"><%= element.orderId %></a></td>
                                                 <td><%= element.userId.username %></td>
@@ -85,7 +86,7 @@
         </main>
        
         <script>
-             const orderData = <%- JSON.stringify(orderData) %>;
+             const orderData = <%- JSON.stringify(allOrderData) %>;
             const orderDateArray =  orderData.map(order => order.date);
             function formatDate(dateString){
                 const date = new Date(dateString);
@@ -96,6 +97,22 @@
         const formattedDate = formatDate(orderDateArray[index]);
         dateCell.textContent = formattedDate;
     });
+
+
+    const frequencySelect = document.getElementById('frequency-select');
+    const dateInputs = document.querySelectorAll('.date-inputs');
+
+    frequencySelect.addEventListener('change', function () {
+        if (this.value === 'custom') {
+            dateInputs.forEach(input => input.style.display = 'block');
+        } else {
+            dateInputs.forEach(input => input.style.display = 'none');
+        }
+    });
+
+    if (frequencySelect.value === 'custom') {
+        dateInputs.forEach(input => input.style.display = 'block');
+    }
 
            
            

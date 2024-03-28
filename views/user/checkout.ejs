@@ -297,7 +297,7 @@
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
-                        }   
+                        }
                         return response.json();
                     })
                     .then(data => {
@@ -361,11 +361,30 @@
 
                             razorpayObject.on('payment.failed', function (response) {
                                 console.log(response);
-                                alert("This step of Payment Failed");
+                                Swal.fire({
+                                    title: 'Payment faild!',
+                                    text: 'Try another payment methode or contact your bank!',
+                                    icon: 'error',
+                                    customClass: {
+                                        confirmButton: 'btn btn-primary'
+                                    },
+                                    buttonsStyling: false
+                                })
                             });
 
                             razorpayObject.open();
                         } else if (data.paymentMethod === 'COD') {
+                            if(data.limitExceeded){
+                                return Swal.fire({
+                                    title: 'Warning!',
+                                    text: 'COD payment limit exceeded! You can only buy up to ₹1000 via COD',
+                                    icon: 'warning',
+                                    customClass: {
+                                        confirmButton: 'btn btn-primary'
+                                    },
+                                    buttonsStyling: false
+                                })
+                            }
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Order Placed',
@@ -390,20 +409,20 @@
                                     },
                                     buttonsStyling: false
                                 })
-                            }else{
+                            } else {
                                 Swal.fire({
-                                icon: 'success',
-                                title: 'Order Placed',
-                                showConfirmButton: false,
-                                timer: 1000,
-                                customClass: {
-                                    confirmButton: 'btn btn-primary'
-                                },
-                                buttonsStyling: false
-                            })
-                            setTimeout(() => {
-                                window.location.href = `/orderDetails/${data.orderId}`
-                            }, 1500)
+                                    icon: 'success',
+                                    title: 'Order Placed',
+                                    showConfirmButton: false,
+                                    timer: 1000,
+                                    customClass: {
+                                        confirmButton: 'btn btn-primary'
+                                    },
+                                    buttonsStyling: false
+                                })
+                                setTimeout(() => {
+                                    window.location.href = `/orderDetails/${data.orderId}`
+                                }, 1500)
                             }
                         }
                     })

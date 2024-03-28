@@ -394,11 +394,13 @@ const listProduct = async (req,res) =>{
     try {
         const productId = req.params.productId;
         const productData = await Product.findById(productId) ;
+        let product;
         if(productData.list === true){
-            await Product.findByIdAndUpdate(productId,{list:false});
+             product = await Product.findByIdAndUpdate(productId,{list:false});
         }else{
-            await Product.findByIdAndUpdate(productId,{list:true});
+             product = await Product.findByIdAndUpdate(productId,{list:true});
         }
+        res.json({product});
     } catch (error) {
         res.status(500).send(error.message);
     }
@@ -672,8 +674,84 @@ const addOffer = async (req,res) =>{
 
 const reportLoad = async (req,res) =>{
     try {
-        const orderData = await Order.find({status:'Delivered'}).sort({date:-1}).populate('userId');
-        res.render('report',{orderData});
+        const allOrderData = await Order.find({status:'Delivered'}).sort({date:-1}).populate('userId');
+        async function filterByInterval(interval){
+            let matchQuery = {};
+            let groupQuery = {};
+            switch(interval){
+                case "daily" : 
+                    matchQuery = {
+                        status: 'Delivered',
+                        date: {
+                            $gte: new Date(new Date().setHours(0, 0, 0, 0)), // Filter for today's date (from the beginning of the day)
+                          $lt: new Date(new Date().setHours(23, 59, 59, 999)) // Filter for today's date (until the end of the day)
+                        }
+                    };  
+                    groupQuery = {
+                        _id:{$week:"$date"},
+                        totalOfferDeduction: {$sum:'$offerDeduction'},
+                        totalCouponDeduction: {$sum:'$couponDeduction'},  
+                        totalSubTotal: {$sum: '$subTotal'},
+                    }
+                    break;
+                case "weekly" : 
+                    matchQuery = {
+                        status: 'Delivered',
+                        date: {
+                            $gte: new Date(new Date() - 7 * 24 * 60 * 60 * 1000)
+                        }
+                    };
+                    groupQuery = {
+                        _id:{$week:"$date"},
+                        totalOfferDeduction: {$sum:'$offerDeduction'},
+                        totalCouponDeduction: {$sum:'$couponDeduction'},  
+                        totalSubTotal: {$sum: '$subTotal'},
+                    }
+                    break;
+                case "monthly" : 
+                    matchQuery = { 
+                        status: 'Delivered',
+                        date: {
+                         $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+                     }
+                    };
+                    groupQuery = {
+                        _id:{$week:"$date"},
+                        totalOfferDeduction: {$sum:'$offerDeduction'},
+                        totalCouponDeduction: {$sum:'$couponDeduction'},  
+                        totalSubTotal: {$sum: '$subTotal'},
+                    }
+                    break;
+                case "yearly" :
+                    matchQuery = {
+                        status: 'Delivered',
+                        date: {
+                            $gte: new Date(new Date().getFullYear(), 0, 1)
+                        }
+                    };
+                    groupQuery = {
+                        _id:{$week:"$date"},
+                        totalOfferDeduction: {$sum:'$offerDeduction'},
+                        totalCouponDeduction: {$sum:'$couponDeduction'},  
+                        totalSubTotal: {$sum: '$subTotal'},
+                    }
+                    break;
+                default :
+                break;
+            }
+            const result = await Order.aggregate([
+                {$match:matchQuery},
+                {$group:groupQuery}
+            ])
+
+            return result;
+        }
+        const dailyData = await filterByInterval('daily');
+        const weeklyData = await filterByInterval('weekly');
+        const monthlyData = await filterByInterval('monthly');
+        const YearlyData = await filterByInterval('yearly');
+        console.log('------------------',dailyData)
+        res.render('report',{allOrderData, dailyData, weeklyData, monthlyData, YearlyData});
     } catch (error) {
         console.log(error)
     }

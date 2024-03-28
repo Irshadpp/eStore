@@ -40,7 +40,7 @@ router.post('/verifyOTP', indexController.verifyOTP);
 router.get('/resendOTP', indexController.resendOTP);
 
 //home page load
-router.get('/home', indexAuth.isLogin, indexAuth.isUserBlock, indexController.homeLoad);
+router.get('/home', indexController.homeLoad);
 
 router.get('/products', indexController.allProductsLoad)
 router.get('/account', indexAuth.isLogin, indexAuth.isUserBlock, indexController.accountLoad);
@@ -80,7 +80,10 @@ router.get('/products/lowToHigh', indexController.sortLowToHigh);
 router.get('/products/highToLow', indexController.sortHighToLow);
 
 //filter
-router.post('/filterCategory', indexAuth.isLogin, indexAuth.isUserBlock, indexController.filterCategory);
+router.post('/filterCategory', indexController.filterCategory);
+
+//search
+router.get('/search', indexController.search);
 
 //wishlist
 router.get('/wishlist',indexAuth.isLogin, indexAuth.isUserBlock, indexController.wishlistLoad);

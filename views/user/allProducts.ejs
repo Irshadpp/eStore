@@ -25,13 +25,6 @@
                         <a href="#" class="sidebar-toggler"><i class="icon-bars"></i>Filters</a>
                     </div><!-- End .toolbox-left -->
 
-                    <div class="toolbox-center">
-                        <div class="toolbox-info">
-                            Showing <span>
-                                <%= products.length %> of <%= products.length %>
-                            </span> Products
-                        </div><!-- End .toolbox-info -->
-                    </div><!-- End .toolbox-center -->
 
                     <div class="toolbox-right">
                         <div class="toolbox-sort">
@@ -262,12 +255,6 @@
                     <div class="product-price">
                         ₹${element.price}
                     </div><!-- End .product-price -->
-                    <div class="ratings-container">
-                        <div class="ratings">
-                            <div class="ratings-val" style="width: 0%;"></div><!-- End .ratings-val -->
-                        </div><!-- End .ratings -->
-                        <span class="ratings-text">( 0 Reviews )</span>
-                    </div><!-- End .rating-container -->
                 </div><!-- End .product-body -->
             </div><!-- End .product -->
         </div><!-- End .col-sm-6 col-lg-4 col-xl-3 -->
@@ -288,32 +275,11 @@
 
             function searchProducts() {
                 const searchValue = searchInput.value.trim().toLowerCase();
-                const productsContainer = document.querySelector('.products');
-                const products = Array.from(document.querySelectorAll('.product'));
-                let firstMatchedProduct = null;
-
-                products.forEach(productContainer => {
-                    const productName = productContainer.querySelector('.product-title').textContent.toLowerCase();
-
-                    if (productName.includes(searchValue)) {
-                        productContainer.style.width = '300px';
-                        productContainer.style.display = 'block';
-                        if (!firstMatchedProduct) {
-                            firstMatchedProduct = productContainer;
-                        }
-                    } else {
-                        productContainer.style.display = 'none';
-                    }
-                });
-
-                if (firstMatchedProduct) {
-                    // Move the first matched product to the top of the products container
-                    const firstMatchedProductIndex = products.indexOf(firstMatchedProduct);
-                    if (firstMatchedProductIndex > 0) {
-                        productsContainer.insertBefore(firstMatchedProduct, productsContainer.firstChild);
-                        firstMatchedProduct.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                }
+                console.log(searchValue)
+                fetch(`/search?name=${searchValue}`)
+                .then(response => response.json())
+                .then(data => renderProducts(data.products))
+                .catch(error => console.log(error));
             }
         })
 

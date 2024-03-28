@@ -1051,6 +1051,12 @@ const placeOrder = async (req, res) => {
                 paymentMethod: paymentMethod,
             });
         }else if(paymentMethod === 'COD') {
+            if(order.subTotal > 1000){
+                return res.json({
+                    limitExceeded:true,
+                    paymentMethod: paymentMethod
+                });
+            }
             newOrder = await order.save();
             if(couponCode){
                 const couponData = await Coupon.findOneAndUpdate(
@@ -1253,9 +1259,21 @@ const sortHighToLow = async (req, res) => {
 const filterCategory = async (req, res) => {
     try {
         const categories = req.body.categories;
-        const products = await Product.find({ categoryId: { $in: categories.map(id => new mongoose.Types.ObjectId(id)) } }).lean()
+        const products = await Product.find({ categoryId: { $in: categories.map(id => new mongoose.Types.ObjectId(id)) } }).populate('categoryId').lean()
         const categoryData = await Category.find()
         res.json({ products, pageCount:1 });
+    } catch (error) {
+        console.log(error);
+        res.render('page404');
+    }
+}
+
+const search = async (req,res) => {
+    try {
+        const productName = req.query.name?.trim();
+        const productData = await Product.find({productName:{$regex:new RegExp(productName, 'i')}}).populate('categoryId');
+        const products = productData.filter(product => product.list && product.categoryId.list)
+        res.json({products});
     } catch (error) {
         console.log(error);
         res.render('page404');
@@ -1401,6 +1419,7 @@ module.exports = {
     sortLowToHigh,
     sortHighToLow,
     filterCategory,
+    search,
     wishlistLoad,
     addtoWishlist,
     removeProduct,

@@ -56,16 +56,9 @@
 
                             </div>
                             <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
-                                <%if (item.list === true) {%>
-                                    <a href="" onclick="list('<%=item._id%>')"
+                                    <a href="#" onclick="event.preventDefault();list('<%=item._id%>',this)"
                                     class="btn btn-sm font-sm rounded btn-light  "> Unlist </a>
-                                <%} else {%>
-                                    <a href="" onclick="list('<%=item._id%>')"
-                                    class="btn btn-sm font-sm rounded btn-brand "> List</a>
-                               <%} %>
-                                
-                                
-                                <a href="" onclick="deleteProduct('<%=item._id%>')" class="btn btn-sm  font-sm btn-danger rounded"
+                                <a href="#" onclick="deleteProduct('<%=item._id%>')" class="btn btn-sm  font-sm btn-danger rounded"
                                     > <i class="material-icons md-delete_forever"></i> Delete </a>
                             </div>
                         </div>
@@ -94,13 +87,24 @@
     <script src="/admin/assets/js/main.js" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        async function list(productId) {
-            try {
-                await axios.put(`/admin/products/list/${productId}`);
-            } catch (error) {
-                console.log(error.message);
-            }
-
+        function list(productId, buttonElement) {
+                fetch(`/admin/products/list/${productId}`,{method:'PUT',headers:{'Content-Type':"application/json"}})
+                .then(response =>{
+                    return response.json()
+                }).then(data =>{
+                    if (data.product.list === true) {
+                    console.log(data)
+      buttonElement.textContent = 'List';
+      buttonElement.classList.remove('btn-light');
+      buttonElement.classList.add('btn-brand');
+    } else {
+        console.log(data)
+      buttonElement.textContent = 'Unlist';
+      buttonElement.classList.remove('btn-brand');
+      buttonElement.classList.add('btn-light');
+    }
+                })
+                
         };
 
        

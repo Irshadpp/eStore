@@ -78,7 +78,7 @@
       'Content-Type': 'application/json'
     }
   })
-  .then(response => response.json()) // Directly return the parsed JSON response
+  .then(response => response.json()) 
   .then(data => {
     if (data.isBlock === true) {
       buttonElement.textContent = 'Unblock';
