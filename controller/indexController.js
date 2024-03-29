@@ -1375,6 +1375,63 @@ const couponCheck = async (req,res) =>{
     }
 }
 
+const downloadInvoice = async (req,res)=>{
+    console.log('====================================');
+    console.log();
+    console.log('====================================');
+    try {
+        const invoiceData = {
+            // Invoice details
+            currency: 'USD',
+            taxNotation: 'vat', // or gst
+            marginTop: 25,
+            marginRight: 25,
+            marginLeft: 25,
+            marginBottom: 25,
+            logo: 'https://public.easyinvoice.cloud/img/logo_en_original.png',
+            sender: {
+                company: 'Sample Corp',
+                address: 'Sample Street 123',
+                city: 'Sample City',
+                zip: '12345',
+                country: 'Sample Country'
+            },
+            client: {
+                company: 'Client Corp',
+                address: 'Client Street 456',
+                city: 'Client City',
+                zip: '67890',
+                country: 'Client Country'
+            },
+            // ...other invoice details
+            items: [
+                // Invoice line items
+                {
+                    description: 'Item 1',
+                    quantity: 2,
+                    price: 10
+                },
+                {
+                    description: 'Item 2',
+                    quantity: 1,
+                    price: 20
+                }
+            ]
+        };
+
+        // Generate invoice PDF
+        const result = await easyinvoice.createInvoice(invoiceData);
+        console.log(result);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="invoice.pdf"');
+        res.send(result.pdf);
+    } catch (error) {
+        console.log(error);
+        res.render('page404');
+    }
+}
+
+
 module.exports = {
     loadIndex,
     loadLogin,
@@ -1423,5 +1480,6 @@ module.exports = {
     wishlistLoad,
     addtoWishlist,
     removeProduct,
-    couponCheck
+    couponCheck,
+    downloadInvoice
 }

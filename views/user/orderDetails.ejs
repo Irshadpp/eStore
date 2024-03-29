@@ -82,6 +82,7 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
                
                 <% }) %>
               </div>
+              
               <div class="d-flex justify-content-between pl-5 pr-5  pt-2">
                 <h6 class="fw-bold mb-0">Delivery Address</h6>
               </div>
@@ -121,8 +122,11 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
                 <!-- <p class="text-muted mb-0"><span class="fw-bold me-4">Discount</span> ₹0.00</p> -->
                 <!-- <p class="text-muted mb-0"><span class="fw-bold me-4">GST 18%</span> 123</p> -->
               </div>
+              <div class="pl-5">
+                <button class="btn btn-primary mb-0 " onclick="downloadInvoice('<%=orderData._id%>')">Download Invoice</button>
+              </div>
 
-              <div class="d-flex justify-content-between pl-5 pr-5  mb-5">
+              <div class="d-flex justify-content-between pl-5 pr-5  mb-2">
                 <!-- <p class="text-muted mb-0">Recepits Voucher : 18KU-62IIK</p> -->
               </div>
             </div>
@@ -254,6 +258,31 @@ function requestReturn(productId, order_id){
   });
 }
 
+
+function downloadInvoice(order_id){
+  console.log('====================================');
+  console.log();
+  console.log('====================================');
+  fetch(`\orderDetails\downloadInvoice?id=${order_id}`)
+  .then(response => response.blob())
+  .then(blob =>{
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+
+    link.download = 'invoice.pdf';
+
+    document.body.appendChild(link);
+    link.click();
+
+    URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+  })
+  .catch(error =>{
+    consoel.log(error)
+  })
+
+}
 
   </script>
 

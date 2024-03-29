@@ -67,7 +67,10 @@ router.post('/checkout', indexAuth.isLogin, indexAuth.isUserBlock, indexControll
 router.post('/verifyOrder', indexAuth.isLogin, indexAuth.isUserBlock, indexController.verifyOrder)
 router.get('/orderDetails/:orderId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.orderDetailsLoad);
 router.put('/cancelOrder/:productId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.cancelOrder);
-router.post('/returnProduct', indexAuth.isLogin, indexAuth.isUserBlock, indexController.returnProduct)
+router.post('/returnProduct', indexAuth.isLogin, indexAuth.isUserBlock, indexController.returnProduct);
+
+//download invoice
+router.get('/downloadInvoice', indexAuth.isLogin, indexAuth.isUserBlock, indexController.downloadInvoice);
 
 router.post('/editProfile/:userId', indexAuth.isLogin, indexAuth.isUserBlock, indexController.editProfile);
 
@@ -92,6 +95,7 @@ router.put('/removeProduct', indexAuth.isLogin, indexAuth.isUserBlock, indexCont
 
 //coupon
 router.post('/couponCheck', indexAuth.isLogin, indexAuth.isUserBlock, indexController.couponCheck);
+
 
 router.get('/test',(req,res)=>{
     res.render('test');

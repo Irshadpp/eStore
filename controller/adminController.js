@@ -675,83 +675,16 @@ const addOffer = async (req,res) =>{
 const reportLoad = async (req,res) =>{
     try {
         const allOrderData = await Order.find({status:'Delivered'}).sort({date:-1}).populate('userId');
-        async function filterByInterval(interval){
-            let matchQuery = {};
-            let groupQuery = {};
-            switch(interval){
-                case "daily" : 
-                    matchQuery = {
-                        status: 'Delivered',
-                        date: {
-                            $gte: new Date(new Date().setHours(0, 0, 0, 0)), // Filter for today's date (from the beginning of the day)
-                          $lt: new Date(new Date().setHours(23, 59, 59, 999)) // Filter for today's date (until the end of the day)
-                        }
-                    };  
-                    groupQuery = {
-                        _id:{$week:"$date"},
-                        totalOfferDeduction: {$sum:'$offerDeduction'},
-                        totalCouponDeduction: {$sum:'$couponDeduction'},  
-                        totalSubTotal: {$sum: '$subTotal'},
-                    }
-                    break;
-                case "weekly" : 
-                    matchQuery = {
-                        status: 'Delivered',
-                        date: {
-                            $gte: new Date(new Date() - 7 * 24 * 60 * 60 * 1000)
-                        }
-                    };
-                    groupQuery = {
-                        _id:{$week:"$date"},
-                        totalOfferDeduction: {$sum:'$offerDeduction'},
-                        totalCouponDeduction: {$sum:'$couponDeduction'},  
-                        totalSubTotal: {$sum: '$subTotal'},
-                    }
-                    break;
-                case "monthly" : 
-                    matchQuery = { 
-                        status: 'Delivered',
-                        date: {
-                         $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-                     }
-                    };
-                    groupQuery = {
-                        _id:{$week:"$date"},
-                        totalOfferDeduction: {$sum:'$offerDeduction'},
-                        totalCouponDeduction: {$sum:'$couponDeduction'},  
-                        totalSubTotal: {$sum: '$subTotal'},
-                    }
-                    break;
-                case "yearly" :
-                    matchQuery = {
-                        status: 'Delivered',
-                        date: {
-                            $gte: new Date(new Date().getFullYear(), 0, 1)
-                        }
-                    };
-                    groupQuery = {
-                        _id:{$week:"$date"},
-                        totalOfferDeduction: {$sum:'$offerDeduction'},
-                        totalCouponDeduction: {$sum:'$couponDeduction'},  
-                        totalSubTotal: {$sum: '$subTotal'},
-                    }
-                    break;
-                default :
-                break;
-            }
-            const result = await Order.aggregate([
-                {$match:matchQuery},
-                {$group:groupQuery}
-            ])
+        let totalOfferDeduction = 0;
+let totalCouponDeduction = 0;
+let paymentTotal = 0;
 
-            return result;
-        }
-        const dailyData = await filterByInterval('daily');
-        const weeklyData = await filterByInterval('weekly');
-        const monthlyData = await filterByInterval('monthly');
-        const YearlyData = await filterByInterval('yearly');
-        console.log('------------------',dailyData)
-        res.render('report',{allOrderData, dailyData, weeklyData, monthlyData, YearlyData});
+allOrderData.forEach(order => {
+    totalOfferDeduction += order.offerDeduction;
+    totalCouponDeduction += order.couponDeduction;
+    paymentTotal += order.subTotal;
+});
+        res.render('report',{allOrderData, totalOfferDeduction, totalCouponDeduction, paymentTotal});
     } catch (error) {
         console.log(error)
     }
@@ -759,6 +692,63 @@ const reportLoad = async (req,res) =>{
 
 const generateReport = async (req, res) => {
     try {
+        const interval = req.body.frequencySelect;
+        if(interval){
+            if(interval === 'all'){
+                const allOrderData = await Order.find({status:'Delivered'}).sort({date:-1}).populate('userId');
+                return res.json({formattedOrders:allOrderData})
+            }
+       
+        const allOrderData = await Order.find({status:'Delivered'}).sort({date:-1}).populate('userId');
+        async function filterByInterval(interval) {
+            let startDate, endDate = new Date();
+            switch (interval) {
+                case "daily":
+                    startDate = new Date(endDate.setHours(0, 0, 0, 0));
+                    endDate = new Date(endDate.setHours(23, 59, 59, 999));
+                    break;
+                case "weekly":
+                    startDate = new Date(endDate.setDate(endDate.getDate() - endDate.getDay()));
+                    startDate.setHours(0, 0, 0, 0);
+                    endDate = new Date(endDate.setDate(startDate.getDate() + 6));
+                    endDate.setHours(23, 59, 59, 999);
+                    break;
+                case "monthly":
+                    startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+                    endDate = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0);
+                    endDate.setHours(23, 59, 59, 999);
+                    break;
+                case "yearly":
+                    startDate = new Date(endDate.getFullYear(), 0, 1);
+                    endDate = new Date(endDate.getFullYear() + 1, 0, 0);
+                    endDate.setHours(23, 59, 59, 999);
+                    break;
+                default:
+                    return [];
+            }
+        
+            const orders = await Order.find({
+                    date: {
+                        $gte: startDate, 
+                        $lte: endDate
+                    },
+                    status: 'Delivered'
+                })
+                .populate('userId');
+            
+            return orders;
+        }
+        const orders = await filterByInterval(interval)
+        const formattedOrders = orders.map(order => {
+            const formattedDate = new Date(order.date).toLocaleDateString('en-GB').split('/').join('-'); 
+            return {
+                ...order.toObject(), 
+                date: formattedDate
+            };
+        });
+        console.log(formattedOrders)
+        res.json({formattedOrders})
+    }else{
         const startDate = req.body.startDate; 
         const endDate = req.body.endDate;  
         const orders = await Order.find({
@@ -779,11 +769,14 @@ const generateReport = async (req, res) => {
 
         console.log(formattedOrders);
         res.json(formattedOrders);
+    }
+        
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
 
 module.exports = {
     loginLoad,
