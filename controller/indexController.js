@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 const razorpay = require('razorpay');
 const crypto = require('crypto');
+const easyinvoice = require('easyinvoice');
 
 const razorpayInstance = new razorpay({
     key_id: 'rzp_test_cIsaimIKhCrW7h',
@@ -963,7 +964,8 @@ const placeOrder = async (req, res) => {
         const addressData = checkAddress.addresses.find(addrs => addrs.address === address);
 
         let productArray = [];
-        allProductsData.forEach((item) => {
+        for(let item of allProductsData) {
+            const productData = await Product.findOne({_id:item.productId});
             let productDocItem = {
                 productId: item.productId,
                 quantity: item.quantity,
@@ -971,7 +973,7 @@ const placeOrder = async (req, res) => {
             }
 
             productArray.push(productDocItem);
-        })
+        }
 
         order = new Order({
             userId: req.session.user_id,
@@ -1376,55 +1378,53 @@ const couponCheck = async (req,res) =>{
 }
 
 const downloadInvoice = async (req,res)=>{
-    console.log('====================================');
-    console.log();
-    console.log('====================================');
+    
     try {
+        const order_id = req.query.id;
+    const orderData = await Order.findOne({_id:order_id}).populate('products.productId');
+    let products = []
+    orderData.products.forEach(product =>{
+        let item = {
+            description: product.productId.productName,
+            quantity: product.quantity,
+            price: product.productId.price,
+            // total: product.total
+        }
+        products.push(item);
+    })
+    console.log(products)
         const invoiceData = {
-            // Invoice details
-            currency: 'USD',
-            taxNotation: 'vat', // or gst
+            currency: 'INR',
+            taxNotation: 'gst',
             marginTop: 25,
             marginRight: 25,
             marginLeft: 25,
             marginBottom: 25,
-            logo: 'https://public.easyinvoice.cloud/img/logo_en_original.png',
             sender: {
-                company: 'Sample Corp',
-                address: 'Sample Street 123',
-                city: 'Sample City',
-                zip: '12345',
-                country: 'Sample Country'
+                company: 'eStore Fashion',
+                address: 'Banglure',
+                city:'India'
             },
             client: {
-                company: 'Client Corp',
-                address: 'Client Street 456',
-                city: 'Client City',
-                zip: '67890',
-                country: 'Client Country'
+                company: orderData.address.name,
+                address: orderData.address.address,
+                city: orderData.address.city,
+                zip: orderData.address.pincode,
+                country: 'India'
             },
-            // ...other invoice details
-            items: [
-                // Invoice line items
-                {
-                    description: 'Item 1',
-                    quantity: 2,
-                    price: 10
-                },
-                {
-                    description: 'Item 2',
-                    quantity: 1,
-                    price: 20
-                }
-            ]
+            information: {
+                number:"1234",
+                date:"12-12-2021",
+            },
+            products: products,
+            amount: orderData.subTotal
         };
 
         // Generate invoice PDF
         const result = await easyinvoice.createInvoice(invoiceData);
-        console.log(result);
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename="invoice.pdf"');
-        res.send(result.pdf);
+        res.send(Buffer.from(result.pdf,'base64'));
     } catch (error) {
         console.log(error);
         res.render('page404');

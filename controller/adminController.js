@@ -610,7 +610,15 @@ const couponDelete = async (req,res) =>{
 const offerLoad = async (req,res) =>{
     try {
         const offerData = await Offer.find();
-        res.render('offers',{offerData});
+        const formattedOfferData = offerData.map(offer => {
+            const formattedDate = new Date(offer.expiryDate).toLocaleDateString('en-GB').split('/').join('-'); 
+            return {
+                ...offer.toObject(), 
+                expiryDate: formattedDate
+            };
+        })
+        
+        res.render('offers',{offerData:formattedOfferData,});
     } catch (error) {
         console.log(error);
 }
@@ -656,7 +664,8 @@ const addOffer = async (req,res) =>{
             percentage: parseFloat(percentage),
             expiryDate,
             status,
-            offerType
+            offerType,
+            offerTypeName: selectedOptionvalue
         })
         const newOffer = await offer.save();
         if(offerType == 'category'){

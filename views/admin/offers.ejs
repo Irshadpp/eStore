@@ -42,8 +42,8 @@
                                         <th></th>   
                                         <th scope="col">Name</th>
                                         <th scope="col">Percentage</th>
-                                        <th scope="col">Offer</th>
-                                        <th scope="col">Offer</th>
+                                        <th scope="col">Offer Type</th>
+                                        <th scope="col">Offer Item</th>
                                         <th scope="col">Expiry Date</th>
                                         <th scope="col">Status</th>
                                         <th scope="col" class="text-end">Action</th>
@@ -56,9 +56,13 @@
                                         <td><b><%= element.offerName %></b></td>
                                         <td class=""><%= element.percentage %>%</td>
                                         <td><%= element.offerType%></td>
-                                        <td><%= element.offerType%></td>
-                                        <td></td>
-                                        <% if (element.expiryData < Date.now()) { %>
+                                        <td><%= element.offerTypeName%></td>
+                                        <td><%= element.expiryDate%></td>
+                                        <% 
+                                        var parts = element.expiryDate.split('-');
+                                        var expiryDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                                        if (expiryDate < new Date()) { 
+                                        %>
                                             <td><span class="badge rounded-pill alert-danger">Expired</span></td>
                                         <% }else if(element.status === 'active'){ %>
                                             <td><span class="badge rounded-pill alert-success">Active</span></td>
@@ -98,7 +102,7 @@
             }
                 document.querySelectorAll('tbody tr').forEach((row, index) => {
         const dateCell = row.querySelector('td:nth-child(6)');
-        const formattedDate = formatDate(offerDataArray[index]);
+        const formattedDate = 'hello';
         dateCell.textContent = formattedDate;
     });
 
