@@ -64,6 +64,17 @@
                         <div class="card mb-4">
                             <article class="card-body">
                                 <h5 class="card-title">Sale statistics</h5>
+                                <div class="row align-items-center" >
+                                    <div class="col-md-3 col-12 me-auto mb-md-0 mb-3 ">
+                                        <div class="custom_select">
+                                            <select id="frequency-select" class="form-select">
+                                                <option value="monthly">Monthly</option>
+                                                <option value="yearly">Yearly</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
                                 <canvas id="myChart" height="120px"></canvas>
                             </article>
                         </div>
@@ -73,39 +84,6 @@
                 <div class="card mb-4">
                     <header class="card-header">
                         <h4 class="card-title">Latest orders</h4>
-                        <div class="row align-items-center">
-                            <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
-                                <div class="custom_select">
-                                    <select class="form-select select-nice">
-                                        <option selected>All Categories</option>
-                                        <option>Women's Clothing</option>
-                                        <option>Men's Clothing</option>
-                                        <option>Cellphones</option>
-                                        <option>Computer & Office</option>
-                                        <option>Consumer Electronics</option>
-                                        <option>Jewelry & Accessories</option>
-                                        <option>Home & Garden</option>
-                                        <option>Luggage & Bags</option>
-                                        <option>Shoes</option>
-                                        <option>Mother & Kids</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-2 col-6">
-                                <input type="date" value="02.05.2021" class="form-control" />
-                            </div>
-                            <div class="col-md-2 col-6">
-                                <div class="custom_select">
-                                    <select class="form-select select-nice">
-                                        <option selected>Status</option>
-                                        <option>All</option>
-                                        <option>Paid</option>
-                                        <option>Chargeback</option>
-                                        <option>Refund</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
                     </header>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -267,7 +245,40 @@
             </section>
             <!-- content-main end// -->
 
-            <script>const revenue = <%-JSON.stringify(revenue)%></script>
+            <script>const monthlyData = <%-JSON.stringify(monthlyData)%>;</script>
+            <script>
+                var data = monthlyData;
+  var labels = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const selectedOption = document.getElementById("frequency-select");
+    selectedOption.addEventListener("change", function () {
+      if (selectedOption.value === "monthly") {
+        let data = monthlyData;
+        let labels = [
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+          ];
+              } else if (selectedOption.value === "yearly") {
+               
+        const totalCount = monthlyData.reduce((acc, crr) => {
+          return acc = acc + crr;
+        }, 0);
+              let data = [0, 0, 0, totalCount, 0, 0, 0, 0, 0, 0];
+              let labels = Array.from({ length: 11 }, (_, i) => 2020 + i);
+              console.log('====================================');
+                console.log(labels);
+                console.log('====================================');
+            } else {
+        data = monthlyData;
+      }
+    });
+  })
+
+            </script>
            
         </main>
         <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
