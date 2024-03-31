@@ -1,4 +1,3 @@
-const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const moment = require("moment");
 
@@ -11,18 +10,27 @@ const Coupon = require("../model/coupondb");
 const Offer = require("../model/offerdb");
 
 //login load
-const loginLoad = asyncHandler(async (req, res) => {
-  res.render("login");
-});
+const loginLoad =(req, res) => {
+  try {
+    res.render("login");
+  } catch (error) {
+    res.render("404page");
+  }
+}
 
-const logout = asyncHandler(async (req, res) => {
-  req.session.admin_id = null;
+const logout = (req, res) => {
+  try {
+    req.session.admin_id = null;
   res.redirect("/admin");
-});
+  } catch (error) {
+    res.render("404page");
+  }
+}
 
 //dashboard load
-const dashboardLoad = asyncHandler(async (req, res) => {
-  const orderData = await Order.find({ status: "Delivered" });
+const dashboardLoad = async (req, res) => {
+  try {
+    const orderData = await Order.find({ status: "Delivered" });
   const revenue = orderData.reduce((acc, crr) => {
     console.log(crr.subTotal);
     return (acc = acc + crr.subTotal);
@@ -33,7 +41,7 @@ const dashboardLoad = asyncHandler(async (req, res) => {
   }, 0);
   const monthlyOrders = await Order.aggregate([
     {
-        $match:{status:'Delivered'}
+      $match: { status: "Delivered" },
     },
     {
       $group: {
@@ -84,99 +92,191 @@ const dashboardLoad = asyncHandler(async (req, res) => {
     {
       $project: {
         _id: 0,
-        
+
         count: 1,
       },
     },
   ]);
 
-  const monthlyData = monthlyOrders.map(item => item.count);
-  console.log("====================================");
-  console.log(monthlyData);
-  console.log("====================================");
-  res.render("dashboard", { revenue, orderCount, productCount, monthlyData });
-});
+  const monthlyData = monthlyOrders.map((item) => item.count);
+  const topTenProducts = await Order.aggregate([
+    { $unwind: "$products" },
+    { $match: { "products.status": "Delivered" } }, 
+    {
+      $group: {
+        _id: "$products.productId",
+        count: { $sum: 1 }, 
+    },
+  },
+    { $sort: { count: -1 } }, 
+    { $limit: 10 }, 
+    {
+      $lookup: {
+        from: "products", 
+        localField: "_id",
+        foreignField: "_id",
+        as: "productInfo",
+      },
+    },
+    { $unwind: "$productInfo" }, 
+  ]);
 
+  const topTenCategories = await Order.aggregate([
+    { $unwind: "$products" },
+    { $match: { "products.status": "Delivered" } },
+    {
+      $lookup: {
+        from: "products", 
+        localField: "products.productId",
+        foreignField: "_id",
+        as: "productInfo",
+      },
+    },
+    { $unwind: "$productInfo" },
+    {
+      $lookup: {
+        from: "categories", 
+        localField: "productInfo.categoryId",
+        foreignField: "_id",
+        as: "categoryInfo",
+      },
+    },
+    { $unwind: "$categoryInfo" },
+    {
+      $group: {
+        _id: "$categoryInfo._id", 
+        count: { $sum: 1 },
+      },
+    },
+    { $sort: { count: -1 } },
+    { $limit: 10 },
+    {
+      $lookup: {
+        from: "categories", 
+        localField: "_id",
+        foreignField: "_id",
+        as: "mostDeliveredCategory",
+      },
+    },
+    { $unwind: "$mostDeliveredCategory" }, 
+  ]);
+
+  console.log(topTenCategories);
+  res.render("dashboard", {
+    revenue,
+    orderCount,
+    productCount,
+    monthlyData,
+    topTenCategories,
+    topTenProducts,
+  });
+  } catch (error) {
+    res.render("404page");
+  }
+} 
 //customers load
-const customersLoad = asyncHandler(async (req, res) => {
-  const userData = await User.find({
-    $and: [{ isAdmin: false }, { isVerified: true }],
-  });
-  const formatedUserData = userData.map((item) => {
-    const {
-      _id,
-      googleId,
-      wallet,
-      username,
-      email,
-      mobile,
-      password,
-      address,
-      isVerified,
-      isBlock,
-      isAdmin,
-      token,
-      createDate,
-      __v,
-      walletHistory,
-    } = item;
+const customersLoad = async (req, res) => {
+  try {
+    const userData = await User.find({
+      $and: [{ isAdmin: false }, { isVerified: true }],
+    });
+    const formatedUserData = userData.map((item) => {
+      const {
+        _id,
+        googleId,
+        wallet,
+        username,
+        email,
+        mobile,
+        password,
+        address,
+        isVerified,
+        isBlock,
+        isAdmin,
+        token,
+        createDate,
+        __v,
+        walletHistory,
+      } = item;
+  
+      const formatedDate = moment(createDate).format("DD-MM-YYYY");
+      return {
+        _id,
+        googleId,
+        wallet,
+        username,
+        email,
+        mobile,
+        password,
+        address,
+        isVerified,
+        isBlock,
+        isAdmin,
+        token,
+        createDate: formatedDate,
+        __v,
+        walletHistory,
+      };
+    });
+    res.render("customers", { users: formatedUserData });
+  } catch (error) {
+    res.render("404page");
+  }
+}
 
-    const formatedDate = moment(createDate).format("DD-MM-YYYY");
-    return {
-      _id,
-      googleId,
-      wallet,
-      username,
-      email,
-      mobile,
-      password,
-      address,
-      isVerified,
-      isBlock,
-      isAdmin,
-      token,
-      createDate: formatedDate,
-      __v,
-      walletHistory,
-    };
-  });
-  res.render("customers", { users: formatedUserData });
-});
+const productsLoad = async (req, res) => {
+  try {
+    const category = await Category.find({ list: false });
+    const productData = await Product.find().populate("categoryId");
+    const imagePathsArray = productData.map((product) => product.imagePaths);
+    res.render("products", { products: productData, imagePathsArray });
+  } catch (error) {
+    res.render("404page");
+  }
+} 
 
-const productsLoad = asyncHandler(async (req, res) => {
-  const category = await Category.find({ list: false });
-  const productData = await Product.find().populate("categoryId");
-  const imagePathsArray = productData.map((product) => product.imagePaths);
-  res.render("products", { products: productData, imagePathsArray });
-});
-
-const categoryLoad = asyncHandler(async (req, res) => {
-  const categoryData = await Category.find();
+const categoryLoad = async (req, res) => {
+  try {
+    const categoryData = await Category.find();
   res.render("category", { categoryData });
-});
+  } catch (error) {
+    res.render("404page");
+  }
+} 
 
-const addProductLoad = asyncHandler(async (req, res) => {
-  const categoryData = await Category.find();
+const addProductLoad = async (req, res) => {
+  try {
+    const categoryData = await Category.find();
   res.render("addProduct", { categoryData });
-});
-
-const editCategoryLoad = asyncHandler(async (req, res) => {
-  const category_id = req.params.category_id;
+  } catch (error) {
+    res.render("404page");
+  }
+}
+const editCategoryLoad = async (req, res) => {
+  try {
+    const category_id = req.params.category_id;
   const categoryData = await Category.findOne({ _id: category_id });
   res.render("editCategory", { categoryData });
-});
-
-const editProductLoad = asyncHandler(async (req, res) => {
-  const product_id = req.params.product_id;
+  } catch (error) {
+    res.render("404page");
+  }
+} 
+const editProductLoad = async (req, res) => {
+  try {
+    const product_id = req.params.product_id;
   const categoryData = await Category.find();
 
   const product = await Product.findOne({ _id: product_id });
 
   res.render("editProduct", { categoryData, product });
-});
+  } catch (error) {
+    res.render("404page");
+  }
+} 
 
-const verifyLogin = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+const verifyLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
   const adminData = await Admin.findOne({ email: email });
   if (adminData) {
@@ -194,27 +294,39 @@ const verifyLogin = asyncHandler(async (req, res) => {
   } else {
     res.render("login", { msg: "Couldn't find your email!" });
   }
-});
-
-const blockUser = asyncHandler(async (req, res) => {
-  const userId = req.params.userId;
-  const blockStatus = await User.findOne({ _id: userId });
-  if (blockStatus.isBlock === true) {
-    await User.updateOne({ _id: userId }, { isBlock: false });
-    res.json({ success: true, isBlock: false });
-  } else {
-    await User.updateOne({ _id: userId }, { isBlock: true });
-    res.json({ success: true, isBlock: true });
+  } catch (error) {
+    res.render("404page");
   }
-});
+} 
 
-const unblockUser = asyncHandler(async (req, res) => {
-  const userId = req.params.userId;
+const blockUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const blockStatus = await User.findOne({ _id: userId });
+    if (blockStatus.isBlock === true) {
+      await User.updateOne({ _id: userId }, { isBlock: false });
+      res.json({ success: true, isBlock: false });
+    } else {
+      await User.updateOne({ _id: userId }, { isBlock: true });
+      res.json({ success: true, isBlock: true });
+    }
+  } catch (error) {
+    res.render("404page");
+  }
+} 
+
+const unblockUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
   await User.findByIdAndUpdate(userId, { isBlock: false });
-});
+  } catch (error) {
+    res.render("404page");
+  }
+} 
 
-const addProduct = asyncHandler(async (req, res) => {
-  const categoryData = await Category.find();
+const addProduct = async (req, res) => {
+  try {
+    const categoryData = await Category.find();
 
   if (!req.files || req.files.length === 0) {
     return res.status(400).render("addProduct", {
@@ -270,10 +382,14 @@ const addProduct = asyncHandler(async (req, res) => {
     successMsg: "Product added successfully",
     categoryData,
   });
-});
+  } catch (error) {
+    res.render("404page");
+  }
+} 
 
-const addCategory = asyncHandler(async (req, res) => {
-  const { categoryName, description } = req.body;
+const addCategory = async (req, res) => {
+  try {
+    const { categoryName, description } = req.body;
   const regexPattern = new RegExp(categoryName, "i");
 
   const checkCategory = await Category.findOne({
@@ -317,7 +433,10 @@ const addCategory = asyncHandler(async (req, res) => {
     successMsg: "Catergory added successfully",
     categoryData: updatedCategoryData,
   });
-});
+  } catch (error) {
+    res.render("404page");
+  }
+} 
 
 const editProduct = async (req, res) => {
   const product_id = req.params.product_id;
@@ -477,7 +596,7 @@ const deleteImage = async (req, res) => {
     const updatedProduct = await Product.findOne({ imagePaths: image });
     res.render("editProduct", { product: updatedProduct });
   } catch (error) {
-    res.status(401).send(error.message);
+    res.render("404page");
   }
 };
 
@@ -485,9 +604,9 @@ const deleteProduct = async (req, res) => {
   try {
     const productId = req.params.productId;
     await Product.findByIdAndDelete(productId);
-    res.redirect("/admin/products");
+    res.json({success:true});
   } catch (error) {
-    res.status(500).send(error.message);
+    res.render("404page");
   }
 };
 
@@ -496,7 +615,7 @@ const unlistCategory = async (req, res) => {
     const categoryId = req.params.categoryId;
     await Category.findByIdAndUpdate(categoryId, { list: false });
   } catch (error) {
-    res.status(500).send(error.message);
+    res.render("404page");
   }
 };
 
@@ -505,7 +624,7 @@ const listCategory = async (req, res) => {
     const categoryId = req.params.categoryId;
     await Category.findByIdAndUpdate(categoryId, { list: true });
   } catch (error) {
-    res.status(500).send(error.message);
+    res.render("404page");
   }
 };
 
@@ -521,7 +640,7 @@ const listProduct = async (req, res) => {
     }
     res.json({ product });
   } catch (error) {
-    res.status(500).send(error.message);
+    res.render("404page");
   }
 };
 
@@ -534,10 +653,28 @@ const ordresLoad = async (req, res) => {
       .limit(10);
     const orderCount = await Order.countDocuments();
     const pageCount = Math.ceil(orderCount / 10);
-    res.render("orders", { orderData, pageCount });
+
+    const returnedProducts = await Order.find({
+      "products.reason": { $exists: true },
+    }).populate("products.productId");
+    let reasonData = [];
+    returnedProducts.forEach((item) => {
+      item.products.forEach((element) => {
+        if (element.reason) {
+          let data = {
+            orderId: item.orderId,
+            product: element.productId.productName,
+            reason: element.reason,
+            quantity: element.quantity,
+          };
+          reasonData.push(data);
+        }
+      });
+    });
+   
+    res.render("orders", { orderData, pageCount, reasonData });
   } catch (error) {
-    res.status(404).json("Page not found");
-    console.log(error);
+    res.render("404page");
   }
 };
 
@@ -553,7 +690,9 @@ const orderPageLoad = async (req, res) => {
       .skip(skip)
       .limit(limit);
     res.json({ orderData });
-  } catch (error) {}
+  } catch (error) {
+    res.render("404page");
+  }
 };
 
 const orderDetailLoad = async (req, res) => {
@@ -566,8 +705,7 @@ const orderDetailLoad = async (req, res) => {
     const formatedDate = moment(date).format("ddd, MMM, YYYY, h:mma");
     res.render("orderDetail", { orderData, formatedDate });
   } catch (error) {
-    res.status(404).json("Page not found");
-    console.log(error);
+    res.render("404page");
   }
 };
 
@@ -617,7 +755,7 @@ const changeOrderStatus = async (req, res) => {
       message: "updated sucessfully",
     });
   } catch (error) {
-    console.log(error);
+    res.render("404page");
   }
 };
 
@@ -627,10 +765,6 @@ const returnProduct = async (req, res) => {
     await Order.updateOne(
       { $and: [{ _id: order_id }, { "products.productId": productId }] },
       { $set: { "products.$.status": "Returned" } }
-    );
-    await Product.findByIdAndUpdate(
-      { _id: productId },
-      { $inc: { quantity: qty } }
     );
     const orderData = await Order.findById(order_id);
     if (orderData.paymentMode != "COD") {
@@ -657,7 +791,9 @@ const returnProduct = async (req, res) => {
     }
 
     res.json({ status: "Returned" });
-  } catch (error) {}
+  } catch (error) {
+    res.render("404page");
+  }
 };
 
 const couponsLaod = async (req, res) => {
@@ -665,7 +801,7 @@ const couponsLaod = async (req, res) => {
     const couponData = await Coupon.find();
     res.render("coupons", { couponData });
   } catch (error) {
-    console.log(error);
+    res.render("404page");
   }
 };
 
@@ -673,7 +809,7 @@ const addCouponLoad = async (req, res) => {
   try {
     res.render("addCoupon");
   } catch (error) {
-    console.log(error);
+    res.render("404page");
   }
 };
 
@@ -746,6 +882,7 @@ const addCoupon = async (req, res) => {
     res.render("addCoupon", { successMsg: "Coupon added successfully" });
   } catch (error) {
     console.log(error);
+    res.render("404page");
   }
 };
 
@@ -756,6 +893,7 @@ const couponDelete = async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.log(error);
+    res.render("404page");
   }
 };
 
@@ -776,6 +914,7 @@ const offerLoad = async (req, res) => {
     res.render("offers", { offerData: formattedOfferData });
   } catch (error) {
     console.log(error);
+    res.render("404page");
   }
 };
 
@@ -788,6 +927,7 @@ const addOfferLoad = async (req, res) => {
     res.render("addOffer", { categoryData: categories, productData: products });
   } catch (error) {
     console.log(error);
+    res.render("404page");
   }
 };
 
@@ -846,8 +986,32 @@ const addOffer = async (req, res) => {
     res.json({ successMsg: "Please give valid expiry date!" });
   } catch (error) {
     console.log(error);
+    res.render("404page");
   }
 };
+
+const activateOffer = async (req, res) =>{
+  try {
+    console.log('====================================');
+    console.log();
+    console.log('====================================');
+    const offerId = req.body.offerId
+    await Offer.findByIdAndUpdate(offerId,{$set:{status:'active'}});
+    res.json({success:true});
+  } catch (error) {
+    res.render("404page");
+  }
+}
+
+const deactivateOffer = async (req, res) =>{
+  try {
+    const offerId = req.body.offerId
+    await Offer.findByIdAndUpdate(offerId,{$set:{status:'inactive'}});
+    res.json({success:true});
+  } catch (error) {
+    res.render("404page");
+  }
+}
 
 const reportLoad = async (req, res) => {
   try {
@@ -871,6 +1035,7 @@ const reportLoad = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    res.render("404page");
   }
 };
 
@@ -971,7 +1136,7 @@ const generateReport = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.render("404page");
   }
 };
 
@@ -1008,6 +1173,8 @@ module.exports = {
   offerLoad,
   addOfferLoad,
   addOffer,
+  activateOffer,
+  deactivateOffer,
   reportLoad,
   generateReport,
   orderPageLoad,

@@ -1,11 +1,56 @@
 <%-include('../layout/adminHeader')-%>
+
+ <!-- return Table Modal -->
+ <div class="modal fade" id="returnReasonModal" tabindex="-1" role="dialog"
+ aria-labelledby="transactionTableModalLabel" aria-hidden="true">
+ <div class="modal-dialog modal-lg" role="document">
+     <div class="modal-content">
+         <div class="modal-header">
+             <h5 class="modal-title" id="transactionTableModalLabel">Return reason List</h5>
+             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+             </button>
+         </div>
+         <div class="modal-body">
+             <table class="table">
+                 <thead>
+                     <tr>
+                        <th scope="col">orderId</th>
+                         <th scope="col">Product</th>
+                         <th scope="col" class="text-start ">Reason</th>
+                         <th scope="col" class="text-center">Quantity</th>
+                     </tr>
+                 </thead>
+                 <tbody>
+                    <% if (reasonData.length > 0) { %>
+                     <% reasonData.forEach(element => { %>
+                      
+                    <tr>
+                        <td>
+                            <%= element.orderId %>
+                        </td>
+                        <td>
+                            <%= element.product %>
+                        </td>
+                        <td class="text-start"><%= element.reason %></td>
+                        <td class="text-center "><%= element.quantity %><td>
+                    </tr>
+                         
+                         <% }) %>
+                         <% } %>
+                 </tbody>
+             </table>
+         </div>
+     </div>
+ </div>
+</div>
             <section class="content-main">
                 <div class="content-header">
                     <div>
                         <h2 class="content-title card-title">Order List</h2>
                     </div>
                     <div>
-                        <input type="text" placeholder="Search order ID" class="form-control bg-white" />
+                        <a href="#returnReasonModal" data-toggle="modal" class="btn btn-primary ">Return List</a>
                     </div>
                 </div>
                 <div class="card mb-4">

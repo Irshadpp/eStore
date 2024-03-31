@@ -66,6 +66,8 @@ router.delete('/deleteCoupon', adminAuth.isLogin, adminController.couponDelete);
 router.get('/offer', adminAuth.isLogin, adminController.offerLoad);
 router.get('/addOffer', adminAuth.isLogin, adminController.addOfferLoad);
 router.post('/addOffer', adminAuth.isLogin, adminController.addOffer);
+router.put('/activateOffer', adminAuth.isLogin, adminController.activateOffer);
+router.put('/deactivateOffer', adminAuth.isLogin, adminController.deactivateOffer);
 
 
 //report

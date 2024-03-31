@@ -63,21 +63,20 @@
                                         var expiryDate = new Date(parts[2], parts[1] - 1, parts[0]);
                                         if (expiryDate < new Date()) { 
                                         %>
-                                            <td><span class="badge rounded-pill alert-danger">Expired</span></td>
+                                            <td data-id="<%= element._id%>" class="status"><span class="badge rounded-pill alert-danger">Expired</span></td>
                                         <% }else if(element.status === 'active'){ %>
-                                            <td><span class="badge rounded-pill alert-success">Active</span></td>
+                                            <td data-id="<%= element._id%>" class="status"><span class="badge rounded-pill alert-success">Active</span></td>
                                        <% }else{ %>
-                                        <td><span class="badge rounded-pill alert-danger">Inactive</span></td>
+                                        <td data-id="<%= element._id%>" class="status"><span class="badge rounded-pill alert-danger">Inactive</span></td>
                                       <% } %>
                                         <td class="text-end">
                                             <div class="dropdown">
-                                                <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
+                                                <a data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
                                                 <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="#" onclick="activateOffer('<%=element._id%>')">Activate</a>
-                                                    <a class="dropdown-item text-danger" href="#" onclick="inactivateOffer('<%=element._id%>')">Inactivate</a>
+                                                    <a class="dropdown-item" onclick="activateOffer('<%=element._id%>')">Activate</a>
+                                                    <a class="dropdown-item text-danger" onclick="deactivateOffer('<%=element._id%>')">Deactivate</a>
                                                 </div>
                                             </div>
-                                            <!-- dropdown //end -->
                                         </td>
                                     </tr>
                                     <% }) %>
@@ -85,13 +84,9 @@
                                 </tbody>
                             </table>
                         </div>
-                        <!-- table-responsive //end -->
                     </div>
-                    <!-- card-body end// -->
                 </div>
-                <!-- card end// -->
             </section>
-            <!-- content-main end// -->
         </main>
         <script>
             const offerData = <%-JSON.stringify(offerData)%>;
@@ -102,29 +97,14 @@
             }
                 document.querySelectorAll('tbody tr').forEach((row, index) => {
         const dateCell = row.querySelector('td:nth-child(6)');
-        const formattedDate = 'hello';
+        const formattedDate = offerDataArray[index];
         dateCell.textContent = formattedDate;
     });
 
-    function inactivateOffer(offerId){
-        Swal.fire({
-    title: 'Are you sure?',
-    text: "Do you want to inactivate this offer",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, inactivate it!',
-    customClass: {
-      confirmButton: 'btn btn-danger me-1',
-      cancelButton: 'btn btn-label-secondary'
-    },
-    buttonsStyling: false
-  }).then(function(result) {
-    if (result.value) {
-        fetch('/admin/inactivateOffer',{
+    function activateOffer(offerId){
+        fetch('/admin/activateOffer',{
             method: 'PUT',
-            body: JSON.stringify({couponId}),
+            body: JSON.stringify({offerId}),
             headers:{
                 "Content-Type":"application/json"
             }
@@ -132,12 +112,51 @@
         .then(response =>{
             return response.json();
         })
-        .then(data =>  )
+        .then(data => {
+            const status = document.querySelector(`.status[data-id="${offerId}"]`);
+            console.log('====================================');
+            console.log(offerId);
+            console.log('====================================',status);
+            status.innerHTML = '<span class="badge rounded-pill alert-success">Active</span>'
+        })
+        .catch(error => console.log(error));
+    }
+
+    function deactivateOffer(offerId){
+        Swal.fire({
+    title: 'Are you sure?',
+    text: "Do you want to Deactivate this offer",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, Deactivated it!',
+    customClass: {
+      confirmButton: 'btn btn-danger me-1',
+      cancelButton: 'btn btn-label-secondary'
+    },
+    buttonsStyling: false
+  }).then(function(result) {
+    if (result.value) {
+        fetch('/admin/deactivateOffer',{
+            method: 'PUT',
+            body: JSON.stringify({offerId}),
+            headers:{
+                "Content-Type":"application/json"
+            }
+        })
+        .then(response =>{
+            return response.json();
+        })
+        .then(data =>{
+    const status = document.querySelector(`.status[data-id="${offerId}"]`);
+            status.innerHTML = '<span class="badge rounded-pill alert-danger">Inactive</span>'
+        })
         .catch(error => console.log(error));
       Swal.fire({
         icon: 'success',
-        title: 'Deleted!',
-        text: 'Your file has been deleted.',
+        title: 'Deactivated!',
+        text: 'Offer has been deactivated.',
         customClass: {
           confirmButton: 'btn btn-success'
         }
