@@ -98,17 +98,23 @@
                                                                                 (element.productId.categoryId.offerId.percentage/100)%>
                                                                                 <input type="text" class="productPrice"
                                                                                     value="<%=price%>" hidden>
+                                                                                </div><!-- End .cart-product-quantity -->
+                                                                </td>
+                                                                <td class="total-col">
+                                                                    <%= parseFloat(price * element.quantity).toFixed(2) %>
+                                                                </td>
                                                                                 <%}else{%>
                                                                                     <input type="text"
                                                                                         class="productPrice"
                                                                                         value="<%=element.productId.price%>"
                                                                                         hidden>
-                                                                                    <% } %>
-                                                                    </div><!-- End .cart-product-quantity -->
+                                                                                    </div><!-- End .cart-product-quantity -->
                                                                 </td>
                                                                 <td class="total-col">
-                                                                    <%= parseFloat(element.total).toFixed(2) %>
+                                                                    <%= parseFloat(element.productId.price * element.quantity).toFixed(2)%>
                                                                 </td>
+                                                                                    <% } %>
+                                                                    
                                                                 <td class="remove-col"><button class="btn-remove"
                                                                         data-product-id="<%= element.productId._id %>"><i
                                                                             class="icon-close"></i></button></td>
@@ -180,13 +186,16 @@
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
     <script>
+
+        
         $(document).ready(function () {
             $('.quantityInput').on('change', function () {
+                var $this = $(this);
                 var newQuantity = $(this).val();
-                var $parentrow = $(this).closest('tr')
-                var cartItemId = $parentrow.find('.cartId').val();
-                var productId = $parentrow.find('.productId').val();
-                var productPrice = $parentrow.find('.productPrice').val();
+                var $parentRow = $(this).closest('tr')
+                var cartItemId = $parentRow.find('.cartId').val();
+                var productId = $parentRow.find('.productId').val();
+                var productPrice = $parentRow.find('.productPrice').val();
                 console.log('Cart Item ID:', cartItemId);
                 console.log('Cart product price:', productPrice);
 
@@ -200,6 +209,18 @@
                         productPrice: productPrice
                     },
                     success: function (response) {
+                        if(response === 'out of stock'){
+                            $this.val(newQuantity-1)
+                            return Swal.fire({
+    title: 'Sorry!',
+    text: "Product is out of stock! You can't add quantity anymore",
+    type: 'error',
+    customClass: {
+      confirmButton: 'btn btn-primary'
+    },
+    buttonsStyling: false
+  })
+                        }
                         const productTotal = $(this).closest('tr').find('.total-col');
                         $('.subtotal').html(parseFloat(response.subTotal).toFixed(2))
                         productTotal.html(parseFloat(response.updatedProductPrice).toFixed(2))

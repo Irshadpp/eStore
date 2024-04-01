@@ -46,7 +46,7 @@ background: linear-gradient(to top left, rgba(242, 221, 156), rgba(255, 254, 243
                         <p class="qty text-muted mb-0 small">Qty: <%=element.quantity%></p>
                       </div>
                       <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                        <p class="text-muted mb-0 small"><%=parseFloat(element.productId.price).toFixed(2)%></p>
+                        <p class="text-muted mb-0 small"><%=parseFloat(element.productPrice).toFixed(2)%></p>
                       </div>
                       <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
                         <p class="text-muted mb-0 small"><%=parseFloat(element.total).toFixed(2)%></p>
@@ -260,9 +260,6 @@ function requestReturn(productId, order_id){
 
 
 function downloadInvoice(order_id){
-  console.log('====================================');
-  console.log();
-  console.log('====================================');
   fetch(`/downloadInvoice?id=${order_id}`)
   .then(response => {
     console.log(response)

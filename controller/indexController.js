@@ -293,13 +293,31 @@ const cartLoad = async (req, res) => {
 const checkoutLoad = async (req, res) => {
   try {
     const cart = await Cart.findOne({ userId: req.session.user_id })
-      .populate("items.productId")
-      .exec();
+    .populate({
+      path: "items.productId",
+      populate: {
+        path: "categoryId",
+        populate: {
+          path: "offerId",
+          model: "Offer",
+        },
+      },
+    })
+    .populate({
+      path: "items.productId",
+      populate: {
+        path: "offerId",
+        model: "Offer",
+      },
+    });
+
 
     if (!cart) {
       console.log("Cart not found");
       return res.status(404).redirect("/cart");
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
 
     const products = cart.items.map((item) => ({
       productId: item.productId._id,
@@ -308,8 +326,35 @@ const checkoutLoad = async (req, res) => {
       total: item.total,
     }));
 
-    const subTotal = cart.subTotal;
 
+    const subTotal = cart.items.reduce((acc, crr, index) => {
+      let price;
+      if (
+        cart.items[index].productId.offerId &&
+        cart.items[index].productId.offerId.status === "active"
+      ) {
+        price =
+          crr.productId.price -
+          (crr.productId.price *
+            cart.items[index].productId.offerId.percentage) /
+            100;
+      } else if (
+        cart.items[index].productId.categoryId.offerId &&
+        cart.items[index].productId.categoryId.offerId.status ===
+          "active"
+      ) {
+        price =
+          crr.productId.price -
+          (crr.productId.price *
+            cart.items[index].productId.categoryId.offerId
+              .percentage) /
+            100;
+      } else {
+        price = crr.productId.price;
+      }
+      return (acc = acc + price * crr.quantity);
+    }, 0);
+    
     const addressData = await Address.findOne(
       { userId: req.session.user_id },
       { addresses: 1, _id: 0 }
@@ -847,6 +892,8 @@ const deleteProduct = async (req, res) => {
     const productId = req.params.productId;
     const userId = req.session.user_id;
 
+
+
     const cart = await Cart.findOne({ userId: userId });
     const cartData = await Cart.findOne(
       { "items.productId": productId },
@@ -885,9 +932,10 @@ const updateQuantity = async (req, res) => {
       { _id: 0, quantity: 1 }
     );
 
-    if (checkProduct.quantity === 0) {
-      return res.json("out of stock");
-    }
+
+    console.log('====================================');
+    console.log();
+    console.log('====================================');
 
     const oldQtyData = await Cart.findOne(
       { "items._id": cartItemId },
@@ -895,6 +943,10 @@ const updateQuantity = async (req, res) => {
     );
 
     const oldQty = oldQtyData.items[0].quantity;
+
+    if (checkProduct.quantity === 0 && oldQty < parseInt(newQuantity)) {
+      return res.json("out of stock");
+    }
 
     if (parseInt(newQuantity) === oldQty) {
       return res.status(401).json("quantity limit exeeded");
@@ -1074,13 +1126,41 @@ const placeOrder = async (req, res) => {
 
     let productArray = [];
     for (let item of allProductsData) {
-      const productData = await Product.findOne({ _id: item.productId });
+      const productData = await Product.findOne({ _id: item.productId })
+      .populate({
+        path: "categoryId",
+        populate: "offerId",
+      })
+      .populate("offerId");
+
+      let productPrice;
+    var offerDeduction;
+    if (
+      productData.offerId &&
+      productData.offerId.status === "active" &&
+      productData.offerId.expiryDate > Date.now()
+    ) {
+      offerDeduction =
+        productData.price * (productData.offerId.percentage / 100);
+      productPrice = productData.price - offerDeduction;
+    } else if (
+      productData.categoryId.offerId &&
+      productData.categoryId.offerId.status === "active" &&
+      productData.categoryId.offerId.expiryDate > Date.now()
+    ) {
+      offerDeduction =
+        productData.price * (productData.categoryId.offerId.percentage / 100);
+      productPrice = productData.price - offerDeduction;
+    } else {
+      productPrice = productData.price;
+    }
+
       let productDocItem = {
         productId: item.productId,
+        productPrice: productPrice,
         quantity: item.quantity,
         total: item.total,
       };
-
       productArray.push(productDocItem);
     }
 
@@ -1529,13 +1609,14 @@ const downloadInvoice = async (req, res) => {
       let item = {
         description: product.productId.productName,
         quantity: product.quantity,
-        price: product.productId.price,
+        price: product.productPrice,
         // total: product.total
       };
       products.push(item);
     });
     console.log(products);
     const invoiceData = {
+      mode: "development",
       currency: "INR",
       taxNotation: "gst",
       marginTop: 25,
