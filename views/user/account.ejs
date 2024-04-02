@@ -207,15 +207,15 @@
                                     <td class="pl-3">
                                         <%= element.description %>
                                     </td>
-                                    <td id="transactionDate">25-03-2024</td>
+                                    <td id="transactionDate"> <%= element.date %></td>
                                     <td>₹<%= parseFloat(element.amount).toFixed(2) %>
                                     </td>
                                     <% if (element.status==="in" ) { %>
                                         <td class="text-success text-end">&nbsp;&nbsp; &nbsp;&nbsp;<i class="fa-solid fa-arrow-left"
-                                                style="color: #087f06;"></i>
-                                            <% } else if (element.status==="out" ) { %>
+                                                style="color: #0ae806;"></i>
+                                            <% } else if (element.status==="Out" ) { %>
                                         <td class="text-danger text-end">&nbsp;&nbsp; &nbsp;&nbsp; <i class="fa-solid fa-arrow-left fa-rotate-180"
-                                                style="color: #a21606;"></i></td>
+                                                style="color: #e71902;"></i></td>
                                         <% } %>
                                 </tr>
                                 <% }) %>

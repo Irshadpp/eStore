@@ -987,19 +987,16 @@ const addOffer = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.render("404page");
-  }
+  } 
 };
 
 const activateOffer = async (req, res) =>{
   try {
-    console.log('====================================');
-    console.log();
-    console.log('====================================');
     const offerId = req.body.offerId
     await Offer.findByIdAndUpdate(offerId,{$set:{status:'active'}});
     res.json({success:true});
   } catch (error) {
-    res.render("404page");
+    res.render("404page");                           
   }
 }
 

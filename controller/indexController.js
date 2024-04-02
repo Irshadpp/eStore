@@ -25,16 +25,16 @@ const generateOTP = require("../util/generateOtp");
 const sendEmail = require("../util/sendEmail");
 const { log } = require("console");
 
-const loadIndex = async (req,res)=>{
-    try {
-        const category = await Category.find();
-  const products = await Product.find().populate("categoryId");
-  const imagePathsArray = products.map((item) => item.imagePaths);
-  res.render("index", { products, category, imagePathsArray });
-    } catch (error) {
-        res.render('page404');
-    }
-}
+const loadIndex = async (req, res) => {
+  try {
+    const category = await Category.find();
+    const products = await Product.find().populate("categoryId");
+    const imagePathsArray = products.map((item) => item.imagePaths);
+    res.render("index", { products, category, imagePathsArray });
+  } catch (error) {
+    res.render("page404");
+  }
+};
 
 const loadLogin = async (req, res) => {
   try {
@@ -45,29 +45,29 @@ const loadLogin = async (req, res) => {
   }
 };
 
-const forgotPasswordLoad = async (req,res)=>{
-    try {
-        res.render("forgotPassword");
-    } catch (error) {
-        res.render('page404');
-    }
-}
+const forgotPasswordLoad = async (req, res) => {
+  try {
+    res.render("forgotPassword");
+  } catch (error) {
+    res.render("page404");
+  }
+};
 
-const fPasswordOtpLoad = async (req,res)=>{
-    try {
-        res.render("fPasswordOtp");
-    } catch (error) {
-        res.render('page404');
-    }
-}
+const fPasswordOtpLoad = async (req, res) => {
+  try {
+    res.render("fPasswordOtp");
+  } catch (error) {
+    res.render("page404");
+  }
+};
 
-const changePasswordLoad = async (req,res)=>{
-    try {
-        res.render("changePassword");
-    } catch (error) {
-        res.render('page404');
-    }
-}
+const changePasswordLoad = async (req, res) => {
+  try {
+    res.render("changePassword");
+  } catch (error) {
+    res.render("page404");
+  }
+};
 
 const loadSignup = async (req, res) => {
   try {
@@ -87,27 +87,27 @@ const otpLoad = async (req, res) => {
   }
 };
 
-const homeLoad = async (req,res)=>{
-    try {
-        const userData = await User.findById(req.session.user_id);
-  const productData = await Product.find({
-    $and: [{ list: true }, { quantity: { $gt: 0 } }],
-  })
-    .populate({
-      path: "categoryId",
-      populate: "offerId",
+const homeLoad = async (req, res) => {
+  try {
+    const userData = await User.findById(req.session.user_id);
+    const productData = await Product.find({
+      $and: [{ list: true }, { quantity: { $gt: 0 } }],
     })
-    .populate("offerId");
+      .populate({
+        path: "categoryId",
+        populate: "offerId",
+      })
+      .populate("offerId");
 
-  const products = productData.filter(
-    (product) => product.categoryId.list === true
-  );
-  const imagePathsArray = products.map((item) => item.imagePaths);
-  res.render("home", { userData, products, imagePathsArray });
-    } catch (error) {
-        res.render('page404');
-    }
-}
+    const products = productData.filter(
+      (product) => product.categoryId.list === true
+    );
+    const imagePathsArray = products.map((item) => item.imagePaths);
+    res.render("home", { userData, products, imagePathsArray });
+  } catch (error) {
+    res.render("page404");
+  }
+};
 
 const allProductsLoad = async (req, res) => {
   try {
@@ -177,12 +177,19 @@ const accountLoad = async (req, res) => {
       return new Date(b._id.getTimestamp()) - new Date(a._id.getTimestamp());
     });
 
-    console.log('====================================');
-    console.log();
-    console.log('====================================');
+    const transactionData = sortedHistory.map((transaction) => {
+      const transactionObj = transaction.toObject();
 
-    const transactionData = sortedHistory;
-    console.log(transactionData);
+      const date = new Date(transactionObj.date);
+    
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+    
+      transactionObj.date = `${day}-${month}-${year}`;
+    
+      return transactionObj;
+    });
     res.render("account", {
       userData,
       addressData,
@@ -196,15 +203,14 @@ const accountLoad = async (req, res) => {
   }
 };
 
-const addAddressLoad = async (req,res)=>{
-    try {
-        const checkAddress = await Address.findOne({ userId: req.session.user_id });
-        res.render("addAddress");
-    } catch (error) {
-        res.render('page404');
-    }
-}
- 
+const addAddressLoad = async (req, res) => {
+  try {
+    const checkAddress = await Address.findOne({ userId: req.session.user_id });
+    res.render("addAddress");
+  } catch (error) {
+    res.render("page404");
+  }
+};
 
 const cartLoad = async (req, res) => {
   try {
@@ -293,39 +299,70 @@ const cartLoad = async (req, res) => {
 const checkoutLoad = async (req, res) => {
   try {
     const cart = await Cart.findOne({ userId: req.session.user_id })
-    .populate({
-      path: "items.productId",
-      populate: {
-        path: "categoryId",
+      .populate({
+        path: "items.productId",
+        populate: {
+          path: "categoryId",
+          populate: {
+            path: "offerId",
+            model: "Offer",
+          },
+        },
+      })
+      .populate({
+        path: "items.productId",
         populate: {
           path: "offerId",
           model: "Offer",
         },
-      },
-    })
-    .populate({
-      path: "items.productId",
-      populate: {
-        path: "offerId",
-        model: "Offer",
-      },
-    });
-
+      });
 
     if (!cart) {
       console.log("Cart not found");
       return res.status(404).redirect("/cart");
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////
+    async function getProductPrice(item) {
+      const checkOffer = await Product.findOne({ _id: item.productId })
+        .populate({
+          path: "categoryId",
+          populate: { path: "offerId", model: "Offer" },
+        })
+        .populate({ path: "offerId", model: "Offer" });
 
-    const products = cart.items.map((item) => ({
-      productId: item.productId._id,
-      productName: item.productId.productName,
-      quantity: item.quantity,
-      total: item.total,
-    }));
+      let price;
+      if (checkOffer.offerId && checkOffer.offerId.status === "active") {
+        price =
+          checkOffer.price -
+          (checkOffer.price * checkOffer.offerId.percentage) / 100;
+      } else if (
+        checkOffer.categoryId.offerId &&
+        checkOffer.categoryId.offerId.status === "active"
+      ) {
+        price =
+          checkOffer.price -
+          (checkOffer.price * checkOffer.categoryId.offerId.percentage) / 100;
+      } else {
+        price = checkOffer.price;
+      }
 
+      return price;
+    }
+
+    async function resolveProductPrices(cartItems) {
+      return await Promise.all(
+        cartItems.map(async (item) => {
+          const productPrice = await getProductPrice(item);
+          return {
+            productId: item.productId._id,
+            productName: item.productId.productName,
+            productPrice: productPrice,
+            quantity: item.quantity,
+            total: item.total,
+          };
+        })
+      );
+    }
 
     const subTotal = cart.items.reduce((acc, crr, index) => {
       let price;
@@ -340,21 +377,19 @@ const checkoutLoad = async (req, res) => {
             100;
       } else if (
         cart.items[index].productId.categoryId.offerId &&
-        cart.items[index].productId.categoryId.offerId.status ===
-          "active"
+        cart.items[index].productId.categoryId.offerId.status === "active"
       ) {
         price =
           crr.productId.price -
           (crr.productId.price *
-            cart.items[index].productId.categoryId.offerId
-              .percentage) /
+            cart.items[index].productId.categoryId.offerId.percentage) /
             100;
       } else {
         price = crr.productId.price;
       }
       return (acc = acc + price * crr.quantity);
     }, 0);
-    
+
     const addressData = await Address.findOne(
       { userId: req.session.user_id },
       { addresses: 1, _id: 0 }
@@ -366,12 +401,16 @@ const checkoutLoad = async (req, res) => {
       address = addressData.addresses;
     }
 
-    res.render("checkout", { products, subTotal, address });
+    res.render("checkout", {
+      products: await resolveProductPrices(cart.items),
+      subTotal,
+      address,
+    });
   } catch (error) {
     console.error(error);
     res.render("page404");
   }
-}
+};
 
 const editAddressLoad = async (req, res) => {
   try {
@@ -466,14 +505,14 @@ const deleteAddress = async (req, res) => {
   }
 };
 
-const loguot = async (req,res)=>{
-    try {
-        req.session.user_id = null;
-  res.redirect("/login");
-    } catch (error) {
-        res.render('page404');
-    }
-}
+const loguot = async (req, res) => {
+  try {
+    req.session.user_id = null;
+    res.redirect("/login");
+  } catch (error) {
+    res.render("page404");
+  }
+};
 
 const securePassword = async (password) => {
   try {
@@ -613,140 +652,140 @@ const googleLogin = async (req, res) => {
   }
 };
 
-const saveOTP = async ({ email }, res)=>{
-    try {
-        const subjectt = "eStore signup varification OTP";
-        const message = "Please verify your eStore account with OTP";
-        const duration = 1;
-        const createdOTP = await sendOtp({
-          email,
-          subjectt,
-          message,
-          duration,
-        });
-    } catch (error) {
-        res.render('page404');
-    }
-}
+const saveOTP = async ({ email }, res) => {
+  try {
+    const subjectt = "eStore signup varification OTP";
+    const message = "Please verify your eStore account with OTP";
+    const duration = 1;
+    const createdOTP = await sendOtp({
+      email,
+      subjectt,
+      message,
+      duration,
+    });
+  } catch (error) {
+    res.render("page404");
+  }
+};
 
 const sendOtp = async ({ email, subjectt, message, duration = 1 }) => {
-    try {
-        if (!(email && subjectt && message)) {
-            throw Error("Provide values for email, subject, message");
-          }
-      
-          //clear any old record
-          await OTP.deleteOne({ email });
-      
-          //generate otp
-          const generatedOTP = await generateOTP();
-      
-          //send email
-          const mailOptions = {
-            from: "testerr92@outlook.com",
-            to: email,
-            subject: subjectt,
-            html: `<p>${message}</p>
+  try {
+    if (!(email && subjectt && message)) {
+      throw Error("Provide values for email, subject, message");
+    }
+
+    //clear any old record
+    await OTP.deleteOne({ email });
+
+    //generate otp
+    const generatedOTP = await generateOTP();
+
+    //send email
+    const mailOptions = {
+      from: "testerr92@outlook.com",
+      to: email,
+      subject: subjectt,
+      html: `<p>${message}</p>
                   <p>Your OTP is: ${generatedOTP}</p>`,
-          };
-          await sendEmail(mailOptions);
-          const newOTP = await new OTP({
-            email: email,
-            otp: generatedOTP,
-            created_at: Date.now(),
-            expiration_time: Date.now() + 90000,
-          });
-          const createdOTPRecord = await newOTP.save();
-          return createdOTPRecord;
-    } catch (error) {
-        res.render('page404');
-    }
-}
- 
-const verifyOTP = async (req,res)=>{
-    try {
-        const enteredOTP = parseInt(
-            `${req.body.num1}${req.body.num2}${req.body.num3}${req.body.num4}${req.body.num5}${req.body.num6}`
-          );
-        
-          const otpData = await OTP.findOne({ email: req.session.userSignup_email });
-        
-          if (otpData) {
-            if (otpData.otp === enteredOTP) {
-              const verifyUser = await User.findOneAndUpdate(
-                { _id: req.session.userSignup_id },
-                { $set: { isVerified: true } }
-              );
-        
-              if (verifyUser) {
-                res.redirect("/login");
-                req.session.destroy();
-              }
-            } else {
-              res.render("otp", { msg: "Please enter the correct OTP!" });
-            }
-          } else {
-            res.render("otp", { msg: "Something went wrong!" });
-          }
-    } catch (error) {
-        res.render('page404');
-    }
-}
+    };
+    await sendEmail(mailOptions);
+    const newOTP = await new OTP({
+      email: email,
+      otp: generatedOTP,
+      created_at: Date.now(),
+      expiration_time: Date.now() + 90000,
+    });
+    const createdOTPRecord = await newOTP.save();
+    return createdOTPRecord;
+  } catch (error) {
+    res.render("page404");
+  }
+};
 
-const resendOTP = async (req,res)=>{
-    try {
-        const userData = await User.findOne({ _id: req.session.userSignup_id });
-        saveOTP(userData);
-        res.render("otp");
-    } catch (error) {
-        res.render('page404');
-    }
-}
+const verifyOTP = async (req, res) => {
+  try {
+    const enteredOTP = parseInt(
+      `${req.body.num1}${req.body.num2}${req.body.num3}${req.body.num4}${req.body.num5}${req.body.num6}`
+    );
 
-const verifyLogin = async (req,res)=>{
-    try {
-        const { email, password } = req.body;
-  const userData = await User.findOne({ email: email });
-  if (userData) {
-    if (userData.isBlock === false) {
-      if (userData["password"] === undefined) {
-        return res.render("login", { msg: "You don't have account!" });
-      }
-      const passwordMatch = await bcrypt.compare(password, userData.password);
+    const otpData = await OTP.findOne({ email: req.session.userSignup_email });
 
-      if (passwordMatch) {
-        if (userData.isVerified === true) {
-          req.session.user_id = userData._id;
-          req.session.isBlock = userData.isBlock;
-          res.redirect("/home");
-        } else {
-          res.render("login", { msg: "Please verify your account with OTP!" });
+    if (otpData) {
+      if (otpData.otp === enteredOTP) {
+        const verifyUser = await User.findOneAndUpdate(
+          { _id: req.session.userSignup_id },
+          { $set: { isVerified: true } }
+        );
+
+        if (verifyUser) {
+          res.redirect("/login");
+          req.session.destroy();
         }
       } else {
-        res.render("login", { msg: "Wrong password!" });
+        res.render("otp", { msg: "Please enter the correct OTP!" });
       }
     } else {
-      res.render("login", { msg: "Access restricted!" });
+      res.render("otp", { msg: "Something went wrong!" });
     }
-  } else {
-    res.render("login", { msg: "Invalid email or you don't have account!" });
+  } catch (error) {
+    res.render("page404");
   }
-    } catch (error) {
-        res.render('page404');
+};
+
+const resendOTP = async (req, res) => {
+  try {
+    const userData = await User.findOne({ _id: req.session.userSignup_id });
+    saveOTP(userData);
+    res.render("otp");
+  } catch (error) {
+    res.render("page404");
+  }
+};
+
+const verifyLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const userData = await User.findOne({ email: email });
+    if (userData) {
+      if (userData.isBlock === false) {
+        if (userData["password"] === undefined) {
+          return res.render("login", { msg: "You don't have account!" });
+        }
+        const passwordMatch = await bcrypt.compare(password, userData.password);
+
+        if (passwordMatch) {
+          if (userData.isVerified === true) {
+            req.session.user_id = userData._id;
+            req.session.isBlock = userData.isBlock;
+            res.redirect("/home");
+          } else {
+            res.render("login", {
+              msg: "Please verify your account with OTP!",
+            });
+          }
+        } else {
+          res.render("login", { msg: "Wrong password!" });
+        }
+      } else {
+        res.render("login", { msg: "Access restricted!" });
+      }
+    } else {
+      res.render("login", { msg: "Invalid email or you don't have account!" });
     }
-}
- 
+  } catch (error) {
+    res.render("page404");
+  }
+};
+
 const handleForgotPassword = async (req, res) => {
   try {
     const email = req.body.email;
     const checkUser = await User.findOne({ email: email });
 
     if (!checkUser) {
-      return res
-        .status(500)
-        .render("forgotPassword", {
-          warningMsg: "Invalid email or you don't have account!",
-        });
+      return res.status(500).render("forgotPassword", {
+        warningMsg: "Invalid email or you don't have account!",
+      });
     }
     req.session.fPasswordEmail = checkUser.email;
 
@@ -892,8 +931,6 @@ const deleteProduct = async (req, res) => {
     const productId = req.params.productId;
     const userId = req.session.user_id;
 
-
-
     const cart = await Cart.findOne({ userId: userId });
     const cartData = await Cart.findOne(
       { "items.productId": productId },
@@ -932,10 +969,9 @@ const updateQuantity = async (req, res) => {
       { _id: 0, quantity: 1 }
     );
 
-
-    console.log('====================================');
+    console.log("====================================");
     console.log();
-    console.log('====================================');
+    console.log("====================================");
 
     const oldQtyData = await Cart.findOne(
       { "items._id": cartItemId },
@@ -988,14 +1024,12 @@ const updateQuantity = async (req, res) => {
       { userId: req.session.user_id },
       { $set: { subTotal: subTotal } }
     );
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Quantity updated successfully",
-        updatedProductPrice,
-        subTotal,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Quantity updated successfully",
+      updatedProductPrice,
+      subTotal,
+    });
   } catch (error) {
     console.log(error);
     res.render("page404");
@@ -1127,33 +1161,33 @@ const placeOrder = async (req, res) => {
     let productArray = [];
     for (let item of allProductsData) {
       const productData = await Product.findOne({ _id: item.productId })
-      .populate({
-        path: "categoryId",
-        populate: "offerId",
-      })
-      .populate("offerId");
+        .populate({
+          path: "categoryId",
+          populate: "offerId",
+        })
+        .populate("offerId");
 
       let productPrice;
-    var offerDeduction;
-    if (
-      productData.offerId &&
-      productData.offerId.status === "active" &&
-      productData.offerId.expiryDate > Date.now()
-    ) {
-      offerDeduction =
-        productData.price * (productData.offerId.percentage / 100);
-      productPrice = productData.price - offerDeduction;
-    } else if (
-      productData.categoryId.offerId &&
-      productData.categoryId.offerId.status === "active" &&
-      productData.categoryId.offerId.expiryDate > Date.now()
-    ) {
-      offerDeduction =
-        productData.price * (productData.categoryId.offerId.percentage / 100);
-      productPrice = productData.price - offerDeduction;
-    } else {
-      productPrice = productData.price;
-    }
+      var offerDeduction;
+      if (
+        productData.offerId &&
+        productData.offerId.status === "active" &&
+        productData.offerId.expiryDate > Date.now()
+      ) {
+        offerDeduction =
+          productData.price * (productData.offerId.percentage / 100);
+        productPrice = productData.price - offerDeduction;
+      } else if (
+        productData.categoryId.offerId &&
+        productData.categoryId.offerId.status === "active" &&
+        productData.categoryId.offerId.expiryDate > Date.now()
+      ) {
+        offerDeduction =
+          productData.price * (productData.categoryId.offerId.percentage / 100);
+        productPrice = productData.price - offerDeduction;
+      } else {
+        productPrice = productData.price;
+      }
 
       let productDocItem = {
         productId: item.productId,
