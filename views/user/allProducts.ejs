@@ -48,7 +48,7 @@
 
                 <div class="products">
                     <div class="row">
-                        <% products.forEach(element=> { %>
+                        <% products.slice(0,8).forEach((element)=> { %>
 
                             <div class="col-6 col-md-4 col-lg-4 col-xl-3 col-xxl-2">
                                 <div class="product">
@@ -120,9 +120,9 @@
                     <div class="pagination-area mt-5 mb-50">
                         <nav aria-label="Page navigation example">
                             <ul class="pagination justify-content-center">
-                                <li class="page-item active"><a class="page-link" onclick="nextPage(this)"
+                                <li class="page-item active"><a class="page-link" 
                                         href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" onclick="nextPage(this)" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link"  href="#">2</a></li>
                                 <li class="page-item">
                                     <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
                                 </li>
@@ -174,9 +174,17 @@
     </main><!-- End .main -->
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // window.location.href = '/allProducts';
+    var products = <%- JSON.stringify(products) %>;
 
+        document.addEventListener('DOMContentLoaded', function () {
+
+            document.querySelector('.pagination').addEventListener('click', function(e) {
+    if (e.target.classList.contains('page-link')) {
+        e.preventDefault();
+        let pageNumber = parseInt(e.target.innerText);
+        nextPage(pageNumber, products);
+    }
+});
             document.getElementById('sortby').addEventListener('change', function () {
                 var option = this.value;
 
@@ -220,7 +228,9 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    renderProducts(data.products)
+                    let totalPages = data.pageCount;
+                    generatePaginationLinks(totalPages);
+                    nextPage(totalPages,data.products)
                 })
                 .catch(error => {
                     console.log('Error:', error);
@@ -229,12 +239,13 @@
 
         function renderProducts(products) {
             const container = document.querySelector('.row');
-            container.innerHTML = ''; // Clear existing products
+            console.log(container)
+            container.innerHTML = ''; 
 
             products.forEach(element => {
                 const productHTML = `
         <div class="col-6 col-md-4 col-lg-4 col-xl-3 col-xxl-2">
-            <div class="product">
+            <div class="product">                            
                 <figure class="product-media">
                     <!-- <span class="product-label label-new">New</span> -->
                     <a href="/product/${element._id}">
@@ -262,7 +273,7 @@
             </div><!-- End .product -->
         </div><!-- End .col-sm-6 col-lg-4 col-xl-3 -->
         `;
-                container.insertAdjacentHTML('beforeend', productHTML); // Append product HTML to container
+                container.insertAdjacentHTML('beforeend', productHTML); 
             });
         }
 
@@ -300,29 +311,27 @@
                 a.classList.add('page-link');
                 a.textContent = i;
                 a.onclick = function () {
-                    nextPage(this);
+                    nextPage(i);
                 };
                 li.appendChild(a);
                 paginationContainer.appendChild(li);
             }
         }
 
-        function nextPage(element) {
-            const page = parseInt(element.innerHTML)
-            console.log(page, typeof page)
-            fetch(`/products?id=${page}`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data)
-                    const totalPages = <%-JSON.stringify(pageCount) %>;
-                    renderProducts(data.products)
-                    generatePaginationLinks(totalPages);
 
-                }).catch(error => {
-                    console.log(error)
-                })
+        document.addEventListener('DOMContentLoaded', function() {
+           
+})
+function nextPage(page,products) {
+    console.log(products, page)
+    console.log(products.length,'================')
+            const totalPages = Math.ceil(products.length/8)
+            const limit = 8;
+            const skip = (page - 1) * limit;
+            const paginatedProducts = products.slice(skip, skip + limit);
+            renderProducts(paginatedProducts)
+            generatePaginationLinks(totalPages);
         }
-
 
 
 

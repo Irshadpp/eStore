@@ -111,9 +111,6 @@ const homeLoad = async (req, res) => {
 
 const allProductsLoad = async (req, res) => {
   try {
-    const pageNum = req.query.id || 1;
-    const limit = 8;
-    const skip = (parseInt(pageNum) - 1) * limit;
     const productData = await Product.find()
       .populate({
         path: "categoryId",
@@ -126,17 +123,11 @@ const allProductsLoad = async (req, res) => {
         product.categoryId.list === true &&
         product.quantity > 0
     );
-    const paginatedProducts = products.slice(skip, skip + limit);
     const categoryData = await Category.find();
-    const pageCount = Math.ceil(products.length / limit);
-    if (!req.query.id) {
       return res.render("allProducts", {
-        products: paginatedProducts,
+        products,
         categoryData,
-        pageCount,
       });
-    }
-    res.json({ products: paginatedProducts, categoryData, pageCount });
   } catch (error) {
     res.render("page404");
   }
@@ -181,13 +172,13 @@ const accountLoad = async (req, res) => {
       const transactionObj = transaction.toObject();
 
       const date = new Date(transactionObj.date);
-    
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
+
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
       const year = date.getFullYear();
-    
+
       transactionObj.date = `${day}-${month}-${year}`;
-    
+
       return transactionObj;
     });
     res.render("account", {
@@ -1505,7 +1496,9 @@ const filterCategory = async (req, res) => {
       .populate("categoryId")
       .lean();
     const categoryData = await Category.find();
-    res.json({ products, pageCount: 1 });
+    const pageCount = Math.ceil(products.length/8);
+    res.json({ products, pageCount});
+    // res.render("allProducts",{products})
   } catch (error) {
     console.log(error);
     res.render("page404");
