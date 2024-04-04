@@ -124,10 +124,10 @@ const allProductsLoad = async (req, res) => {
         product.quantity > 0
     );
     const categoryData = await Category.find();
-      return res.render("allProducts", {
-        products,
-        categoryData,
-      });
+    return res.render("allProducts", {
+      products,
+      categoryData,
+    });
   } catch (error) {
     res.render("page404");
   }
@@ -1343,12 +1343,10 @@ const orderDetailsLoad = async (req, res) => {
     const orderData = await Order.findById(orderId).populate(
       "products.productId userId"
     );
-    orderData.products.forEach((element) =>
-      console.log(element.productId.productName)
-    );
+    let discount = orderData.offerDeduction + orderData.couponDeduction;
     const orderDate = moment(orderData.date);
-    const date = orderDate.format("DD-MM-YYYY");
-    res.render("orderDetails", { orderData, date });
+    const date = orderDate.format("DD-MM-YYYY h:mma");
+    res.render("orderDetails", { orderData, date, discount });
   } catch (error) {
     res.render("page404");
   }
@@ -1432,7 +1430,10 @@ const sortPopular = async (req, res) => {
 
 const sortNewArrivals = async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 }).limit(8);
+    const products = await Product.find()
+      .sort({ createdAt: -1 })
+      .limit(8)
+      .populate("categoryId");
     const categoryData = await Category.find();
     res.render("allProducts", { products, categoryData, pageCount: 1 });
   } catch (error) {
@@ -1443,7 +1444,9 @@ const sortNewArrivals = async (req, res) => {
 
 const sortAtoZ = async (req, res) => {
   try {
-    const products = await Product.find().sort({ productName: 1 });
+    const products = await Product.find()
+      .sort({ productName: 1 })
+      .populate("categoryId");
     const categoryData = await Category.find();
     res.render("allProducts", { products, categoryData, pageCount: 1 });
   } catch (error) {
@@ -1454,7 +1457,9 @@ const sortAtoZ = async (req, res) => {
 
 const sortZtoA = async (req, res) => {
   try {
-    const products = await Product.find().sort({ productName: -1 });
+    const products = await Product.find()
+      .sort({ productName: -1 })
+      .populate("categoryId");
     const categoryData = await Category.find();
     res.render("allProducts", { products, categoryData, pageCount: 1 });
   } catch (error) {
@@ -1465,7 +1470,9 @@ const sortZtoA = async (req, res) => {
 
 const sortLowToHigh = async (req, res) => {
   try {
-    const products = await Product.find().sort({ price: 1 });
+    const products = await Product.find()
+      .sort({ price: 1 })
+      .populate("categoryId");
     const categoryData = await Category.find();
     res.render("allProducts", { products, categoryData, pageCount: 1 });
   } catch (error) {
@@ -1476,7 +1483,9 @@ const sortLowToHigh = async (req, res) => {
 
 const sortHighToLow = async (req, res) => {
   try {
-    const products = await Product.find().sort({ price: -1 });
+    const products = await Product.find()
+      .sort({ price: -1 })
+      .populate("categoryId");
     const categoryData = await Category.find();
     res.render("allProducts", { products, categoryData, pageCount: 1 });
   } catch (error) {
@@ -1496,8 +1505,8 @@ const filterCategory = async (req, res) => {
       .populate("categoryId")
       .lean();
     const categoryData = await Category.find();
-    const pageCount = Math.ceil(products.length/8);
-    res.json({ products, pageCount});
+    const pageCount = Math.ceil(products.length / 8);
+    res.json({ products, pageCount });
     // res.render("allProducts",{products})
   } catch (error) {
     console.log(error);

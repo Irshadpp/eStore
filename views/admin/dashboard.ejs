@@ -78,6 +78,15 @@
                                 <canvas id="myChart" height="120px"></canvas>
                             </article>
                         </div>
+                        <div class="col-xl-12 col-lg-12">
+                            <div class="card mb-4">
+                                <article class="card-body">
+                                    <h5 class="card-title">Sale statistics category wise</h5>
+                                    <div class="row align-items-center" >
+                                    </div>
+                                    <canvas id="myChartCategory" height="120px"></canvas>
+                                </article>
+                            </div>
                         
                     </div>
                 </div>
@@ -163,6 +172,8 @@ let data = monthlyData;
 
 document.addEventListener("DOMContentLoaded", function () {
     const ctx = document.getElementById("myChart").getContext("2d");
+    const ctxCategory = document.getElementById("myChartCategory").getContext("2d");
+
     window.myChart = new Chart(ctx, {
         type: "line",
         data: {
@@ -174,7 +185,34 @@ document.addEventListener("DOMContentLoaded", function () {
                 backgroundColor: "rgba(4, 209, 130, 0.2)",
                 borderColor: "rgb(4, 209, 130)",
                 data: data,
-            }],
+            },
+            
+        ],
+        },
+        options: {
+            plugins: {
+                legend: {
+                    labels: {
+                        usePointStyle: true,
+                    },
+                },
+            },
+        },
+    });
+    window.myChart = new Chart(ctxCategory, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Sales",
+                tension: 0.3,
+                fill: true,
+                backgroundColor: "rgba(44, 120, 220, 0.2)",
+                borderColor: "rgb(44, 120, 220)",
+                data: data,
+            },
+            
+        ],
         },
         options: {
             plugins: {

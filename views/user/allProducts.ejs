@@ -228,9 +228,8 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    let totalPages = data.pageCount;
-                    generatePaginationLinks(totalPages);
-                    nextPage(totalPages,data.products)
+                    renderProducts(data.products)
+                    generatePaginationLinks(data.pageCount);
                 })
                 .catch(error => {
                     console.log('Error:', error);
@@ -322,7 +321,7 @@
         document.addEventListener('DOMContentLoaded', function() {
            
 })
-function nextPage(page,products) {
+function nextPage(page) {
     console.log(products, page)
     console.log(products.length,'================')
             const totalPages = Math.ceil(products.length/8)

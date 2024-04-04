@@ -60,19 +60,7 @@
                                                     <td class="price-col">
                                                         <%= parseFloat(price).toFixed(2) %>
                                                     </td>
-                                                    <%}else if(element.productId.categoryId.offerId &&
-                                                        element.productId.categoryId.offerId.status==='active' ){ let
-                                                        price=element.productId.price - element.productId.price *
-                                                        (element.productId.categoryId.offerId.percentage/100)%>
-                                                        <td class="price-col">
-                                                            <%= parseFloat(price).toFixed(2) %>
-                                                        </td>
-                                                        <%}else{%>
-                                                            <td class="price-col">
-                                                                <%= parseFloat(element.productId.price).toFixed(2) %>
-                                                            </td>
-                                                            <% } %>
-                                                                <td class="quantity-col">
+                                                    <td class="quantity-col">
                                                                     <div class="cart-product-quantity">
                                                                         <input type="number"
                                                                             class="quantityInput form-control" readonly
@@ -82,20 +70,8 @@
                                                                             value="<%=element._id%>" hidden>
                                                                         <input type="text" class="productId"
                                                                             value="<%=element.productId._id%>" hidden>
-                                                                        <% if(element.productId.offerId &&
-                                                                            element.productId.offerId.status==='active'
-                                                                            ){ let price=element.productId.price -
-                                                                            element.productId.price *
-                                                                            (element.productId.offerId.percentage/100)%>
                                                                             <input type="text" class="productPrice"
                                                                                 value="<%=price%>" hidden>
-                                                                            <%}else
-                                                                                if(element.productId.categoryId.offerId
-                                                                                &&
-                                                                                element.productId.categoryId.offerId.status==='active'
-                                                                                ){ let price=element.productId.price -
-                                                                                element.productId.price *
-                                                                                (element.productId.categoryId.offerId.percentage/100)%>
                                                                                 <input type="text" class="productPrice"
                                                                                     value="<%=price%>" hidden>
                                                                                 </div><!-- End .cart-product-quantity -->
@@ -103,21 +79,85 @@
                                                                 <td class="total-col">
                                                                     <%= parseFloat(price * element.quantity).toFixed(2) %>
                                                                 </td>
-                                                                                <%}else{%>
                                                                                     <input type="text"
                                                                                         class="productPrice"
                                                                                         value="<%=element.productId.price%>"
                                                                                         hidden>
                                                                                     </div><!-- End .cart-product-quantity -->
                                                                 </td>
-                                                                <td class="total-col">
-                                                                    <%= parseFloat(element.productId.price * element.quantity).toFixed(2)%>
-                                                                </td>
-                                                                                    <% } %>
                                                                     
                                                                 <td class="remove-col"><button class="btn-remove"
                                                                         data-product-id="<%= element.productId._id %>"><i
                                                                             class="icon-close"></i></button></td>
+                                                    <%}else if(element.productId.categoryId.offerId &&
+                                                        element.productId.categoryId.offerId.status==='active' ){ let
+                                                        price=element.productId.price - element.productId.price *
+                                                        (element.productId.categoryId.offerId.percentage/100)%>
+                                                        <td class="price-col">
+                                                            <%= parseFloat(price).toFixed(2) %>
+                                                            <td class="quantity-col">
+                                                                    <div class="cart-product-quantity">
+                                                                        <input type="number"
+                                                                            class="quantityInput form-control" readonly
+                                                                            value="<%= element.quantity %>" min="1"
+                                                                            max="5" step="1" data-decimals="0" required>
+                                                                        <input type="text" class="cartId"
+                                                                            value="<%=element._id%>" hidden>
+                                                                        <input type="text" class="productId"
+                                                                            value="<%=element.productId._id%>" hidden>
+                                                                            <input type="text" class="productPrice"
+                                                                                value="<%=price%>" hidden>
+                                                                                <input type="text" class="productPrice"
+                                                                                    value="<%=price%>" hidden>
+                                                                                </div><!-- End .cart-product-quantity -->
+                                                                </td>
+                                                                <td class="total-col">
+                                                                    <%= parseFloat(price * element.quantity).toFixed(2) %>
+                                                                </td>
+                                                                                    <input type="text"
+                                                                                        class="productPrice"
+                                                                                        value="<%=element.productId.price%>"
+                                                                                        hidden>
+                                                                                    </div><!-- End .cart-product-quantity -->
+                                                                </td>
+                                                                    
+                                                                <td class="remove-col"><button class="btn-remove"
+                                                                        data-product-id="<%= element.productId._id %>"><i
+                                                                            class="icon-close"></i></button></td>
+                                                        </td>
+                                                        <%}else{%>
+                                                            <td class="price-col">
+                                                                <%= parseFloat(element.productId.price).toFixed(2) %>
+                                                            </td>
+                                                            <td class="quantity-col">
+                                                                    <div class="cart-product-quantity">
+                                                                        <input type="number"
+                                                                            class="quantityInput form-control" readonly
+                                                                            value="<%= element.quantity %>" min="1"
+                                                                            max="5" step="1" data-decimals="0" required>
+                                                                        <input type="text" class="cartId"
+                                                                            value="<%=element._id%>" hidden>
+                                                                        <input type="text" class="productId"
+                                                                            value="<%=element.productId._id%>" hidden>
+                                                                            <input type="text" class="productPrice"
+                                                                                value="<%=element.productId.price%>" hidden>
+                                                                                <!-- End .cart-product-quantity -->
+                                                                </td>
+                                                                <td class="total-col">
+                                                                    <%= parseFloat(element.productId.price * element.quantity).toFixed(2) %>
+                                                                </td>
+                                                                                    <input type="text"
+                                                                                        class="productPrice"
+                                                                                        value="<%=element.productId.price%>"
+                                                                                        hidden>
+                                                                                    </div><!-- End .cart-product-quantity -->
+                                                                </td>
+                                                                    
+                                                                <td class="remove-col"><button class="btn-remove"
+                                                                        data-product-id="<%= element.productId._id %>"><i
+                                                                            class="icon-close"></i></button></td>
+                                                            <% } %>
+                                                                
                                         </tr>
                         </div>
                         <%})%>

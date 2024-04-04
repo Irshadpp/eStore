@@ -45,19 +45,19 @@ const dashboardLoad = async (req, res) => {
     },
     {
       $group: {
-        _id: { $month: "$date" }, // Group by month
-        count: { $sum: 1 }, // Count documents in each group
+        _id: { $month: "$date" }, 
+        count: { $sum: 1 },
       },
     },
     {
       $sort: {
-        _id: 1, // Sort by month
+        _id: 1,
       },
     },
     {
       $group: {
         _id: null,
-        counts: { $push: { month: "$_id", count: "$count" } }, // Push month and count into an array
+        counts: { $push: { month: "$_id", count: "$count" } }, 
       },
     },
     {
@@ -97,6 +97,7 @@ const dashboardLoad = async (req, res) => {
       },
     },
   ]);
+  console.log(monthlyOrders)
 
   const monthlyData = monthlyOrders.map((item) => item.count);
   const topTenProducts = await Order.aggregate([
