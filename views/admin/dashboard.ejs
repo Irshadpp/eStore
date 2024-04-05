@@ -164,7 +164,8 @@
             </section>
             <!-- content-main end// -->
 
-            <script>const monthlyData = <%-JSON.stringify(monthlyData)%>;</script>
+            <script>const monthlyData = <%-JSON.stringify(monthlyData)%></script>
+            <script>const categories = <%-JSON.stringify(categories)%>;</script>
             <script>
            
 let labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -199,10 +200,10 @@ document.addEventListener("DOMContentLoaded", function () {
             },
         },
     });
-    window.myChart = new Chart(ctxCategory, {
+    window.myChartCategory = new Chart(ctxCategory, {
         type: "line",
         data: {
-            labels: labels,
+            labels: categories,
             datasets: [{
                 label: "Sales",
                 tension: 0.3,

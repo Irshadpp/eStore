@@ -162,7 +162,9 @@ const dashboardLoad = async (req, res) => {
     { $unwind: "$mostDeliveredCategory" }, 
   ]);
 
-  console.log(topTenCategories);
+  const categoryData = await Category.find();
+  const categories = categoryData.map( cat => cat.categoryName);
+
   res.render("dashboard", {
     revenue,
     orderCount,
@@ -170,6 +172,7 @@ const dashboardLoad = async (req, res) => {
     monthlyData,
     topTenCategories,
     topTenProducts,
+    categories
   });
   } catch (error) {
     res.render("404page");
