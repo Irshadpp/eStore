@@ -8,6 +8,13 @@ const isLogin = asyncHandler( (req,res,next) =>{
         next()
     }
 });
+const isHome = asyncHandler( (req,res,next) =>{
+    if(!req.session.user_id){
+        res.redirect('/')
+    }else{
+        next()
+    }
+});
 
 const isLogout = asyncHandler( (req,res,next) =>{
     if(req.session.user_id){
@@ -34,5 +41,6 @@ const isUserBlock = asyncHandler( async (req,res,next) => {
 module.exports = {
     isLogin,
     isLogout,
+    isHome,
     isUserBlock
 }

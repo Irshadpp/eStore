@@ -30,9 +30,14 @@ const logout = (req, res) => {
 //dashboard load
 const dashboardLoad = async (req, res) => {
   try {
-    const orderData = await Order.find({ status: "Delivered" });
+    const orderData = await Order.find({ status: "Delivered" })
+    .populate({
+      path:'products.productId',
+      populate: {
+        path:'categoryId',
+      }
+    });
   const revenue = orderData.reduce((acc, crr) => {
-    console.log(crr.subTotal);
     return (acc = acc + crr.subTotal);
   }, 0);
   const orderCount = orderData.length;
@@ -97,7 +102,6 @@ const dashboardLoad = async (req, res) => {
       },
     },
   ]);
-  console.log(monthlyOrders)
 
   const monthlyData = monthlyOrders.map((item) => item.count);
   const topTenProducts = await Order.aggregate([
@@ -165,6 +169,17 @@ const dashboardLoad = async (req, res) => {
   const categoryData = await Category.find();
   const categories = categoryData.map( cat => cat.categoryName);
 
+  let saledCategoryData = [];
+  orderData.forEach(item=>{
+    const categories = item.products.map(cat => cat.productId.categoryId.categoryName);
+    saledCategoryData.push(categories);
+  })
+
+  const saledCategories = categories.map(category=>
+    saledCategoryData.flat().reduce((acc,crr) => acc + (crr === category ? 1 : 0),0)
+  )
+
+
   res.render("dashboard", {
     revenue,
     orderCount,
@@ -172,7 +187,8 @@ const dashboardLoad = async (req, res) => {
     monthlyData,
     topTenCategories,
     topTenProducts,
-    categories
+    categories,
+    saledCategories
   });
   } catch (error) {
     res.render("404page");
@@ -747,7 +763,6 @@ const changeOrderStatus = async (req, res) => {
     const checkStatuses = orderProducts.products.find(
       (product) => product.status !== "Delivered"
     );
-    console.log(checkStatuses);
     if (!checkStatuses) {
       await Order.updateOne(
         { _id: order_id },
@@ -774,7 +789,6 @@ const returnProduct = async (req, res) => {
     if (orderData.paymentMode != "COD") {
       let total = 0;
       orderData.products.forEach((product) => {
-        console.log(product.productId._id);
         if (product.productId._id == productId) {
           total = product.total - orderData.couponDeduction;
         }
@@ -861,6 +875,13 @@ const addCoupon = async (req, res) => {
         .render("addCoupon", { warningMsg: "Please give coupon description!" });
     }
 
+    if (new Date(expiryDate) < Date.now()) {
+      return res
+        .status(400)
+        .render("addCoupon", { warningMsg: "Please give valid expiry date!" });
+    }
+
+
     if (discountAmount < 1) {
       return res.status(400).render("addCoupon", {
         warningMsg: "Discount amount price must be valid!",
@@ -885,7 +906,6 @@ const addCoupon = async (req, res) => {
     await coupon.save();
     res.render("addCoupon", { successMsg: "Coupon added successfully" });
   } catch (error) {
-    console.log(error);
     res.render("404page");
   }
 };
@@ -896,7 +916,6 @@ const couponDelete = async (req, res) => {
     await Coupon.findByIdAndDelete(couponId);
     res.json({ success: true });
   } catch (error) {
-    console.log(error);
     res.render("404page");
   }
 };
@@ -917,7 +936,6 @@ const offerLoad = async (req, res) => {
 
     res.render("offers", { offerData: formattedOfferData });
   } catch (error) {
-    console.log(error);
     res.render("404page");
   }
 };
@@ -930,7 +948,6 @@ const addOfferLoad = async (req, res) => {
     const products = productData.map((pro) => pro.productName);
     res.render("addOffer", { categoryData: categories, productData: products });
   } catch (error) {
-    console.log(error);
     res.render("404page");
   }
 };
@@ -947,7 +964,6 @@ const addOffer = async (req, res) => {
       selectedOptionvalue,
     } = req.body;
     let per = parseInt(percentage);
-    console.log("fghjkhfdsfjaksdjfkadjsklfjakljflk", selectedOptionvalue);
 
     if (offerName.trim() === "") {
       return res.json({ warningMsg: "Please give offer name!" });
@@ -989,7 +1005,6 @@ const addOffer = async (req, res) => {
     }
     res.json({ successMsg: "Please give valid expiry date!" });
   } catch (error) {
-    console.log(error);
     res.render("404page");
   } 
 };
@@ -1035,7 +1050,6 @@ const reportLoad = async (req, res) => {
       paymentTotal,
     });
   } catch (error) {
-    console.log(error);
     res.render("404page");
   }
 };
@@ -1109,7 +1123,6 @@ const generateReport = async (req, res) => {
           date: formattedDate,
         };
       });
-      console.log(formattedOrders);
       res.json({ formattedOrders });
     } else {
       const startDate = req.body.startDate;
@@ -1132,11 +1145,9 @@ const generateReport = async (req, res) => {
         };
       });
 
-      console.log(formattedOrders);
       res.json(formattedOrders);
     }
   } catch (error) {
-    console.log(error);
     res.render("404page");
   }
 };

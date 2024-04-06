@@ -166,10 +166,11 @@
 
             <script>const monthlyData = <%-JSON.stringify(monthlyData)%></script>
             <script>const categories = <%-JSON.stringify(categories)%>;</script>
+            <script>const categoryData = <%-JSON.stringify(saledCategories)%>;</script>
+
             <script>
            
 let labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-let data = monthlyData;
 
 document.addEventListener("DOMContentLoaded", function () {
     const ctx = document.getElementById("myChart").getContext("2d");
@@ -185,7 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 fill: true,
                 backgroundColor: "rgba(4, 209, 130, 0.2)",
                 borderColor: "rgb(4, 209, 130)",
-                data: data,
+                data: monthlyData,
             },
             
         ],
@@ -210,7 +211,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 fill: true,
                 backgroundColor: "rgba(44, 120, 220, 0.2)",
                 borderColor: "rgb(44, 120, 220)",
-                data: data,
+                data: categoryData,
             },
             
         ],

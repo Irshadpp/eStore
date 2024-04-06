@@ -16,6 +16,9 @@ router.get('/', indexAuth.isLogout, indexController.loadIndex);
 router.get('/login',indexAuth.isLogout, indexController.loadLogin);
 router.get('/signup', indexAuth.isLogout, indexController.loadSignup);
 
+router.get('/about',indexAuth.isLogout, indexController.loadAbout);
+router.get('/contact',indexAuth.isLogout, indexController.loadContact);
+
 router.get('/forgotPassword', indexAuth.isLogout, indexController.forgotPasswordLoad);
 router.post('/forgotPassword', indexAuth.isLogout, indexController.handleForgotPassword);
 router.get('/fPasswordOtp', indexAuth.isLogout, indexController.fPasswordOtpLoad);
@@ -40,7 +43,7 @@ router.post('/verifyOTP', indexController.verifyOTP);
 router.get('/resendOTP', indexController.resendOTP);
 
 //home page load
-router.get('/home', indexController.homeLoad);
+router.get('/home',indexAuth.isHome, indexAuth.isUserBlock, indexController.homeLoad);
 
 router.get('/products', indexController.allProductsLoad)
 router.get('/account', indexAuth.isLogin, indexAuth.isUserBlock, indexController.accountLoad);

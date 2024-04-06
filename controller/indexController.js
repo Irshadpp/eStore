@@ -1,4 +1,5 @@
 "use strict";
+require('dotenv').config();
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const moment = require("moment");
@@ -7,8 +8,8 @@ const crypto = require("crypto");
 const easyinvoice = require("easyinvoice");
 
 const razorpayInstance = new razorpay({
-  key_id: "rzp_test_cIsaimIKhCrW7h",
-  key_secret: "GIblKk1JR3xwE70qpa1jOo89",
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
 const User = require("../model/userdb");
@@ -36,11 +37,26 @@ const loadIndex = async (req, res) => {
   }
 };
 
+const loadAbout = async (req, res) => {
+  try {
+    res.render("about");
+  } catch (error) {
+    res.render("page404");
+  }
+};
+
+const loadContact = async (req, res) => {
+  try {
+    res.render("contact");
+  } catch (error) {
+    res.render("page404");
+  }
+};
+
 const loadLogin = async (req, res) => {
   try {
     res.render("login");
   } catch (error) {
-    console.log(error.message);
     res.render("page404");
   }
 };
@@ -73,7 +89,6 @@ const loadSignup = async (req, res) => {
   try {
     res.render("signup");
   } catch (error) {
-    console.log(error.message);
     res.render("page404");
   }
 };
@@ -82,7 +97,6 @@ const otpLoad = async (req, res) => {
   try {
     res.render("otp");
   } catch (error) {
-    console.log(error.message);
     res.render("page404");
   }
 };
@@ -106,7 +120,7 @@ const homeLoad = async (req, res) => {
     res.render("home", { userData, products, imagePathsArray });
   } catch (error) {
     res.render("page404");
-  }
+  } 
 };
 
 const allProductsLoad = async (req, res) => {
@@ -148,7 +162,6 @@ const productLoad = async (req, res) => {
     }
     res.render("product", { product, images });
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -189,7 +202,6 @@ const accountLoad = async (req, res) => {
       transactionData,
     });
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -206,31 +218,6 @@ const addAddressLoad = async (req, res) => {
 const cartLoad = async (req, res) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.session.user_id);
-    // const cartProducts = await Cart.aggregate([
-    //     { $match: { userId: userId } },
-    //     { $unwind: "$items" },
-    //     {
-    //         $lookup: {
-    //             from: "products",
-    //             localField: "items.productId",
-    //             foreignField: "_id",
-    //             as: "productDetails"
-    //         }
-    //     },
-    //     { $unwind: "$productDetails" },
-    //     {
-    //         $project: {
-    //             // "_id":0,
-    //             "itemsId": "$items._id",
-    //             "total": "$items.total",
-    //             "productId": "$productDetails._id",
-    //             "productName": "$productDetails.productName",
-    //             "price": "$productDetails.price",
-    //             "image": { $arrayElemAt: ["$productDetails.imagePaths", 0] },
-    //             "quantity": "$items.quantity"
-    //         }
-    //     }
-    // ]);
     const cartProducts = await Cart.findOne({ userId: userId })
       .populate({
         path: "items.productId",
@@ -282,7 +269,6 @@ const cartLoad = async (req, res) => {
     }
     res.render("cart", { cartProducts: [], subTotal: 0 });
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -309,7 +295,6 @@ const checkoutLoad = async (req, res) => {
       });
 
     if (!cart) {
-      console.log("Cart not found");
       return res.status(404).redirect("/cart");
     }
 
@@ -416,7 +401,6 @@ const editAddressLoad = async (req, res) => {
     );
     res.render("editAddress", { addressData });
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -477,7 +461,6 @@ const editAddress = async (req, res) => {
 
     res.redirect("/account");
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -491,7 +474,6 @@ const deleteAddress = async (req, res) => {
     );
     res.redirect("/account");
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -510,7 +492,6 @@ const securePassword = async (password) => {
     const hashPassword = await bcrypt.hash(password, 10);
     return hashPassword;
   } catch (error) {
-    console.log(error.message);
     res.render("page404");
   }
 };
@@ -609,7 +590,6 @@ const signup = async (req, res) => {
       res.render("signup", { msg: "Give proper name!" });
     }
   } catch (error) {
-    console.log(error.message);
     res.render("page404");
   }
 };
@@ -619,6 +599,19 @@ const googleLogin = async (req, res) => {
     const username = req.user.displayName;
     const email = req.user.emails[0].value;
     const googleId = req.user.id;
+    const id = req.query.id;
+
+    function generateOrderId(length) {
+      const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+      let id = "";
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * chars.length);
+        id += chars.charAt(randomIndex);
+      }
+      return id;
+    }
+
+    const referalId = generateOrderId(12);
 
     const userCheck = await User.findOne({ email: email });
     if (userCheck) {
@@ -630,10 +623,41 @@ const googleLogin = async (req, res) => {
         email: email,
         googleId: googleId,
         address: [],
+        referalId: referalId
       });
 
       const newUser = await users.save();
       if (newUser) {
+        if (id) {
+          const checkRefId = await User.findOne({ referalId: id });
+          if (checkRefId) {
+            let walletHistory;
+            walletHistory = {
+              amount: 100,
+              description: "Referal",
+              date: new Date(),
+              status: "In",
+            };
+            await User.updateOne(
+              { _id: req.session.userSignup_id },
+              { $set: { wallet: 100, walletHistory: walletHistory } }
+            );
+            walletHistory = {
+              amount: 200,
+              description: "Referal",
+              date: new Date(),
+              status: "In",
+            };
+            await User.updateOne(
+              { referalId: id },
+              {
+                $inc: { wallet: 200 },
+                $push: { walletHistory: walletHistory },
+              }
+            );
+          }
+        }
+
         req.session.user_id = newUser._id;
         res.redirect("/home");
       }
@@ -913,7 +937,6 @@ const addToCart = async (req, res) => {
     }
   } catch (error) {
     res.render("page404");
-    console.log(error);
   }
 };
 
@@ -948,7 +971,6 @@ const deleteProduct = async (req, res) => {
     res.render("cart", { cartProducts: updatedCart });
   } catch (error) {
     res.render("page404");
-    console.log(error);
   }
 };
 
@@ -960,9 +982,6 @@ const updateQuantity = async (req, res) => {
       { _id: 0, quantity: 1 }
     );
 
-    console.log("====================================");
-    console.log();
-    console.log("====================================");
 
     const oldQtyData = await Cart.findOne(
       { "items._id": cartItemId },
@@ -1022,7 +1041,6 @@ const updateQuantity = async (req, res) => {
       subTotal,
     });
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1048,7 +1066,6 @@ const editProfile = async (req, res) => {
     const updatedUser = await User.findOne({ _id: userId });
     res.redirect("/account");
   } catch (error) {
-    console.log(error.message);
     res.render("page404");
   }
 };
@@ -1119,7 +1136,6 @@ const addAddress = async (req, res) => {
 
     res.redirect("/account");
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1159,7 +1175,7 @@ const placeOrder = async (req, res) => {
         .populate("offerId");
 
       let productPrice;
-      var offerDeduction;
+      var offerDeduction = 0;
       if (
         productData.offerId &&
         productData.offerId.status === "active" &&
@@ -1193,6 +1209,7 @@ const placeOrder = async (req, res) => {
       userId: req.session.user_id,
       orderId: receipt,
       products: productArray,
+      offerDeduction: offerDeduction,
       subTotal: subTotal,
       address: addressData,
       paymentMode: paymentMethod,
@@ -1211,11 +1228,10 @@ const placeOrder = async (req, res) => {
               success: true,
               order_id: order.id,
               amount: amount,
-              key_id: "rzp_test_cIsaimIKhCrW7h",
+              key_id: process.env.RAZORPAY_KEY_ID,
               paymentMethod: paymentMethod,
             });
           } else {
-            console.log(err);
             res.status(500).json({ error: "Razorpay order creation failed" });
           }
         }
@@ -1294,14 +1310,13 @@ const placeOrder = async (req, res) => {
     }
   } catch (error) {
     res.status(500).render("page404");
-    console.log(error);
   }
 };
 
 const verifyOrder = async (req, res) => {
   try {
     const { paymentId, order_id, razorpay_signature, couponCode } = req.body;
-    const key_secret = "GIblKk1JR3xwE70qpa1jOo89";
+    const key_secret = process.env.RAZORPAY_KEY_SECRET;
     let hmac = crypto.createHmac("sha256", key_secret);
     hmac.update(order_id + "|" + paymentId);
     const generated_signature = hmac.digest("hex");
@@ -1332,7 +1347,6 @@ const verifyOrder = async (req, res) => {
       res.json({ success: false, message: "Payment verification failed" });
     }
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1392,7 +1406,6 @@ const cancelOrder = async (req, res) => {
       message: "order cancel successfull",
     });
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1411,7 +1424,6 @@ const returnProduct = async (req, res) => {
     );
     res.json({ success: true, status: "Return requested" });
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1423,7 +1435,6 @@ const sortPopular = async (req, res) => {
     const categoryData = await Category.find();
     res.render("allProducts", { products, categoryData, pageCount: 1 });
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1437,7 +1448,6 @@ const sortNewArrivals = async (req, res) => {
     const categoryData = await Category.find();
     res.render("allProducts", { products, categoryData, pageCount: 1 });
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1450,7 +1460,6 @@ const sortAtoZ = async (req, res) => {
     const categoryData = await Category.find();
     res.render("allProducts", { products, categoryData, pageCount: 1 });
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1463,7 +1472,6 @@ const sortZtoA = async (req, res) => {
     const categoryData = await Category.find();
     res.render("allProducts", { products, categoryData, pageCount: 1 });
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1476,7 +1484,6 @@ const sortLowToHigh = async (req, res) => {
     const categoryData = await Category.find();
     res.render("allProducts", { products, categoryData, pageCount: 1 });
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1489,7 +1496,6 @@ const sortHighToLow = async (req, res) => {
     const categoryData = await Category.find();
     res.render("allProducts", { products, categoryData, pageCount: 1 });
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1509,7 +1515,6 @@ const filterCategory = async (req, res) => {
     res.json({ products, pageCount });
     // res.render("allProducts",{products})
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1525,7 +1530,6 @@ const search = async (req, res) => {
     );
     res.json({ products });
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1535,7 +1539,6 @@ const wishlistLoad = async (req, res) => {
     const wishlistData = await Wishlist.find().populate("products.productId");
     res.render("wishlist", { wishlistData });
   } catch (error) {
-    console.log(error);
     res.render("page404");
     res.render("page404");
   }
@@ -1565,7 +1568,6 @@ const addtoWishlist = async (req, res) => {
     }
     res.redirect("/wishlist");
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1579,7 +1581,6 @@ const removeProduct = async (req, res) => {
     );
     res.json(200);
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1629,7 +1630,6 @@ const couponCheck = async (req, res) => {
       updatedsubTotal,
     });
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
@@ -1650,7 +1650,6 @@ const downloadInvoice = async (req, res) => {
       };
       products.push(item);
     });
-    console.log(products);
     const invoiceData = {
       mode: "development",
       currency: "INR",
@@ -1685,13 +1684,14 @@ const downloadInvoice = async (req, res) => {
     res.setHeader("Content-Disposition", 'attachment; filename="invoice.pdf"');
     res.send(Buffer.from(result.pdf, "base64"));
   } catch (error) {
-    console.log(error);
     res.render("page404");
   }
 };
 
 module.exports = {
   loadIndex,
+  loadContact,
+  loadAbout,
   loadLogin,
   forgotPasswordLoad,
   fPasswordOtpLoad,
