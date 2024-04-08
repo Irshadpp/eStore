@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "start:prod": "pm2 start app.js --name eStore"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
