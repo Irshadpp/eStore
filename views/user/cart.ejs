@@ -296,8 +296,9 @@
                     if (result.value) {
                         fetch(`http://localhost:3000/cart/deleteProduct/${productId}`, {
                             method: 'DELETE',
+                            mode: "no-cors",
                             headers: {
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
                             },
 
                         }).then(response => {
