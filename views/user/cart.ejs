@@ -294,7 +294,7 @@
                     buttonsStyling: false
                 }).then(function (result) {
                     if (result.value) {
-                        fetch(`http://localhost:3000/cart/deleteProduct/${productId}`, {
+                        fetch(`/cart/deleteProduct/${productId}`, {
                             method: 'DELETE',
                             headers: {
                                 'Content-Type': 'application/json',
