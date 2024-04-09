@@ -665,6 +665,7 @@ const googleLogin = async (req, res) => {
       }
     }
   } catch (error) {
+    console.log(error)
     res.render("page404");
   }
 };
