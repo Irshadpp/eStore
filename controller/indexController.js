@@ -237,8 +237,9 @@ const cartLoad = async (req, res) => {
         },
       });
 
+    let subTotal = 0;
     if (cartProducts !== null) {
-      const subTotal = cartProducts.items.reduce((acc, crr, index) => {
+      subTotal = cartProducts.items.reduce((acc, crr, index) => {
         let price;
         if (
           cartProducts.items[index].productId.offerId &&
@@ -265,13 +266,14 @@ const cartLoad = async (req, res) => {
         }
         return (acc = acc + price * crr.quantity);
       }, 0);
-      res.render("cart", { cartProducts: cartProducts.items, subTotal });
     }
-    res.render("cart", { cartProducts: [], subTotal: 0 });
+    res.render("cart", { cartProducts: cartProducts ? cartProducts.items : [], subTotal });
   } catch (error) {
+    console.error(error);
     res.render("page404");
   }
 };
+
 
 const checkoutLoad = async (req, res) => {
   try {
@@ -968,7 +970,7 @@ const deleteProduct = async (req, res) => {
       { $inc: { quantity: cartItemQty } }
     );
 
-    res.render("cart", { cartProducts: updatedCart });
+    res.redirect("/cart");
   } catch (error) {
     res.render("page404");
   }
