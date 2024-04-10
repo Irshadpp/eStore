@@ -302,7 +302,6 @@
                     })
                     .then(data => {
                         if (data.paymentMethod === 'razorpay') {
-                            console.log('Response from backend:', data.key_id);
                             var options = {
                                 "key": "" + data.key_id + "",
                                 "amount": "" + data.amount + "",
@@ -341,7 +340,6 @@
                                                 window.location.href = `/orderDetails/${data.orderId}`
                                             }, 1000)
                                         })
-                                    console.log('response', response);
                                 },
                                 "prefill": {
                                     "contact": "9876543210",
@@ -357,10 +355,8 @@
                             };
 
                             var razorpayObject = new Razorpay(options);
-                            console.log(razorpayObject);
 
                             razorpayObject.on('payment.failed', function (response) {
-                                console.log(response);
                                 Swal.fire({
                                     title: 'Payment faild!',
                                     text: 'Try another payment methode or contact your bank!',
@@ -449,6 +445,5 @@
     </body>
 
 
-    <!-- molla/checkout.html  22 Nov 2019 09:55:06 GMT -->
 
     </html>
