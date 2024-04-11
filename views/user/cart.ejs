@@ -320,6 +320,32 @@
             });
         });
 
+        $(document).ready(function() {
+        var cartProducts = <%-JSON.stringify(cartProducts)%>; 
+        $('.btn-order').on('click', function(e) {
+            if (cartProducts.length === 0) {
+                e.preventDefault();
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Your cart is empty!',
+                    text: 'Please add items to your cart before proceeding to checkout.',
+                    showConfirmButton: false,
+                    showCancelButton: true,
+                    cancelButtonText: 'Continue Shopping',
+                    cancelButtonColor: '#3085d6',
+                    cancelButtonClass: 'btn btn-primary',
+                    timer: 3000,
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.dismiss === Swal.DismissReason.cancel) {
+                        window.location.href = '/products';
+                    }
+                });
+            }
+        });
+    });
+
     </script>
 
 

@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express();
+const express = require('express');
+const router = express();
 
 const adminAuth = require('../middlewares/adminAuth');
 const adminController = require('../controller/adminController');

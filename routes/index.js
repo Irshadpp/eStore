@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express();
+const express = require('express');
+const router = express();
 const passport = require('passport');
 const indexController = require('../controller/indexController');
 const indexAuth = require('../middlewares/indexAuth');

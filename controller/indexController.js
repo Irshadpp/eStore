@@ -194,11 +194,23 @@ const accountLoad = async (req, res) => {
 
       return transactionObj;
     });
+
+    const formattedOfferData = couponData.map((coupon) => {
+      const formattedDate = new Date(coupon.expiryDate)
+        .toLocaleDateString("en-GB")
+        .split("/")
+        .join("-");
+      return {
+        ...coupon.toObject(),
+        expiryDate: formattedDate,
+      };
+    });
+
     res.render("account", {
       userData,
       addressData,
       orderData,
-      couponData,
+      couponData : formattedOfferData,
       transactionData,
     });
   } catch (error) {
