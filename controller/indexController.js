@@ -1527,7 +1527,6 @@ const filterCategory = async (req, res) => {
     const categoryData = await Category.find();
     const pageCount = Math.ceil(products.length / 8);
     res.json({ products, pageCount });
-    // res.render("allProducts",{products})
   } catch (error) {
     res.render("page404");
   }
@@ -1660,7 +1659,6 @@ const downloadInvoice = async (req, res) => {
         description: product.productId.productName,
         quantity: product.quantity,
         price: product.productPrice,
-        // total: product.total
       };
       products.push(item);
     });
