@@ -1,0 +1,14 @@
+# version: '3'
+# services:
+#   app:
+#     build: .
+#     ports:
+#       - "3000:3000"
+#     environment:
+#       - MONGO_URI=mongodb://mongodb-container:27017/eStore
+#     depends_on:
+#       - mongodb-container
+#   mongodb-container:
+#     image: mongo
+#     volumes:
+#       - C:\Program Files\MongoDB\Server\7.0\data:/data/db
