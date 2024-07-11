@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodejs-app
+  template:
+    metadata:
+      labels: 
+        app: nodejs-app
+    spec:
+      containers: 
+      - name: nodejs-app
+        image: irshadpp/app:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DB_URI
+          value: mongodb+srv://irshad:EIqZmfzkIyOknY7f@cluster0.jm9yi6w.mongodb.net/eStore
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs-service
+spec:
+  selector:
+    app: nodejs-app
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30080
+  type: NodePort
